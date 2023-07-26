@@ -1,0 +1,12 @@
+{
+  "$schema": "https://json-schema.org/draft-07/schema",
+  "$id": "user__logged_in_from_new_device.schema.json",
+  "title": "User_LoggedInFromNewDevice",
+  "type": "object",
+  "properties": {
+    "userId": {
+      "type": "string",
+      "description": "The user's ID"
+    }
+  }
+}

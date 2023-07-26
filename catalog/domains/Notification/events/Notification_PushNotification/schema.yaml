@@ -1,0 +1,12 @@
+# yaml-language-server: $schema=https://json-schema.org/draft-07/schema
+$schema: https://json-schema.org/draft-07/schema
+title: Notification_PushNotification
+type: object
+properties:
+  deviceRegistrationToken:
+    type: string
+    description: Device Registration Token
+  payload:
+    type: object
+    description: FCM Payload
+    additionalProperties: true

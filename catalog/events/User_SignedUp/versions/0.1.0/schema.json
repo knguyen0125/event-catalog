@@ -1,0 +1,12 @@
+{
+	"$schema": "https://json-schema.org/draft/2020-12/schema",
+	"$id": "user__signed_up.schema.json",
+	"title": "User__SignedUp",
+	"type": "object",
+	"properties": {
+		"userId": {
+			"type": "string",
+			"description": "The user's ID"
+		}
+	}
+}
