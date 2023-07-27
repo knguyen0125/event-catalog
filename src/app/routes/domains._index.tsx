@@ -17,7 +17,17 @@ export const meta: V2_MetaFunction = () => [
 
 export async function loader() {
   const domains = await Domain.query()
-    .withGraphFetched('[events, services, owners]')
+    .withGraphFetched(
+      '[events(selectName), services(selectName), owners(selectEmail)]',
+    )
+    .modifiers({
+      selectName(builder) {
+        builder.select('name');
+      },
+      selectEmail(builder) {
+        builder.select('email');
+      },
+    })
     .orderBy('name');
 
   return json({

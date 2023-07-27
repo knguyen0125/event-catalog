@@ -18,7 +18,17 @@ export const meta: V2_MetaFunction = () => [
 
 export async function loader() {
   const events = await Event.query()
-    .withGraphFetched('[publishers, subscribers, domain, owners]')
+    .withGraphFetched(
+      '[publishers(selectName), subscribers(selectName), domain(selectName), owners(selectEmail)]',
+    )
+    .modifiers({
+      selectName(builder) {
+        builder.select('name');
+      },
+      selectEmail(builder) {
+        builder.select('email');
+      },
+    })
     .where('is_latest', true)
     .orderBy('name');
 

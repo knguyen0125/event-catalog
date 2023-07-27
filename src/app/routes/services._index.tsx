@@ -13,7 +13,17 @@ import CardV2 from '~/components/CardV2';
 
 export async function loader() {
   const services = await Service.query()
-    .withGraphFetched('[domain, owners, publishedEvents, subscribedToEvents]')
+    .withGraphFetched(
+      '[domain(selectName), owners(selectEmail), publishedEvents(selectName), subscribedToEvents(selectName)]',
+    )
+    .modifiers({
+      selectName(builder) {
+        builder.select('name');
+      },
+      selectEmail(builder) {
+        builder.select('email');
+      },
+    })
     .orderBy('name');
 
   return json({
