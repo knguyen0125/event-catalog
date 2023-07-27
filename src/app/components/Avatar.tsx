@@ -18,7 +18,7 @@ const Avatar: React.FC<{
 
   return (
     <img
-      className="inline-block h-12 w-12 rounded-full text-blue-100"
+      className="inline-block h-6 w-6 rounded-full text-blue-100"
       src={src ?? getBase64FromInitials(alt?.slice(0, 2) ?? '??')}
       alt={alt}
       onError={({ currentTarget }) => {

@@ -50,7 +50,7 @@ const OwnersIndex = () => {
                   },
                   {
                     icon: Cog8ToothIcon,
-                    iconClassName: 'text-green-500',
+                    iconClassName: 'text-emerald-500',
                     text: `Services (${owner.services?.length || 0})`,
                   },
                   {

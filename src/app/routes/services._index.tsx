@@ -26,11 +26,7 @@ const ServiceIndexPage = () => {
 
   return (
     <Container>
-      <h1 className="py-4 text-2xl font-bold">
-        Services (
-        {services.length}
-        )
-      </h1>
+      <h1 className="py-4 text-2xl font-bold">Services ({services.length})</h1>
       <hr className="py-4" />
       <ul className="grid auto-rows-fr grid-cols-1 gap-6 sm:grid-cols-2">
         {services.map((service) => (
@@ -47,7 +43,7 @@ const ServiceIndexPage = () => {
                   },
                   {
                     icon: ArrowLeftOnRectangleIcon,
-                    iconClassName: 'text-green-500',
+                    iconClassName: 'text-emerald-500',
                     text: `Subscribes (${
                       service.subscribedToEvents?.length || 0
                     })`,
@@ -59,10 +55,10 @@ const ServiceIndexPage = () => {
                   },
                   service.domain
                     ? {
-                      icon: RectangleStackIcon,
-                      iconClassName: 'text-red-500',
-                      text: service.domain.name,
-                    }
+                        icon: RectangleStackIcon,
+                        iconClassName: 'text-red-500',
+                        text: service.domain.name,
+                      }
                     : null,
                 ]}
               />
@@ -72,6 +68,6 @@ const ServiceIndexPage = () => {
       </ul>
     </Container>
   );
-}
+};
 
 export default ServiceIndexPage;
