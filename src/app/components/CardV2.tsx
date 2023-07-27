@@ -29,8 +29,8 @@ const CardV2: React.FC<CardV2Props> = ({
       {accentColor && (
         <div style={{ backgroundColor: accentColor }} className="w-4"></div>
       )}
-      <div className={'p-4'}>
-        <div className="flex flex-wrap items-baseline gap-x-2">
+      <div className={'flex flex-col justify-around p-4'}>
+        <div className="flex flex-wrap items-baseline gap-2">
           <span className={'break-all text-lg font-bold'}>{title}</span>
           {badges &&
             badges.map((badge) => (
@@ -47,7 +47,7 @@ const CardV2: React.FC<CardV2Props> = ({
             ))}
         </div>
         <div className={'py-2 font-light'}>{description}</div>
-        <div className={'flex flex-wrap gap-x-2 pt-2 md:gap-x-4'}>
+        <div className={'flex flex-wrap gap-2 pt-2 md:gap-x-4'}>
           {additionalDetails &&
             additionalDetails.map(
               (item) =>

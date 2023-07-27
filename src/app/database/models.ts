@@ -239,6 +239,10 @@ export class Owner extends Model {
   role?: string;
   image?: string;
 
+  events?: Event[];
+  services?: Service[];
+  domains?: Domain[];
+
   static get tableName() {
     return 'owners';
   }
