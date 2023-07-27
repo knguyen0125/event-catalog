@@ -23,6 +23,7 @@ export class Event extends Model {
   publishers?: Service[];
   subscribers?: Service[];
   domain?: Domain;
+  owners?: Owner[];
 
   static get tableName() {
     return 'events';

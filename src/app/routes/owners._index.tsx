@@ -23,7 +23,7 @@ export default function OwnersIndex() {
   return (
     <Container>
       <h1 className="py-4 text-4xl font-bold">Owners</h1>
-      <ul>
+      <ul className={'grid grid-cols-1 gap-6 sm:grid-cols-2'}>
         {data.owners.map((owner) => (
           <li key={owner.email}>
             <OwnerCard owner={owner} />
