@@ -1,3 +1,4 @@
+/* eslint-disable max-len, @typescript-eslint/no-use-before-define, max-classes-per-file, no-param-reassign  */
 import type { QueryBuilder } from 'objection';
 import { Model } from 'objection';
 import Knex from 'knex';
@@ -18,11 +19,17 @@ Model.knex(db);
 
 export class Event extends Model {
   name!: string;
+
   version!: string;
+
   summary?: string;
+
   publishers?: Service[];
+
   subscribers?: Service[];
+
   domain?: Domain;
+
   owners?: Owner[];
 
   static get tableName() {
@@ -48,6 +55,7 @@ export class Event extends Model {
               builder.where('role', 'publisher');
             },
             beforeInsert(model: any) {
+              // eslint-disable-next-line no-param-reassign
               model.role = 'publisher';
             },
           },
@@ -67,6 +75,7 @@ export class Event extends Model {
               builder.where('role', 'subscriber');
             },
             beforeInsert(model: any) {
+              // eslint-disable-next-line
               model.role = 'subscriber';
             },
           },
@@ -107,10 +116,15 @@ export class Event extends Model {
 
 export class Service extends Model {
   name!: string;
+
   summary?: string;
+
   publishedEvents?: Event[];
+
   subscribedToEvents?: Event[];
+
   owners?: Owner[];
+
   domain?: Domain;
 
   static get tableName() {
@@ -187,14 +201,19 @@ export class Service extends Model {
 
 export class Domain extends Model {
   name!: string;
+
   summary?: string;
+
   events?: Event[];
+
   services?: Service[];
+
   owners?: Owner[];
 
   static get tableName() {
     return 'domains';
   }
+
   static get idColumn() {
     return 'name';
   }
@@ -235,12 +254,17 @@ export class Domain extends Model {
 
 export class Owner extends Model {
   email!: string;
+
   name?: string;
+
   role?: string;
+
   image?: string;
 
   events?: Event[];
+
   services?: Service[];
+
   domains?: Domain[];
 
   static get tableName() {

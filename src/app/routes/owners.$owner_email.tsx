@@ -4,14 +4,16 @@ import { json } from '@remix-run/node';
 import Container from '~/components/Container';
 import { Owner } from '~/database/models';
 
-export const meta: V2_MetaFunction = () => {
-  return [{ title: 'Owners' }, { name: 'description', content: 'Owners' }];
-};
+export const meta: V2_MetaFunction = () => [
+  { title: 'Owners' },
+  { name: 'description', content: 'Owners' },
+];
 
 export async function loader({ params }: LoaderArgs) {
   const owner = await Owner.query().findOne({ email: params.owner_email });
 
   if (!owner) {
+    // eslint-disable-next-line @typescript-eslint/no-throw-literal
     throw new Response('Not found', { status: 404 });
   }
 
@@ -20,7 +22,7 @@ export async function loader({ params }: LoaderArgs) {
   });
 }
 
-export default function OwnerDetailPage() {
+const OwnerDetailPage = () => {
   const { owner } = useLoaderData<typeof loader>();
 
   return (
@@ -30,4 +32,6 @@ export default function OwnerDetailPage() {
       <p>{owner.email}</p>
     </Container>
   );
-}
+};
+
+export default OwnerDetailPage;

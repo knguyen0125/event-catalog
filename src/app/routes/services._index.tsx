@@ -1,15 +1,15 @@
 import React from 'react';
-import Container from '~/components/Container';
-import { Service } from '~/database/models';
 import { json } from '@remix-run/node';
 import { Link, useLoaderData } from '@remix-run/react';
-import CardV2 from '~/components/CardV2';
 import {
   ArrowLeftOnRectangleIcon,
   ArrowRightOnRectangleIcon,
   RectangleStackIcon,
   UserGroupIcon,
 } from '@heroicons/react/24/outline';
+import Container from '~/components/Container';
+import { Service } from '~/database/models';
+import CardV2 from '~/components/CardV2';
 
 export async function loader() {
   const services = await Service.query()
@@ -26,8 +26,12 @@ const ServiceIndexPage = () => {
 
   return (
     <Container>
-      <h1 className="py-4 text-2xl font-bold">Services ({services.length})</h1>
-      <hr className={'py-4'} />
+      <h1 className="py-4 text-2xl font-bold">
+        Services (
+        {services.length}
+        )
+      </h1>
+      <hr className="py-4" />
       <ul className="grid auto-rows-fr grid-cols-1 gap-6 sm:grid-cols-2">
         {services.map((service) => (
           <li key={service.name}>
@@ -55,10 +59,10 @@ const ServiceIndexPage = () => {
                   },
                   service.domain
                     ? {
-                        icon: RectangleStackIcon,
-                        iconClassName: 'text-red-500',
-                        text: service.domain.name,
-                      }
+                      icon: RectangleStackIcon,
+                      iconClassName: 'text-red-500',
+                      text: service.domain.name,
+                    }
                     : null,
                 ]}
               />
@@ -68,6 +72,6 @@ const ServiceIndexPage = () => {
       </ul>
     </Container>
   );
-};
+}
 
 export default ServiceIndexPage;

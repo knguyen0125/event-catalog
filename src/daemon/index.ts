@@ -10,7 +10,7 @@
  * In build mode, the SQLite database is deleted and recreated.
  */
 async function build() {
-  throw new Error("Not implemented");
+  throw new Error('Not implemented');
 }
 
 /**

@@ -1,4 +1,4 @@
-import React from "react";
+import React from 'react';
 
 const Avatar: React.FC<{
   src?: string;
@@ -18,11 +18,13 @@ const Avatar: React.FC<{
 
   return (
     <img
-      className={"inline-block h-12 w-12 rounded-full text-blue-100"}
-      src={src ?? getBase64FromInitials(alt?.slice(0, 2) ?? "??")}
+      className="inline-block h-12 w-12 rounded-full text-blue-100"
+      src={src ?? getBase64FromInitials(alt?.slice(0, 2) ?? '??')}
       alt={alt}
       onError={({ currentTarget }) => {
-        currentTarget.src = getBase64FromInitials(alt?.slice(0, 2) ?? "??");
+        // eslint-disable-next-line no-param-reassign
+        currentTarget.src = getBase64FromInitials(alt?.slice(0, 2) ?? '??');
+        // eslint-disable-next-line no-param-reassign
         currentTarget.onerror = null;
       }}
     />

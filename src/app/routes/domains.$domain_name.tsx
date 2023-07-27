@@ -1,7 +1,7 @@
 import React from 'react';
 import { json, LoaderArgs } from '@remix-run/node';
-import { Domain } from '~/database/models';
 import { useLoaderData } from '@remix-run/react';
+import { Domain } from '~/database/models';
 import Container from '~/components/Container';
 
 export async function loader({ params }: LoaderArgs) {
@@ -10,6 +10,7 @@ export async function loader({ params }: LoaderArgs) {
   });
 
   if (!domain) {
+    // eslint-disable-next-line @typescript-eslint/no-throw-literal
     throw new Response('Not Found', { status: 404 });
   }
 

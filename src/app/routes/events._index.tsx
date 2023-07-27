@@ -1,15 +1,15 @@
 import React from 'react';
-import Container from '~/components/Container';
 import { json } from '@remix-run/node';
-import { Event } from '~/database/models';
 import { Link, useLoaderData } from '@remix-run/react';
-import CardV2 from '~/components/CardV2';
 import {
   ArrowLeftOnRectangleIcon,
   ArrowRightOnRectangleIcon,
   RectangleStackIcon,
   UserGroupIcon,
 } from '@heroicons/react/24/outline';
+import Container from '~/components/Container';
+import { Event } from '~/database/models';
+import CardV2 from '~/components/CardV2';
 
 export async function loader() {
   const events = await Event.query()
@@ -24,8 +24,12 @@ const EventsIndex = () => {
 
   return (
     <Container>
-      <h1 className="py-4 text-2xl font-bold">Events ({events.length})</h1>
-      <hr className={'py-4'} />
+      <h1 className="py-4 text-2xl font-bold">
+        Events (
+        {events.length}
+        )
+      </h1>
+      <hr className="py-4" />
       <ul className="grid  grid-cols-1 gap-6 sm:grid-cols-2">
         {events.map((event) => (
           <li key={event.name}>
@@ -54,10 +58,10 @@ const EventsIndex = () => {
                   },
                   event.domain
                     ? {
-                        icon: RectangleStackIcon,
-                        iconClassName: 'text-red-500',
-                        text: event.domain.name,
-                      }
+                      icon: RectangleStackIcon,
+                      iconClassName: 'text-red-500',
+                      text: event.domain.name,
+                    }
                     : null,
                 ]}
               />
@@ -67,6 +71,6 @@ const EventsIndex = () => {
       </ul>
     </Container>
   );
-};
+}
 
 export default EventsIndex;

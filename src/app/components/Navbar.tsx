@@ -1,77 +1,59 @@
-import { Link, NavLink } from "@remix-run/react";
-import clsx from "clsx";
-import { Disclosure } from "@headlessui/react";
-import { Bars3Icon, XMarkIcon } from "@heroicons/react/24/outline";
-import Container from "~/components/Container";
-import logo from "~/assets/logo.svg";
+import { Link, NavLink } from '@remix-run/react';
+import clsx from 'clsx';
+import { Disclosure } from '@headlessui/react';
+import { Bars3Icon, XMarkIcon } from '@heroicons/react/24/outline';
+import Container from '~/components/Container';
+import logo from '~/assets/logo.svg';
 
-export default function Navbar() {
+const Navbar = () => {
   const routes = [
     {
-      name: "Events",
-      path: "/events",
+      name: 'Events',
+      path: '/events',
     },
     {
-      name: "Services",
-      path: "/services",
+      name: 'Services',
+      path: '/services',
     },
     {
-      name: "Domains",
-      path: "/domains",
+      name: 'Domains',
+      path: '/domains',
     },
     {
-      name: "Owners",
-      path: "/owners",
+      name: 'Owners',
+      path: '/owners',
     },
     {
-      name: "Visualizer",
-      path: "/visualizer",
+      name: 'Visualizer',
+      path: '/visualizer',
     },
   ];
 
   return (
-    <Disclosure as={"nav"} className={"bg-gray-800"}>
+    <Disclosure as="nav" className="bg-gray-800">
       {({ open }) => (
         <>
           <Container>
-            <div className={"relative flex h-16 items-center justify-between"}>
-              <div
-                className={
-                  "absolute inset-y-0 left-0 flex items-center sm:hidden"
-                }
-              >
-                {/* Mobile menu button*/}
-                <Disclosure.Button
-                  className={
-                    "inline-flex items-center justify-center rounded-md p-2 text-gray-400 hover:bg-gray-700 hover:text-white focus:outline-none focus:ring-2 focus:ring-inset focus:ring-white"
-                  }
-                >
-                  <span className={"sr-only"}>Open main menu</span>
+            <div className="relative flex h-16 items-center justify-between">
+              <div className="absolute inset-y-0 left-0 flex items-center sm:hidden">
+                {/* Mobile menu button */}
+                <Disclosure.Button className="inline-flex items-center justify-center rounded-md p-2 text-gray-400 hover:bg-gray-700 hover:text-white focus:outline-none focus:ring-2 focus:ring-inset focus:ring-white">
+                  <span className="sr-only">Open main menu</span>
                   {open ? (
-                    <XMarkIcon
-                      className={"block h-6 w-6"}
-                      aria-hidden={"true"}
-                    />
+                    <XMarkIcon className="block h-6 w-6" aria-hidden="true" />
                   ) : (
-                    <Bars3Icon
-                      className={"block h-6 w-6"}
-                      aria-hidden={"true"}
-                    />
+                    <Bars3Icon className="block h-6 w-6" aria-hidden="true" />
                   )}
                 </Disclosure.Button>
               </div>
-              <div
-                className={
-                  "flex flex-1 items-center justify-center sm:items-stretch sm:justify-start"
-                }
-              >
-                <div className={"flex flex-shrink-0 items-center"}>
-                  <Link to={"/"}>
+              <div className="flex flex-1 items-center justify-center sm:items-stretch sm:justify-start">
+                <div className="flex flex-shrink-0 items-center">
+                  <Link to="/">
                     <img className="h-8 w-auto" src={logo} alt="Your.Rentals" />
                   </Link>
                 </div>
-                <div className={"hidden sm:ml-6 sm:block"}>
-                  <div className={"flex space-x-4"}>
+                <div className="hidden sm:ml-6 sm:block">
+                  <div className="flex space-x-4">
                     {routes.map((route) => (
                       <NavLink
                         to={route.path}
@@ -79,9 +61,9 @@ export default function Navbar() {
                         className={({ isActive }) =>
                           clsx(
                             isActive
-                              ? "bg-gray-900 text-white"
-                              : "text-gray-300 hover:bg-gray-700 hover:text-white",
-                            "rounded-md px-3 py-2 text-sm font-medium",
+                              ? 'bg-gray-900 text-white'
+                              : 'text-gray-300 hover:bg-gray-700 hover:text-white',
+                            'rounded-md px-3 py-2 text-sm font-medium',
                           )
                         }
                       >
@@ -93,18 +75,18 @@ export default function Navbar() {
               </div>
             </div>
           </Container>
-          <Disclosure.Panel className={"sm:hidden"}>
-            <div className={"space-y-1 px-2 pb-3 pt-2"}>
+          <Disclosure.Panel className="sm:hidden">
+            <div className="space-y-1 px-2 pb-3 pt-2">
               {routes.map((route) => (
                 <NavLink to={route.path} key={route.path}>
                   {({ isActive }) => (
                     <Disclosure.Button
-                      as={"div"}
+                      as="div"
                       className={clsx(
                         isActive
-                          ? "bg-gray-900 text-white"
-                          : "text-gray-300 hover:bg-gray-700 hover:text-white",
-                        "block rounded-md px-3 py-2 text-base font-medium",
+                          ? 'bg-gray-900 text-white'
+                          : 'text-gray-300 hover:bg-gray-700 hover:text-white',
+                        'block rounded-md px-3 py-2 text-base font-medium',
                       )}
                     >
                       {route.name}
@@ -118,4 +100,6 @@ export default function Navbar() {
       )}
     </Disclosure>
   );
-}
+};
+
+export default Navbar;

@@ -1,19 +1,20 @@
 import type { V2_MetaFunction } from '@remix-run/node';
 import { Link, useLoaderData } from '@remix-run/react';
 import { json } from '@remix-run/node';
-import Container from '~/components/Container';
-import { Owner } from '~/database/models';
 import React from 'react';
-import CardV2 from '~/components/CardV2';
 import {
   Cog8ToothIcon,
   EnvelopeIcon,
   RectangleStackIcon,
 } from '@heroicons/react/24/outline';
+import Container from '~/components/Container';
+import { Owner } from '~/database/models';
+import CardV2 from '~/components/CardV2';
 
-export const meta: V2_MetaFunction = () => {
-  return [{ title: 'Owners' }, { name: 'description', content: 'Owners' }];
-};
+export const meta: V2_MetaFunction = () => [
+  { title: 'Owners' },
+  { name: 'description', content: 'Owners' },
+];
 
 export async function loader() {
   const owners = await Owner.query()
@@ -25,18 +26,18 @@ export async function loader() {
   });
 }
 
-export default function OwnersIndex() {
+const OwnersIndex = () => {
   const { owners } = useLoaderData<typeof loader>();
 
   return (
     <Container>
       <h1 className="py-4 text-2xl font-bold">Owners ({owners.length})</h1>
-      <hr className={'py-4'} />
-      <ul className={'grid grid-cols-1 gap-6 sm:grid-cols-2'}>
+      <hr className="py-4" />
+      <ul className="grid grid-cols-1 gap-6 sm:grid-cols-2">
         {owners.map((owner) => (
           <li key={owner.email}>
             <Link to={`./${owner.email}`} key={owner.email}>
-              {/*<OwnerCard owner={owner} />*/}
+              {/* <OwnerCard owner={owner} /> */}
 
               <CardV2
                 title={owner.name ? owner.name : owner.email}
@@ -65,4 +66,6 @@ export default function OwnersIndex() {
       </ul>
     </Container>
   );
-}
+};
+
+export default OwnersIndex;
