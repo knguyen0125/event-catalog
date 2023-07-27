@@ -4,6 +4,7 @@ import { json } from '@remix-run/node';
 import Container from '~/components/Container';
 import OwnerCard from '~/components/OwnerCard';
 import { Owner } from '~/database/models';
+import React from 'react';
 
 export const meta: V2_MetaFunction = () => {
   return [{ title: 'Owners' }, { name: 'description', content: 'Owners' }];
@@ -18,13 +19,14 @@ export async function loader() {
 }
 
 export default function OwnersIndex() {
-  const data = useLoaderData<typeof loader>();
+  const { owners } = useLoaderData<typeof loader>();
 
   return (
     <Container>
-      <h1 className="py-4 text-4xl font-bold">Owners</h1>
+      <h1 className="py-4 text-2xl font-bold">Owners ({owners.length})</h1>
+      <hr className={'py-4'} />
       <ul className={'grid grid-cols-1 gap-6 sm:grid-cols-2'}>
-        {data.owners.map((owner) => (
+        {owners.map((owner) => (
           <li key={owner.email}>
             <OwnerCard owner={owner} />
           </li>

@@ -106,6 +106,13 @@ export class Event extends Model {
 }
 
 export class Service extends Model {
+  name!: string;
+  summary?: string;
+  publishedEvents?: Event[];
+  subscribedToEvents?: Event[];
+  owners?: Owner[];
+  domain?: Domain;
+
   static get tableName() {
     return 'services';
   }
@@ -180,6 +187,11 @@ export class Service extends Model {
 
 export class Domain extends Model {
   name!: string;
+  summary?: string;
+  events?: Event[];
+  services?: Service[];
+  owners?: Owner[];
+
   static get tableName() {
     return 'domains';
   }

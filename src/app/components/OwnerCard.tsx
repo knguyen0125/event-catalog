@@ -12,7 +12,7 @@ const OwnerCard: React.FC<{ owner: ModelObject<Owner> }> = ({ owner }) => {
         <div className="flex gap-x-1">
           <Avatar src={owner.image} alt={owner.name} />
           <div className={'ml-2 flex flex-col'}>
-            <span className={'font-bold'}>
+            <span className={'text-lg font-bold'}>
               {owner.name}
               {owner.role ? ` - ${owner.role}` : ''}
             </span>
