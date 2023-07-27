@@ -12,7 +12,6 @@ const db = Knex({
     },
   },
   useNullAsDefault: true,
-  debug: true,
 });
 
 Model.knex(db);
@@ -31,6 +30,8 @@ export class Event extends Model {
   domain?: Domain;
 
   owners?: Owner[];
+
+  content?: string;
 
   static get tableName() {
     return 'events';
