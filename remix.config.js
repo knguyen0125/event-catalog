@@ -1,11 +1,11 @@
 /** @type {import('@remix-run/dev').AppConfig} */
 module.exports = {
-  ignoredRouteFiles: ["**/.*"],
-  appDirectory: "src/app",
+  ignoredRouteFiles: ['**/.*'],
+  appDirectory: 'src/app',
   // assetsBuildDirectory: "public/build",
   // serverBuildPath: "build/index.js",
   // publicPath: "/build/",
-  serverModuleFormat: "cjs",
+  serverModuleFormat: 'cjs',
   future: {
     v2_dev: true,
     v2_errorBoundary: true,
@@ -14,6 +14,6 @@ module.exports = {
     v2_normalizeFormMethod: true,
     v2_routeConvention: true,
   },
-  watchPaths: ["catalog"],
+  watchPaths: ['catalog', 'src/db'],
   tailwind: true,
 };

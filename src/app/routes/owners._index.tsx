@@ -1,18 +1,16 @@
-import type { V2_MetaFunction } from "@remix-run/node";
-import { Link, useLoaderData } from "@remix-run/react";
-import { json } from "@remix-run/node";
-import Container from "~/components/Container";
-import db from "~/db";
-import type { Owner } from "../../types";
-import Avatar from "~/components/Avatar";
-import OwnerCard from "~/components/OwnerCard";
+import type { V2_MetaFunction } from '@remix-run/node';
+import { useLoaderData } from '@remix-run/react';
+import { json } from '@remix-run/node';
+import Container from '~/components/Container';
+import OwnerCard from '~/components/OwnerCard';
+import { Owner } from '~/database/models';
 
 export const meta: V2_MetaFunction = () => {
-  return [{ title: "Owners" }, { name: "description", content: "Owners" }];
+  return [{ title: 'Owners' }, { name: 'description', content: 'Owners' }];
 };
 
 export async function loader() {
-  const owners: Owner[] = await db.from("owners").select("*");
+  const owners = await Owner.query();
 
   return json({
     owners,
