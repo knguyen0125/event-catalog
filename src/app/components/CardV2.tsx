@@ -59,7 +59,7 @@ const CardV2: React.FC<CardV2Props> = ({
                       item.iconClassName,
                     )}
                   />
-                  <span className="text-xs font-light">{item.text}</span>
+                  <span className="text-xs text-gray-500">{item.text}</span>
                 </span>
               ),
           )}
