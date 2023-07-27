@@ -8,7 +8,7 @@ import {
   UserGroupIcon,
 } from '@heroicons/react/24/outline';
 import Container from '~/components/Container';
-import { Event } from '~/database/models';
+import { Event } from '~/database/models.server';
 import CardV2 from '~/components/CardV2';
 
 export const meta: V2_MetaFunction = () => [

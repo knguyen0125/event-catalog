@@ -1,7 +1,7 @@
 import React from 'react';
 import { json, LoaderArgs } from '@remix-run/node';
 import { useLoaderData } from '@remix-run/react';
-import { Service } from '~/database/models';
+import { Service } from '~/database/models.server';
 import Container from '~/components/Container';
 
 export async function loader({ params }: LoaderArgs) {
@@ -24,6 +24,6 @@ const ServiceDetailPage = () => {
   const { service } = useLoaderData<typeof loader>();
 
   return <Container>{service.name}</Container>;
-}
+};
 
 export default ServiceDetailPage;

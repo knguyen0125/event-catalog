@@ -10,8 +10,8 @@ import {
 } from '@heroicons/react/24/outline';
 import clsx from 'clsx';
 import { ModelObject } from 'objection';
-import Markdown from 'markdown-to-jsx';
-import { Event } from '~/database/models';
+import Markdown from 'react-markdown';
+import { Event } from '~/database/models.server';
 import Container from '~/components/Container';
 import Badge from '~/components/Badge';
 import Avatar from '~/components/Avatar';

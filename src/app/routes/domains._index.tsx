@@ -6,7 +6,7 @@ import {
   EnvelopeIcon,
   UserGroupIcon,
 } from '@heroicons/react/24/outline';
-import { Domain } from '~/database/models';
+import { Domain } from '~/database/models.server';
 import Container from '~/components/Container';
 import CardV2 from '~/components/CardV2';
 

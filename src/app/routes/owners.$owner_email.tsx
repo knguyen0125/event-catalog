@@ -2,7 +2,7 @@ import type { LoaderArgs, V2_MetaFunction } from '@remix-run/node';
 import { useLoaderData } from '@remix-run/react';
 import { json } from '@remix-run/node';
 import Container from '~/components/Container';
-import { Owner } from '~/database/models';
+import { Owner } from '~/database/models.server';
 
 export const meta: V2_MetaFunction = () => [
   { title: 'Owners' },

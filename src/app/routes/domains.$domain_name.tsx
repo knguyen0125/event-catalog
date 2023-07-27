@@ -1,7 +1,7 @@
 import React from 'react';
 import { json, LoaderArgs } from '@remix-run/node';
 import { useLoaderData } from '@remix-run/react';
-import { Domain } from '~/database/models';
+import { Domain } from '~/database/models.server';
 import Container from '~/components/Container';
 
 export async function loader({ params }: LoaderArgs) {
