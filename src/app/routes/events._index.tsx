@@ -2,8 +2,14 @@ import React from 'react';
 import Container from '~/components/Container';
 import { json } from '@remix-run/node';
 import { Event } from '~/database/models';
-import { useLoaderData } from '@remix-run/react';
-import EventCard from '~/components/EventCard';
+import { Link, useLoaderData } from '@remix-run/react';
+import CardV2 from '~/components/CardV2';
+import {
+  ArrowLeftOnRectangleIcon,
+  ArrowRightOnRectangleIcon,
+  RectangleStackIcon,
+  UserGroupIcon,
+} from '@heroicons/react/24/outline';
 
 export async function loader() {
   const events = await Event.query()
@@ -23,7 +29,39 @@ const EventsIndex = () => {
       <ul className="grid  grid-cols-1 gap-6 sm:grid-cols-2">
         {events.map((event) => (
           <li key={event.name}>
-            <EventCard event={event} />
+            <Link to={`./${event.name}`}>
+              <CardV2
+                title={event.name}
+                description={event.summary}
+                badges={[
+                  { className: 'bg-amber-200', text: `v${event.version}` },
+                ]}
+                additionalDetails={[
+                  {
+                    icon: ArrowRightOnRectangleIcon,
+                    iconClassName: 'text-blue-500',
+                    text: `Publishers (${event.publishers?.length || 0})`,
+                  },
+                  {
+                    icon: ArrowLeftOnRectangleIcon,
+                    iconClassName: 'text-green-500',
+                    text: `Subscribers (${event.subscribers?.length || 0})`,
+                  },
+                  {
+                    icon: UserGroupIcon,
+                    iconClassName: 'text-yellow-500',
+                    text: `Owners (${event.owners?.length || 0})`,
+                  },
+                  event.domain
+                    ? {
+                        icon: RectangleStackIcon,
+                        iconClassName: 'text-red-500',
+                        text: event.domain.name,
+                      }
+                    : null,
+                ]}
+              />
+            </Link>
           </li>
         ))}
       </ul>

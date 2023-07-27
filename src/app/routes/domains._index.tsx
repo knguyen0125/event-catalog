@@ -2,8 +2,13 @@ import type { V2_MetaFunction } from '@remix-run/node';
 import Container from '~/components/Container';
 import { json } from '@remix-run/node';
 import { Domain } from '~/database/models';
-import { useLoaderData } from '@remix-run/react';
-import DomainCard from '~/components/DomainCard';
+import { Link, useLoaderData } from '@remix-run/react';
+import {
+  Cog8ToothIcon,
+  EnvelopeIcon,
+  UserGroupIcon,
+} from '@heroicons/react/24/outline';
+import CardV2 from '~/components/CardV2';
 
 export const meta: V2_MetaFunction = () => {
   return [{ title: 'Domains' }, { name: 'description', content: 'Domains' }];
@@ -28,7 +33,29 @@ export default function DomainIndex() {
       <ul className="grid grid-cols-1 gap-6 sm:grid-cols-2">
         {domains.map((domain) => (
           <li key={domain.name}>
-            <DomainCard domain={domain} />
+            <Link to={`/domains/${domain.name}`}>
+              <CardV2
+                title={domain.name}
+                description={domain.summary}
+                additionalDetails={[
+                  {
+                    icon: EnvelopeIcon,
+                    iconClassName: 'text-blue-500',
+                    text: `Events (${domain.events?.length || 0})`,
+                  },
+                  {
+                    icon: Cog8ToothIcon,
+                    iconClassName: 'text-green-500',
+                    text: `Services (${domain.services?.length || 0})`,
+                  },
+                  {
+                    icon: UserGroupIcon,
+                    iconClassName: 'text-yellow-500',
+                    text: `Owners (${domain.owners?.length || 0})`,
+                  },
+                ]}
+              />
+            </Link>
           </li>
         ))}
       </ul>
