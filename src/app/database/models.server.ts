@@ -264,6 +264,8 @@ export class Owner extends Model {
 
   role?: string;
 
+  content?: string;
+
   image?: string;
 
   events?: Event[];

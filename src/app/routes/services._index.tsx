@@ -1,5 +1,5 @@
 import React from 'react';
-import { json } from '@remix-run/node';
+import { json, V2_MetaFunction } from '@remix-run/node';
 import { Link, useLoaderData } from '@remix-run/react';
 import {
   ArrowLeftOnRectangleIcon,
@@ -11,6 +11,11 @@ import Container from '~/components/Container';
 import { Service } from '~/database/models.server';
 import CardV2 from '~/components/CardV2';
 import Breadcrumb from '~/components/Breadcrumb';
+
+export const meta: V2_MetaFunction = () => [
+  { title: 'Services' },
+  { name: 'description', content: 'Services' },
+];
 
 export async function loader() {
   const services = await Service.query()
