@@ -36,7 +36,7 @@ const Sidebar = ({ domain }: { domain: ModelObject<Domain> }) => (
   <div className="md:min-h-screen">
     <aside className="hidden divide-y divide-gray-200 xl:block xl:pl-8">
       <h2 className="sr-only">Details</h2>
-      {domain.events && domain.events.length > 0 && (
+      {domain.events && domain.events.length >= 0 && (
         <div className="py-6">
           <span className="inline-flex items-center gap-x-1 pb-4">
             <EnvelopeIcon className={clsx('h-4 w-4 text-blue-500')} />
@@ -45,26 +45,30 @@ const Sidebar = ({ domain }: { domain: ModelObject<Domain> }) => (
             </span>
           </span>
           <div className="flex flex-wrap gap-1">
-            {domain.events?.map((event) => (
-              <Link to={`/events/${event.name}`} key={event.name}>
-                <Badge
-                  key={event.name}
-                  className="inline-flex items-center rounded-full border hover:bg-gray-50 hover:shadow"
-                >
-                  <div className="absolute flex flex-shrink-0 items-center justify-center">
-                    <span
-                      className="h-1.5 w-1.5 rounded-full bg-blue-500"
-                      aria-hidden
-                    />
-                  </div>
-                  <div className="ml-3.5">{event.name}</div>
-                </Badge>
-              </Link>
-            ))}
+            {domain.events.length > 0 ? (
+              domain.events?.map((event) => (
+                <Link to={`/events/${event.name}`} key={event.name}>
+                  <Badge
+                    key={event.name}
+                    className="inline-flex items-center rounded-full border hover:bg-gray-50 hover:shadow"
+                  >
+                    <div className="absolute flex flex-shrink-0 items-center justify-center">
+                      <span
+                        className="h-1.5 w-1.5 rounded-full bg-blue-500"
+                        aria-hidden
+                      />
+                    </div>
+                    <div className="ml-3.5">{event.name}</div>
+                  </Badge>
+                </Link>
+              ))
+            ) : (
+              <div className="text-sm">No events</div>
+            )}
           </div>
         </div>
       )}
-      {domain.services && domain.services.length > 0 && (
+      {domain.services && domain.services.length >= 0 && (
         <div className="py-6">
           <span className="inline-flex items-center gap-x-1 pb-4">
             <Cog8ToothIcon className={clsx('h-4 w-4 text-emerald-500')} />
@@ -73,23 +77,27 @@ const Sidebar = ({ domain }: { domain: ModelObject<Domain> }) => (
             </span>
           </span>
           <div className="flex flex-wrap gap-1">
-            {domain.services?.map((service) => (
-              <Link to={`/services/${service.name}`} key={service.name}>
-                <Badge className="inline-flex items-center rounded-full border hover:bg-gray-50 hover:shadow">
-                  <div className="absolute flex flex-shrink-0 items-center justify-center">
-                    <span
-                      className="h-1.5 w-1.5 rounded-full bg-emerald-500"
-                      aria-hidden
-                    />
-                  </div>
-                  <div className="ml-3.5">{service.name}</div>
-                </Badge>
-              </Link>
-            ))}
+            {domain.services.length > 0 ? (
+              domain.services?.map((service) => (
+                <Link to={`/services/${service.name}`} key={service.name}>
+                  <Badge className="inline-flex items-center rounded-full border hover:bg-gray-50 hover:shadow">
+                    <div className="absolute flex flex-shrink-0 items-center justify-center">
+                      <span
+                        className="h-1.5 w-1.5 rounded-full bg-emerald-500"
+                        aria-hidden
+                      />
+                    </div>
+                    <div className="ml-3.5">{service.name}</div>
+                  </Badge>
+                </Link>
+              ))
+            ) : (
+              <div className="text-sm">No services</div>
+            )}
           </div>
         </div>
       )}
-      {domain.owners && domain.owners.length > 0 && (
+      {domain.owners && domain.owners.length >= 0 && (
         <div className="py-6">
           <span className="inline-flex items-center gap-x-1 pb-4">
             <UserGroupIcon className={clsx('h-4 w-4 text-yellow-500')} />
@@ -98,14 +106,18 @@ const Sidebar = ({ domain }: { domain: ModelObject<Domain> }) => (
             </span>
           </span>
           <div className="flex flex-col  gap-2">
-            {domain.owners?.map((owner) => (
-              <Link to={`/owners/${owner.email}`}>
-                <div className="flex items-center gap-2">
-                  <Avatar src={owner.image} alt={owner.name || owner.email} />
-                  <span className="text-sm">{owner.name || owner.email}</span>
-                </div>
-              </Link>
-            ))}
+            {domain.owners.length > 0 ? (
+              domain.owners?.map((owner) => (
+                <Link to={`/owners/${owner.email}`}>
+                  <div className="flex items-center gap-2">
+                    <Avatar src={owner.image} alt={owner.name || owner.email} />
+                    <span className="text-sm">{owner.name || owner.email}</span>
+                  </div>
+                </Link>
+              ))
+            ) : (
+              <div className="text-sm">No owners</div>
+            )}
           </div>
         </div>
       )}

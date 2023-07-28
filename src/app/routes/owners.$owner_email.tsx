@@ -39,7 +39,7 @@ const Sidebar = ({ owner }: { owner: ModelObject<Owner> }) => (
   <div className="md:min-h-screen">
     <aside className="hidden divide-y divide-gray-200 xl:block xl:pl-8">
       <h2 className="sr-only">Details</h2>
-      {owner.events && owner.events.length > 0 && (
+      {owner.events && owner.events.length >= 0 && (
         <div className="py-6">
           <span className="inline-flex items-center gap-x-1 pb-4">
             <ArrowRightOnRectangleIcon
@@ -50,26 +50,30 @@ const Sidebar = ({ owner }: { owner: ModelObject<Owner> }) => (
             </span>
           </span>
           <div className="flex flex-wrap gap-1">
-            {owner.events?.map((event) => (
-              <Link to={`/events/${event.name}`} key={event.name}>
-                <Badge
-                  key={event.name}
-                  className="inline-flex items-center rounded-full border hover:bg-gray-50 hover:shadow"
-                >
-                  <div className="absolute flex flex-shrink-0 items-center justify-center">
-                    <span
-                      className="h-1.5 w-1.5 rounded-full bg-blue-500"
-                      aria-hidden
-                    />
-                  </div>
-                  <div className="ml-3.5">{event.name}</div>
-                </Badge>
-              </Link>
-            ))}
+            {owner.events.length > 0 ? (
+              owner.events?.map((event) => (
+                <Link to={`/events/${event.name}`} key={event.name}>
+                  <Badge
+                    key={event.name}
+                    className="inline-flex items-center rounded-full border hover:bg-gray-50 hover:shadow"
+                  >
+                    <div className="absolute flex flex-shrink-0 items-center justify-center">
+                      <span
+                        className="h-1.5 w-1.5 rounded-full bg-blue-500"
+                        aria-hidden
+                      />
+                    </div>
+                    <div className="ml-3.5">{event.name}</div>
+                  </Badge>
+                </Link>
+              ))
+            ) : (
+              <div className="text-sm">No events</div>
+            )}
           </div>
         </div>
       )}
-      {owner.services && owner.services.length > 0 && (
+      {owner.services && owner.services.length >= 0 && (
         <div className="py-6">
           <span className="inline-flex items-center gap-x-1 pb-4">
             <ArrowLeftOnRectangleIcon
@@ -80,23 +84,27 @@ const Sidebar = ({ owner }: { owner: ModelObject<Owner> }) => (
             </span>
           </span>
           <div className="flex flex-wrap gap-1">
-            {owner.services?.map((service) => (
-              <Link to={`/services/${service.name}`} key={service.name}>
-                <Badge className="inline-flex items-center rounded-full border hover:bg-gray-50 hover:shadow">
-                  <div className="absolute flex flex-shrink-0 items-center justify-center">
-                    <span
-                      className="h-1.5 w-1.5 rounded-full bg-emerald-500"
-                      aria-hidden
-                    />
-                  </div>
-                  <div className="ml-3.5">{service.name}</div>
-                </Badge>
-              </Link>
-            ))}
+            {owner.services.length > 0 ? (
+              owner.services?.map((service) => (
+                <Link to={`/services/${service.name}`} key={service.name}>
+                  <Badge className="inline-flex items-center rounded-full border hover:bg-gray-50 hover:shadow">
+                    <div className="absolute flex flex-shrink-0 items-center justify-center">
+                      <span
+                        className="h-1.5 w-1.5 rounded-full bg-emerald-500"
+                        aria-hidden
+                      />
+                    </div>
+                    <div className="ml-3.5">{service.name}</div>
+                  </Badge>
+                </Link>
+              ))
+            ) : (
+              <div className="text-sm">No services</div>
+            )}
           </div>
         </div>
       )}
-      {owner.domains && owner.domains.length > 0 && (
+      {owner.domains && owner.domains.length >= 0 && (
         <div className="py-6">
           <span className="inline-flex items-center gap-x-1 pb-4">
             <RectangleStackIcon className={clsx('h-4 w-4 text-red-500')} />
@@ -105,22 +113,26 @@ const Sidebar = ({ owner }: { owner: ModelObject<Owner> }) => (
             </span>
           </span>
           <div className="flex flex-wrap gap-1">
-            {owner.domains.map((domain) => (
-              <Link to={`/domains/${domain.name}`}>
-                <Badge
-                  key={domain.name}
-                  className="inline-flex items-center rounded-full border hover:bg-gray-50 hover:shadow"
-                >
-                  <div className="absolute flex flex-shrink-0 items-center justify-center">
-                    <span
-                      className="h-1.5 w-1.5 rounded-full bg-red-500"
-                      aria-hidden
-                    />
-                  </div>
-                  <div className="ml-3.5">{domain.name}</div>
-                </Badge>
-              </Link>
-            ))}
+            {owner.domains.length > 0 ? (
+              owner.domains.map((domain) => (
+                <Link to={`/domains/${domain.name}`}>
+                  <Badge
+                    key={domain.name}
+                    className="inline-flex items-center rounded-full border hover:bg-gray-50 hover:shadow"
+                  >
+                    <div className="absolute flex flex-shrink-0 items-center justify-center">
+                      <span
+                        className="h-1.5 w-1.5 rounded-full bg-red-500"
+                        aria-hidden
+                      />
+                    </div>
+                    <div className="ml-3.5">{domain.name}</div>
+                  </Badge>
+                </Link>
+              ))
+            ) : (
+              <div className="text-sm">No domains</div>
+            )}
           </div>
         </div>
       )}

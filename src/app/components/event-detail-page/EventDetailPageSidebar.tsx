@@ -3,6 +3,7 @@ import { ModelObject } from 'objection';
 import {
   ArrowLeftOnRectangleIcon,
   ArrowRightOnRectangleIcon,
+  ListBulletIcon,
   RectangleStackIcon,
   UserGroupIcon,
 } from '@heroicons/react/24/outline';
@@ -22,7 +23,7 @@ const EventDetailPageSidebar = ({
   <div className="md:min-h-screen">
     <aside className="hidden divide-y divide-gray-200 xl:block xl:pl-8">
       <h2 className="sr-only">Details</h2>
-      {event.publishers && event.publishers.length > 0 && (
+      {event.publishers && event.publishers.length >= 0 && (
         <div className="py-6">
           <span className="inline-flex items-center gap-x-1 pb-4">
             <ArrowRightOnRectangleIcon
@@ -33,26 +34,30 @@ const EventDetailPageSidebar = ({
             </span>
           </span>
           <div className="flex flex-wrap gap-1">
-            {event.publishers?.map((publisher) => (
-              <Link to={`/services/${publisher.name}`} key={publisher.name}>
-                <Badge
-                  key={publisher.name}
-                  className="inline-flex items-center rounded-full border hover:bg-gray-50 hover:shadow"
-                >
-                  <div className="absolute flex flex-shrink-0 items-center justify-center">
-                    <span
-                      className="h-1.5 w-1.5 rounded-full bg-blue-500"
-                      aria-hidden
-                    />
-                  </div>
-                  <div className="ml-3.5">{publisher.name}</div>
-                </Badge>
-              </Link>
-            ))}
+            {event.publishers.length > 0 ? (
+              event.publishers?.map((publisher) => (
+                <Link to={`/services/${publisher.name}`} key={publisher.name}>
+                  <Badge
+                    key={publisher.name}
+                    className="inline-flex items-center rounded-full border hover:bg-gray-50 hover:shadow"
+                  >
+                    <div className="absolute flex flex-shrink-0 items-center justify-center">
+                      <span
+                        className="h-1.5 w-1.5 rounded-full bg-blue-500"
+                        aria-hidden
+                      />
+                    </div>
+                    <div className="ml-3.5">{publisher.name}</div>
+                  </Badge>
+                </Link>
+              ))
+            ) : (
+              <div className="text-sm">No publishers</div>
+            )}
           </div>
         </div>
       )}
-      {event.subscribers && event.subscribers.length > 0 && (
+      {event.subscribers && event.subscribers.length >= 0 && (
         <div className="py-6">
           <span className="inline-flex items-center gap-x-1 pb-4">
             <ArrowLeftOnRectangleIcon
@@ -63,29 +68,73 @@ const EventDetailPageSidebar = ({
             </span>
           </span>
           <div className="flex flex-wrap gap-1">
-            {event.subscribers?.map((subscriber) => (
-              <Link to={`/services/${subscriber.name}`} key={subscriber.name}>
-                <Badge className="inline-flex items-center rounded-full border hover:bg-gray-50 hover:shadow">
+            {event.subscribers.length > 0 ? (
+              event.subscribers?.map((subscriber) => (
+                <Link to={`/services/${subscriber.name}`} key={subscriber.name}>
+                  <Badge className="inline-flex items-center rounded-full border hover:bg-gray-50 hover:shadow">
+                    <div className="absolute flex flex-shrink-0 items-center justify-center">
+                      <span
+                        className="h-1.5 w-1.5 rounded-full bg-emerald-500"
+                        aria-hidden
+                      />
+                    </div>
+                    <div className="ml-3.5">{subscriber.name}</div>
+                  </Badge>
+                </Link>
+              ))
+            ) : (
+              <div className="text-sm">No subscribers</div>
+            )}
+          </div>
+        </div>
+      )}
+      {eventVersions.length > 0 && (
+        <div className="py-6">
+          <span className="inline-flex items-center gap-x-1 pb-4">
+            <ListBulletIcon className={clsx('h-4 w-4 text-zinc-500')} />
+            <span className="text-sm font-light">Event Versions</span>
+          </span>
+          <div className="flex flex-wrap gap-1">
+            {eventVersions.map((eventVersion) => (
+              <Link
+                to={`/events/${event.name}/versions/${eventVersion.version}`}
+                key={eventVersion.version}
+              >
+                <Badge
+                  className={clsx(
+                    'group inline-flex items-center rounded-full border hover:bg-gray-50 hover:shadow',
+                    eventVersion.version === event.version
+                      ? 'bg-zinc-700 text-white hover:text-black'
+                      : '',
+                  )}
+                >
                   <div className="absolute flex flex-shrink-0 items-center justify-center">
                     <span
-                      className="h-1.5 w-1.5 rounded-full bg-emerald-500"
+                      className={clsx(
+                        'h-1.5 w-1.5 rounded-full bg-zinc-500',
+                        eventVersion.version === event.version &&
+                          'bg-white group-hover:bg-zinc-500',
+                      )}
                       aria-hidden
                     />
                   </div>
-                  <div className="ml-3.5">{subscriber.name}</div>
+                  <div className="ml-3.5">
+                    {eventVersion.version}
+                    {eventVersion.is_latest ? ' (Latest)' : ''}
+                  </div>
                 </Badge>
               </Link>
             ))}
           </div>
         </div>
       )}
-      {event.domain && (
-        <div className="py-6">
-          <span className="inline-flex items-center gap-x-1 pb-4">
-            <RectangleStackIcon className={clsx('h-4 w-4 text-red-500')} />
-            <span className="text-sm font-light">Domain</span>
-          </span>
-          <div className="flex flex-wrap gap-1">
+      <div className="py-6">
+        <span className="inline-flex items-center gap-x-1 pb-4">
+          <RectangleStackIcon className={clsx('h-4 w-4 text-red-500')} />
+          <span className="text-sm font-light">Domain</span>
+        </span>
+        <div className="flex flex-wrap gap-1">
+          {event.domain ? (
             <Link to={`/domains/${event.domain.name}`}>
               <Badge
                 key={event.domain.name}
@@ -100,10 +149,12 @@ const EventDetailPageSidebar = ({
                 <div className="ml-3.5">{event.domain.name}</div>
               </Badge>
             </Link>
-          </div>
+          ) : (
+            <div className="text-sm">No domain</div>
+          )}
         </div>
-      )}
-      {event.owners && event.owners.length > 0 && (
+      </div>
+      {event.owners && event.owners.length >= 0 && (
         <div className="py-6">
           <span className="inline-flex items-center gap-x-1 pb-4">
             <UserGroupIcon className={clsx('h-4 w-4 text-yellow-500')} />
@@ -112,56 +163,18 @@ const EventDetailPageSidebar = ({
             </span>
           </span>
           <div className="flex flex-col  gap-2">
-            {event.owners?.map((owner) => (
-              <Link to={`/owners/${owner.email}`}>
-                <div className="flex items-center gap-2">
-                  <Avatar src={owner.image} alt={owner.name || owner.email} />
-                  <span className="text-sm">{owner.name || owner.email}</span>
-                </div>
-              </Link>
-            ))}
-          </div>
-        </div>
-      )}
-      {eventVersions.length > 0 && (
-        <div className="py-6">
-          <span className="inline-flex items-center gap-x-1 pb-4">
-            <ArrowLeftOnRectangleIcon
-              className={clsx('h-4 w-4 text-emerald-500')}
-            />
-            <span className="text-sm font-light">Event Versions</span>
-          </span>
-          <div className="flex flex-wrap gap-1">
-            {eventVersions.map((eventVersion) => (
-              <Link
-                to={`/events/${event.name}/versions/${eventVersion.version}`}
-                key={eventVersion.version}
-              >
-                <Badge
-                  className={clsx(
-                    'group inline-flex items-center rounded-full border hover:bg-gray-50 hover:shadow',
-                    eventVersion.version === event.version
-                      ? 'bg-emerald-700 text-white hover:text-black'
-                      : '',
-                  )}
-                >
-                  <div className="absolute flex flex-shrink-0 items-center justify-center">
-                    <span
-                      className={clsx(
-                        'h-1.5 w-1.5 rounded-full bg-emerald-500',
-                        eventVersion.version === event.version &&
-                          'bg-white group-hover:bg-emerald-500',
-                      )}
-                      aria-hidden
-                    />
+            {event.owners.length > 0 ? (
+              event.owners?.map((owner) => (
+                <Link to={`/owners/${owner.email}`}>
+                  <div className="flex items-center gap-2">
+                    <Avatar src={owner.image} alt={owner.name || owner.email} />
+                    <span className="text-sm">{owner.name || owner.email}</span>
                   </div>
-                  <div className="ml-3.5">
-                    {eventVersion.version}
-                    {eventVersion.is_latest ? ' (Latest)' : ''}
-                  </div>
-                </Badge>
-              </Link>
-            ))}
+                </Link>
+              ))
+            ) : (
+              <div className="text-sm">No owners</div>
+            )}
           </div>
         </div>
       )}

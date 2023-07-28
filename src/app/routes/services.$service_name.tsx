@@ -39,7 +39,7 @@ const Sidebar = ({ service }: { service: ModelObject<Service> }) => (
   <div className="md:min-h-screen">
     <aside className="hidden divide-y divide-gray-200 xl:block xl:pl-8">
       <h2 className="sr-only">Details</h2>
-      {service.publishedEvents && service.publishedEvents.length > 0 && (
+      {service.publishedEvents && service.publishedEvents.length >= 0 && (
         <div className="py-6">
           <span className="inline-flex items-center gap-x-1 pb-4">
             <ArrowRightOnRectangleIcon
@@ -50,29 +50,33 @@ const Sidebar = ({ service }: { service: ModelObject<Service> }) => (
             </span>
           </span>
           <div className="flex flex-wrap gap-1">
-            {service.publishedEvents?.map((publishedEvent) => (
-              <Link
-                to={`/events/${publishedEvent.name}`}
-                key={publishedEvent.name}
-              >
-                <Badge
+            {service.publishedEvents.length > 0 ? (
+              service.publishedEvents?.map((publishedEvent) => (
+                <Link
+                  to={`/events/${publishedEvent.name}`}
                   key={publishedEvent.name}
-                  className="inline-flex items-center rounded-full border hover:bg-gray-50 hover:shadow"
                 >
-                  <div className="absolute flex flex-shrink-0 items-center justify-center">
-                    <span
-                      className="h-1.5 w-1.5 rounded-full bg-blue-500"
-                      aria-hidden
-                    />
-                  </div>
-                  <div className="ml-3.5">{publishedEvent.name}</div>
-                </Badge>
-              </Link>
-            ))}
+                  <Badge
+                    key={publishedEvent.name}
+                    className="inline-flex items-center rounded-full border hover:bg-gray-50 hover:shadow"
+                  >
+                    <div className="absolute flex flex-shrink-0 items-center justify-center">
+                      <span
+                        className="h-1.5 w-1.5 rounded-full bg-blue-500"
+                        aria-hidden
+                      />
+                    </div>
+                    <div className="ml-3.5">{publishedEvent.name}</div>
+                  </Badge>
+                </Link>
+              ))
+            ) : (
+              <div className="text-sm">No publications</div>
+            )}
           </div>
         </div>
       )}
-      {service.subscribedToEvents && service.subscribedToEvents.length > 0 && (
+      {service.subscribedToEvents && service.subscribedToEvents.length >= 0 && (
         <div className="py-6">
           <span className="inline-flex items-center gap-x-1 pb-4">
             <ArrowLeftOnRectangleIcon
@@ -83,29 +87,33 @@ const Sidebar = ({ service }: { service: ModelObject<Service> }) => (
             </span>
           </span>
           <div className="flex flex-wrap gap-1">
-            {service.subscribedToEvents?.map((subscriber) => (
-              <Link to={`/events/${subscriber.name}`} key={subscriber.name}>
-                <Badge className="inline-flex items-center rounded-full border hover:bg-gray-50 hover:shadow">
-                  <div className="absolute flex flex-shrink-0 items-center justify-center">
-                    <span
-                      className="h-1.5 w-1.5 rounded-full bg-emerald-500"
-                      aria-hidden
-                    />
-                  </div>
-                  <div className="ml-3.5">{subscriber.name}</div>
-                </Badge>
-              </Link>
-            ))}
+            {service.subscribedToEvents.length > 0 ? (
+              service.subscribedToEvents?.map((subscriber) => (
+                <Link to={`/events/${subscriber.name}`} key={subscriber.name}>
+                  <Badge className="inline-flex items-center rounded-full border hover:bg-gray-50 hover:shadow">
+                    <div className="absolute flex flex-shrink-0 items-center justify-center">
+                      <span
+                        className="h-1.5 w-1.5 rounded-full bg-emerald-500"
+                        aria-hidden
+                      />
+                    </div>
+                    <div className="ml-3.5">{subscriber.name}</div>
+                  </Badge>
+                </Link>
+              ))
+            ) : (
+              <div className="text-sm">No subscriptions</div>
+            )}
           </div>
         </div>
       )}
-      {service.domain && (
-        <div className="py-6">
-          <span className="inline-flex items-center gap-x-1 pb-4">
-            <RectangleStackIcon className={clsx('h-4 w-4 text-red-500')} />
-            <span className="text-sm font-light">Domain</span>
-          </span>
-          <div className="flex flex-wrap gap-1">
+      <div className="py-6">
+        <span className="inline-flex items-center gap-x-1 pb-4">
+          <RectangleStackIcon className={clsx('h-4 w-4 text-red-500')} />
+          <span className="text-sm font-light">Domain</span>
+        </span>
+        <div className="flex flex-wrap gap-1">
+          {service.domain ? (
             <Link to={`/domains/${service.domain.name}`}>
               <Badge
                 key={service.domain.name}
@@ -120,10 +128,12 @@ const Sidebar = ({ service }: { service: ModelObject<Service> }) => (
                 <div className="ml-3.5">{service.domain.name}</div>
               </Badge>
             </Link>
-          </div>
+          ) : (
+            <div className="text-sm">No domain</div>
+          )}
         </div>
-      )}
-      {service.owners && service.owners.length > 0 && (
+      </div>
+      {service.owners && service.owners.length >= 0 && (
         <div className="py-6">
           <span className="inline-flex items-center gap-x-1 pb-4">
             <UserGroupIcon className={clsx('h-4 w-4 text-yellow-500')} />
@@ -132,14 +142,18 @@ const Sidebar = ({ service }: { service: ModelObject<Service> }) => (
             </span>
           </span>
           <div className="flex flex-col  gap-2">
-            {service.owners?.map((owner) => (
-              <Link to={`/owners/${owner.email}`}>
-                <div className="flex items-center gap-2">
-                  <Avatar src={owner.image} alt={owner.name || owner.email} />
-                  <span className="text-sm">{owner.name || owner.email}</span>
-                </div>
-              </Link>
-            ))}
+            {service.owners?.length > 0 ? (
+              service.owners?.map((owner) => (
+                <Link to={`/owners/${owner.email}`}>
+                  <div className="flex items-center gap-2">
+                    <Avatar src={owner.image} alt={owner.name || owner.email} />
+                    <span className="text-sm">{owner.name || owner.email}</span>
+                  </div>
+                </Link>
+              ))
+            ) : (
+              <div className="text-sm">No owners</div>
+            )}
           </div>
         </div>
       )}
