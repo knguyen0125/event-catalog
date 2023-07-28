@@ -19,7 +19,7 @@ export const meta: V2_MetaFunction = () => [
 export async function loader() {
   const domains = await Domain.query()
     .withGraphFetched(
-      '[events(selectName), services(selectName), owners(selectEmail)]',
+      '[events(isLatest,selectName), services(selectName), owners(selectEmail)]',
     )
     .modifiers({
       selectName(builder) {

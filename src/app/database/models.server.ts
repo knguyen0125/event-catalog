@@ -33,6 +33,14 @@ export class Event extends Model {
 
   content?: string;
 
+  static get modifiers() {
+    return {
+      isLatest(builder: QueryBuilder<any>) {
+        builder.where({ is_latest: true });
+      },
+    };
+  }
+
   static get tableName() {
     return 'events';
   }

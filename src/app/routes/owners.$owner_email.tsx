@@ -22,7 +22,7 @@ export const meta: V2_MetaFunction = () => [
 
 export async function loader({ params }: LoaderArgs) {
   const owner = await Owner.query()
-    .withGraphFetched('[events, services, domains]')
+    .withGraphFetched('[events(isLatest), services, domains]')
     .findOne({ email: params.owner_email });
 
   if (!owner) {

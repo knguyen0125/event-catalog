@@ -21,7 +21,9 @@ export async function loader({ params }: LoaderArgs) {
     .findOne({
       name: params.service_name,
     })
-    .withGraphFetched('[domain, owners, publishedEvents, subscribedToEvents]');
+    .withGraphFetched(
+      '[domain, owners, publishedEvents(isLatest), subscribedToEvents(isLatest)]',
+    );
 
   if (!service) {
     // eslint-disable-next-line @typescript-eslint/no-throw-literal
