@@ -21,6 +21,8 @@ export class Event extends Model {
 
   version!: string;
 
+  is_latest!: boolean;
+
   summary?: string;
 
   publishers?: Service[];

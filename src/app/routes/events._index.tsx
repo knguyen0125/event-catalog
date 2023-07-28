@@ -46,7 +46,7 @@ const EventsIndex = () => {
       <ul className="grid  grid-cols-1 gap-6 sm:grid-cols-2">
         {events.map((event) => (
           <li key={event.name}>
-            <Link to={`./${event.name}`}>
+            <Link to={`./${event.name}/versions/${event.version}`}>
               <CardV2
                 title={event.name}
                 description={event.summary}

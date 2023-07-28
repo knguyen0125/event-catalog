@@ -3,7 +3,7 @@ import { ChevronRightIcon, HomeIcon } from '@heroicons/react/24/outline';
 import { Link, NavLink } from '@remix-run/react';
 
 type BreadcrumbProps = {
-  crumbs: { name: string; to: string }[];
+  crumbs: { name: string; to?: string }[];
 };
 
 const Breadcrumb: React.FC<BreadcrumbProps> = ({ crumbs }) => (
@@ -24,12 +24,18 @@ const Breadcrumb: React.FC<BreadcrumbProps> = ({ crumbs }) => (
               className="h-5 w-5 flex-shrink-0 text-gray-400"
               aria-hidden="true"
             />
-            <NavLink
-              to={crumb.to}
-              className="ml-4 text-sm font-medium text-gray-500 hover:text-gray-700"
-            >
-              {crumb.name}
-            </NavLink>
+            {crumb.to ? (
+              <NavLink
+                to={crumb.to}
+                className="ml-4 text-sm font-medium text-gray-500 hover:text-gray-700"
+              >
+                {crumb.name}
+              </NavLink>
+            ) : (
+              <div className="ml-4 cursor-default text-sm font-medium text-gray-500">
+                {crumb.name}
+              </div>
+            )}
           </div>
         </li>
       ))}
