@@ -1,11 +1,11 @@
 /** @type {import('@remix-run/dev').AppConfig} */
-module.exports = {
+export default {
   ignoredRouteFiles: ['**/.*'],
   appDirectory: 'src/app',
   // assetsBuildDirectory: "public/build",
   // serverBuildPath: "build/index.js",
   // publicPath: "/build/",
-  serverModuleFormat: 'cjs',
+  serverModuleFormat: 'esm',
   future: {
     v2_dev: true,
     v2_errorBoundary: true,
@@ -14,7 +14,7 @@ module.exports = {
     v2_normalizeFormMethod: true,
     v2_routeConvention: true,
   },
-  watchPaths: ['catalog', 'src/db'],
+  watchPaths: ['catalog'],
   tailwind: true,
   serverDependenciesToBundle: [
     /^react-markdown.*/,
