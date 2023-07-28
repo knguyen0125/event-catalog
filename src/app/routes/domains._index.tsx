@@ -9,6 +9,7 @@ import {
 import { Domain } from '~/database/models.server';
 import Container from '~/components/Container';
 import CardV2 from '~/components/CardV2';
+import Breadcrumb from '~/components/Breadcrumb';
 
 export const meta: V2_MetaFunction = () => [
   { title: 'Domains' },
@@ -39,6 +40,7 @@ const DomainIndex = () => {
   const { domains } = useLoaderData<typeof loader>();
   return (
     <Container>
+      <Breadcrumb crumbs={[{ name: 'Domains', to: '.' }]} />
       <h1 className="py-4 text-2xl font-bold">Domains ({domains.length})</h1>
       <hr className="py-4" />
       <ul className="grid grid-cols-1 gap-6 sm:grid-cols-2">

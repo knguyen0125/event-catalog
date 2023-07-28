@@ -1,8 +1,10 @@
 import type { LoaderArgs, V2_MetaFunction } from '@remix-run/node';
 import { useLoaderData } from '@remix-run/react';
 import { json } from '@remix-run/node';
+import React from 'react';
 import Container from '~/components/Container';
 import { Owner } from '~/database/models.server';
+import Breadcrumb from '~/components/Breadcrumb';
 
 export const meta: V2_MetaFunction = () => [
   { title: 'Owners' },
@@ -27,6 +29,12 @@ const OwnerDetailPage = () => {
 
   return (
     <Container>
+      <Breadcrumb
+        crumbs={[
+          { name: 'Owners', to: '/owners' },
+          { name: owner.email, to: '.' },
+        ]}
+      />
       <h1 className="text-4xl font-bold">{owner.name}</h1>
       <h2 className="text-2xl font-bold">{owner.role}</h2>
       <p>{owner.email}</p>

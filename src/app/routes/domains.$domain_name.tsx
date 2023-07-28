@@ -3,6 +3,7 @@ import { json, LoaderArgs } from '@remix-run/node';
 import { useLoaderData } from '@remix-run/react';
 import { Domain } from '~/database/models.server';
 import Container from '~/components/Container';
+import Breadcrumb from '~/components/Breadcrumb';
 
 export async function loader({ params }: LoaderArgs) {
   const domain = await Domain.query().findOne({
@@ -22,7 +23,17 @@ export async function loader({ params }: LoaderArgs) {
 const DomainDetailPage = () => {
   const { domain } = useLoaderData<typeof loader>();
 
-  return <Container>{domain.name}</Container>;
+  return (
+    <Container>
+      <Breadcrumb
+        crumbs={[
+          { name: 'Domains', to: '/domains' },
+          { name: domain.name, to: '.' },
+        ]}
+      />
+      {domain.name}
+    </Container>
+  );
 };
 
 export default DomainDetailPage;

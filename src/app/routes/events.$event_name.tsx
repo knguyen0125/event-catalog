@@ -15,6 +15,7 @@ import { Event } from '~/database/models.server';
 import Container from '~/components/Container';
 import Badge from '~/components/Badge';
 import Avatar from '~/components/Avatar';
+import Breadcrumb from '~/components/Breadcrumb';
 
 export const meta: V2_MetaFunction<typeof loader> = ({ data }) => [
   { title: `Events - ${data?.event.name}` },
@@ -151,6 +152,12 @@ const EventDetail = () => {
   const { event } = useLoaderData<typeof loader>();
   return (
     <Container>
+      <Breadcrumb
+        crumbs={[
+          { name: 'Events', to: '/events' },
+          { name: event.name, to: '.' },
+        ]}
+      />
       <div className="xl:grid xl:grid-cols-4">
         <div className="flex flex-col justify-between xl:col-span-3 xl:border-r xl:border-gray-200 xl:pr-8">
           <div>

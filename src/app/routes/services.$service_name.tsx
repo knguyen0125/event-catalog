@@ -3,6 +3,7 @@ import { json, LoaderArgs } from '@remix-run/node';
 import { useLoaderData } from '@remix-run/react';
 import { Service } from '~/database/models.server';
 import Container from '~/components/Container';
+import Breadcrumb from '~/components/Breadcrumb';
 
 export async function loader({ params }: LoaderArgs) {
   const service = await Service.query()
@@ -23,7 +24,17 @@ export async function loader({ params }: LoaderArgs) {
 const ServiceDetailPage = () => {
   const { service } = useLoaderData<typeof loader>();
 
-  return <Container>{service.name}</Container>;
+  return (
+    <Container>
+      <Breadcrumb
+        crumbs={[
+          { name: 'Services', to: '/Services' },
+          { name: service.name, to: '.' },
+        ]}
+      />
+      {service.name}
+    </Container>
+  );
 };
 
 export default ServiceDetailPage;

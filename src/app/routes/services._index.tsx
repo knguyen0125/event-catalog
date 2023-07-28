@@ -10,6 +10,7 @@ import {
 import Container from '~/components/Container';
 import { Service } from '~/database/models.server';
 import CardV2 from '~/components/CardV2';
+import Breadcrumb from '~/components/Breadcrumb';
 
 export async function loader() {
   const services = await Service.query()
@@ -36,6 +37,7 @@ const ServiceIndexPage = () => {
 
   return (
     <Container>
+      <Breadcrumb crumbs={[{ name: 'Services', to: '.' }]} />
       <h1 className="py-4 text-2xl font-bold">Services ({services.length})</h1>
       <hr className="py-4" />
       <ul className="grid auto-rows-fr grid-cols-1 gap-6 sm:grid-cols-2">
