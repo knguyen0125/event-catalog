@@ -120,6 +120,8 @@ export class Service extends Model {
 
   summary?: string;
 
+  content?: string;
+
   publishedEvents?: Event[];
 
   subscribedToEvents?: Event[];
@@ -204,6 +206,8 @@ export class Domain extends Model {
   name!: string;
 
   summary?: string;
+
+  content?: string;
 
   events?: Event[];
 
