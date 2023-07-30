@@ -1,7 +1,5 @@
-import type { Knex } from 'knex';
-
-export async function up(knex: Knex): Promise<void> {
-  return knex.schema
+export async function up(knex){
+  await knex.schema
     .createTable('events', (table) => {
       table.text('name').comment('Event name. Must be unique');
       table.text('version').comment('Event version');
@@ -74,8 +72,8 @@ export async function up(knex: Knex): Promise<void> {
     });
 }
 
-export async function down(knex: Knex): Promise<void> {
-  return knex.schema
+export async function down(knex){
+  await knex.schema
     .dropTableIfExists('events')
     .dropTableIfExists('services')
     .dropTableIfExists('domains')

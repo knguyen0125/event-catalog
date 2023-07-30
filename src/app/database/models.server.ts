@@ -8,7 +8,7 @@ const db = Knex({
   connection: {
     filename: process.env.DB_PATH as string,
     options: {
-      readonly: true,
+      // readonly: true,
     },
   },
   useNullAsDefault: true,
@@ -35,6 +35,8 @@ export class Event extends Model {
 
   content?: string;
 
+  domain_name?: string
+
   static get modifiers() {
     return {
       isLatest(builder: QueryBuilder<any>) {
@@ -48,7 +50,7 @@ export class Event extends Model {
   }
 
   static get idColumn() {
-    return ['name', 'version'];
+    return ['name', 'version', 'is_latest'];
   }
 
   static get relationMappings() {
@@ -57,9 +59,9 @@ export class Event extends Model {
         relation: Model.ManyToManyRelation,
         modelClass: Service,
         join: {
-          from: ['events.name', 'events.version'],
+          from: ['events.name', 'events.version', 'events.is_latest'],
           through: {
-            from: ['service_events.event_name', 'service_events.event_version'],
+            from: ['service_events.event_name', 'service_events.event_version', 'service_events.event_is_latest'],
             to: 'service_events.service_name',
             extra: ['role'],
             filter(builder: QueryBuilder<any>) {
@@ -77,9 +79,9 @@ export class Event extends Model {
         relation: Model.ManyToManyRelation,
         modelClass: Service,
         join: {
-          from: ['events.name', 'events.version'],
+          from: ['events.name', 'events.version', 'events.is_latest'],
           through: {
-            from: ['service_events.event_name', 'service_events.event_version'],
+            from: ['service_events.event_name', 'service_events.event_version', 'service_events.event_is_latest'],
             to: 'service_events.service_name',
             extra: ['role'],
             filter(builder: QueryBuilder<any>) {
@@ -105,9 +107,9 @@ export class Event extends Model {
         relation: Model.ManyToManyRelation,
         modelClass: Owner,
         join: {
-          from: ['events.name', 'events.version'],
+          from: ['events.name', 'events.version', 'events.is_latest'],
           through: {
-            from: ['event_owners.event_name', 'event_owners.event_version'],
+            from: ['event_owners.event_name', 'event_owners.event_version', 'event_owners.event_is_latest'],
             to: 'event_owners.owner_email',
           },
           to: ['owners.email'],
@@ -117,8 +119,8 @@ export class Event extends Model {
         relation: Model.HasManyRelation,
         modelClass: EventExamples,
         join: {
-          from: ['events.name', 'events.version'],
-          to: ['event_examples.event_name', 'event_examples.event_version'],
+          from: ['events.name', 'events.version', 'events.is_latest'],
+          to: ['event_examples.event_name', 'event_examples.event_version', 'event_examples.event_is_latest'],
         },
       },
     };
@@ -157,7 +159,7 @@ export class Service extends Model {
           from: 'services.name',
           through: {
             from: 'service_events.service_name',
-            to: ['service_events.event_name', 'service_events.event_version'],
+            to: ['service_events.event_name', 'service_events.event_version', 'service_events.event_is_latest'],
             extra: ['role'],
             filter(builder: QueryBuilder<any>) {
               builder.where('role', 'publisher');
@@ -166,7 +168,7 @@ export class Service extends Model {
               model.role = 'publisher';
             },
           },
-          to: ['events.name', 'events.version'],
+          to: ['events.name', 'events.version', 'events.is_latest'],
         },
       },
       subscribedToEvents: {
@@ -176,7 +178,7 @@ export class Service extends Model {
           from: 'services.name',
           through: {
             from: 'service_events.service_name',
-            to: ['service_events.event_name', 'service_events.event_version'],
+            to: ['service_events.event_name', 'service_events.event_version', 'service_events.event_is_latest'],
             extra: ['role'],
             filter(builder: QueryBuilder<any>) {
               builder.where('role', 'subscriber');
@@ -185,7 +187,7 @@ export class Service extends Model {
               model.role = 'subscriber';
             },
           },
-          to: ['events.name', 'events.version'],
+          to: ['events.name', 'events.version', 'events.is_latest'],
         },
       },
       domain: {
@@ -313,9 +315,9 @@ export class Owner extends Model {
           from: 'owners.email',
           through: {
             from: 'event_owners.owner_email',
-            to: ['event_owners.event_name', 'event_owners.event_version'],
+            to: ['event_owners.event_name', 'event_owners.event_version', 'event_owners.event_is_latest'],
           },
-          to: ['events.name', 'events.version'],
+          to: ['events.name', 'events.version', 'events.is_latest'],
         },
       },
       domains: {
@@ -345,8 +347,8 @@ export class EventExamples extends Model {
         relation: Model.BelongsToOneRelation,
         modelClass: Event,
         join: {
-          from: ['event_examples.event_name', 'event_examples.event_version'],
-          to: ['events.name', 'events.version'],
+          from: ['event_examples.event_name', 'event_examples.event_version', 'event_examples.event_is_latest'],
+          to: ['events.name', 'events.version', 'events.is_latest'],
         },
       },
     };

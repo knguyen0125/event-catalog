@@ -2,9 +2,13 @@
 name: Notification_PushNotification
 version: 0.1.1
 summary: |
-	New Push notification
+  New Push notification
 producers:
-	- name: Notification Service
+  - name: Notification Service
 consumers:
-	- name: Push Notification Worker
+  - name: Push Notification Worker
+owners:
+  - kien.nguyen@your.rentals
 ---
+
+Something

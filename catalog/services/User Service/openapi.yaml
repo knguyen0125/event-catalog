@@ -1,0 +1,15 @@
+openapi: 3.0.3
+info:
+  title: User Service
+  description: User Service
+  version: 1.0.0
+servers:
+  - url: 'https'
+paths:
+  /health:
+    get:
+      responses:
+        '200':
+          description: OK
+
+
