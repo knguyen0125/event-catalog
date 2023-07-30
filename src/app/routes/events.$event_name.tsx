@@ -17,6 +17,13 @@ export async function loader({ params }: LoaderArgs) {
     throw new Response('Not Found', { status: 404 });
   }
 
+  if (event.domain_name) {
+    // eslint-disable-next-line @typescript-eslint/no-throw-literal
+    throw redirect(
+      `/domains/${event.domain_name}/events/${event.name}/versions/${event.version}`,
+    );
+  }
+
   // eslint-disable-next-line @typescript-eslint/no-throw-literal
   throw redirect(`/events/${event.name}/versions/${event.version}`);
 }

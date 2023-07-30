@@ -6,6 +6,8 @@ properties:
   deviceRegistrationToken:
     type: string
     description: Device Registration Token
+    examples:
+      - "dQw4w9WgXcQ"
   payload:
     type: object
     description: FCM Payload

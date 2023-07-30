@@ -1,6 +1,6 @@
 import React from 'react';
 import type { LoaderArgs } from '@remix-run/node';
-import { json, Response, V2_MetaFunction } from '@remix-run/node';
+import { json, redirect, Response, V2_MetaFunction } from '@remix-run/node';
 import { useLoaderData } from '@remix-run/react';
 import Markdown from 'react-markdown';
 import { Event } from '~/database/models.server';
@@ -9,6 +9,7 @@ import Badge from '~/components/Badge';
 import Breadcrumb from '~/components/Breadcrumb';
 import EventDetailPageSidebar from '~/components/event-detail-page/EventDetailPageSidebar';
 import catalogHash from '../../../catalogHash.json';
+import FileViewer from '~/components/FileViewer';
 
 export const meta: V2_MetaFunction<typeof loader> = ({ data }) => [
   { title: `${data?.event.name} | Events` },
@@ -29,27 +30,37 @@ export async function loader({ params }: LoaderArgs) {
     throw new Response('Not Found', { status: 404 });
   }
 
+  if (event.domain_name) {
+    // eslint-disable-next-line @typescript-eslint/no-throw-literal
+    throw redirect(
+      `/domains/${event.domain_name}/events/${event.name}/versions/${event.version}`,
+    );
+  }
+
   const eventVersions = await Event.query()
     .where({ name: params.event_name })
     .orderBy('version', 'desc');
 
-  return json({ event, eventVersions, random: catalogHash });
+  return json({
+    event,
+    eventVersions,
+    crumbs: [
+      { name: 'Events', to: '/events' },
+      { name: event.name, to: `/events/${event.name}` },
+      {
+        name: `v${event.version}`,
+        to: `/events/${event.name}/versions/${event.version}`,
+      },
+    ],
+    catalogHash,
+  });
 }
 
 const EventDetail = () => {
-  const { event, eventVersions } = useLoaderData<typeof loader>();
+  const { event, eventVersions, crumbs } = useLoaderData<typeof loader>();
   return (
     <Container>
-      <Breadcrumb
-        crumbs={[
-          { name: 'Events', to: '/events' },
-          { name: event.name, to: `/events/${event.name}` },
-          {
-            name: `v${event.version}`,
-            to: `/events/${event.name}/versions/${event.version}`,
-          },
-        ]}
-      />
+      <Breadcrumb crumbs={crumbs} />
       <div className="xl:grid xl:grid-cols-4">
         <div className="flex flex-col justify-between xl:col-span-3 xl:border-r xl:border-gray-200 xl:pr-8">
           <div>
@@ -69,6 +80,15 @@ const EventDetail = () => {
             <div className="prose">
               {/* eslint-disable-next-line react/no-children-prop */}
               {event.content && <Markdown children={event.content} />}
+            </div>
+            <div>
+              {event.schema && (
+                <FileViewer
+                  filename="schema.json"
+                  content={JSON.stringify(JSON.parse(event.schema), null, 2)}
+                  filetype="json"
+                />
+              )}
             </div>
           </div>
         </div>

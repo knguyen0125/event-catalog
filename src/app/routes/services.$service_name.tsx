@@ -1,5 +1,5 @@
 import React from 'react';
-import { json, LoaderArgs, V2_MetaFunction } from '@remix-run/node';
+import { json, LoaderArgs, redirect, V2_MetaFunction } from '@remix-run/node';
 import { Link, useLoaderData } from '@remix-run/react';
 import { ModelObject } from 'objection';
 import {
@@ -36,9 +36,18 @@ export async function loader({ params }: LoaderArgs) {
     throw new Response('Not Found', { status: 404 });
   }
 
+  if (service.domain_name) {
+    // eslint-disable-next-line @typescript-eslint/no-throw-literal
+    throw redirect(`/domains/${service.domain_name}/services/${service.name}`);
+  }
+
   return json({
     service,
     catalogHash,
+    crumbs: [
+      { name: 'Services', to: '/Services' },
+      { name: service.name, to: '.' },
+    ],
   });
 }
 
@@ -169,16 +178,11 @@ const Sidebar = ({ service }: { service: ModelObject<Service> }) => (
 );
 
 const ServiceDetailPage = () => {
-  const { service } = useLoaderData<typeof loader>();
+  const { service, crumbs } = useLoaderData<typeof loader>();
 
   return (
     <Container>
-      <Breadcrumb
-        crumbs={[
-          { name: 'Services', to: '/Services' },
-          { name: service.name, to: '.' },
-        ]}
-      />
+      <Breadcrumb crumbs={crumbs} />
       <div className="xl:grid xl:grid-cols-4">
         <div className="flex flex-col justify-between xl:col-span-3 xl:border-r xl:border-gray-200 xl:pr-8">
           <div>

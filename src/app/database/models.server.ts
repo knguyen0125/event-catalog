@@ -37,6 +37,8 @@ export class Event extends Model {
 
   domain_name?: string;
 
+  schema?: string;
+
   static get modifiers() {
     return {
       isLatest(builder: QueryBuilder<any>) {
@@ -149,6 +151,8 @@ export class Service extends Model {
   summary?: string;
 
   content?: string;
+
+  domain_name?: string;
 
   producesEvents?: Event[];
 
