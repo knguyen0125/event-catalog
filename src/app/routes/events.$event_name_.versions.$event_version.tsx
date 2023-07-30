@@ -83,11 +83,14 @@ const EventDetail = () => {
             </div>
             <div>
               {event.schema && (
-                <FileViewer
-                  filename="schema.json"
-                  content={JSON.stringify(JSON.parse(event.schema), null, 2)}
-                  filetype="json"
-                />
+                <div>
+                  <h2 className="py-4 text-2xl font-bold">Schema</h2>
+                  <FileViewer
+                    filename="schema.json"
+                    content={JSON.stringify(JSON.parse(event.schema), null, 2)}
+                    language="yml"
+                  />
+                </div>
               )}
             </div>
           </div>

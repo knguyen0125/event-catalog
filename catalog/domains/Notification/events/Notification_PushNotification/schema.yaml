@@ -12,3 +12,6 @@ properties:
     type: object
     description: FCM Payload
     additionalProperties: true
+    examples:
+      - notification:
+          title: "Hello"

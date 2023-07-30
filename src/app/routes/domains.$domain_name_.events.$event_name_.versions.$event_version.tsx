@@ -1,4 +1,3 @@
-import React from 'react';
 import type { LoaderArgs } from '@remix-run/node';
 import { json, Response, V2_MetaFunction } from '@remix-run/node';
 import { Event } from '~/database/models.server';
