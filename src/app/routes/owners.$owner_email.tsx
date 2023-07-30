@@ -14,6 +14,7 @@ import Container from '~/components/Container';
 import { Owner } from '~/database/models.server';
 import Breadcrumb from '~/components/Breadcrumb';
 import Badge from '~/components/Badge';
+import catalogHash from '../../../catalogHash.json';
 
 export const meta: V2_MetaFunction = () => [
   { title: 'Owners' },
@@ -32,6 +33,7 @@ export async function loader({ params }: LoaderArgs) {
 
   return json({
     owner,
+    catalogHash,
   });
 }
 

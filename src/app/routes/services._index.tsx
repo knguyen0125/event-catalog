@@ -11,6 +11,7 @@ import Container from '~/components/Container';
 import { Service } from '~/database/models.server';
 import CardV2 from '~/components/CardV2';
 import Breadcrumb from '~/components/Breadcrumb';
+import catalogHash from '../../../catalogHash.json';
 
 export const meta: V2_MetaFunction = () => [
   { title: 'Services' },
@@ -20,7 +21,7 @@ export const meta: V2_MetaFunction = () => [
 export async function loader() {
   const services = await Service.query()
     .withGraphFetched(
-      '[domain(selectName), owners(selectEmail), publishedEvents(isLatest,selectName), subscribedToEvents(isLatest,selectName)]',
+      '[domain(selectName), owners(selectEmail), producesEvents(isLatest,selectName), consumesEvents(isLatest,selectName)]',
     )
     .modifiers({
       selectName(builder) {
@@ -34,6 +35,7 @@ export async function loader() {
 
   return json({
     services,
+    catalogHash,
   });
 }
 
@@ -56,14 +58,12 @@ const ServiceIndexPage = () => {
                   {
                     icon: ArrowRightOnRectangleIcon,
                     iconClassName: 'text-blue-500',
-                    text: `Publishes (${service.publishedEvents?.length || 0})`,
+                    text: `Produces (${service.producesEvents?.length || 0})`,
                   },
                   {
                     icon: ArrowLeftOnRectangleIcon,
                     iconClassName: 'text-emerald-500',
-                    text: `Subscribes (${
-                      service.subscribedToEvents?.length || 0
-                    })`,
+                    text: `Consumes (${service.consumesEvents?.length || 0})`,
                   },
                   {
                     icon: UserGroupIcon,

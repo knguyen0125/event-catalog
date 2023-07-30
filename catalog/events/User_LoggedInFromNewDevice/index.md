@@ -5,10 +5,10 @@ summary: |
   User has logged in from a new device
 producers:
   - name: User Service
+consumers:
+  - Notification Service
 ---
 
-Hello
+## Details
 
-World
-
-Something
+This is good

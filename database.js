@@ -4,6 +4,7 @@ const _ = require('lodash');
 const Knex = require('knex');
 const YAML = require('js-yaml');
 const grayMatter = require('gray-matter');
+const {writeCatalogHash, getFiles} = require("./catalogHash");
 
 const regexes = {
   event: /^\/events\/(?<event_name>[^\/]+?)$/,
@@ -20,7 +21,6 @@ const regexes = {
   owner: /^\/owners\/(?<owner_email>[^\/]+?)$/,
 };
 
-console.log(process.env)
 const knex = Knex({
   client: 'better-sqlite3',
   connection: {
@@ -40,15 +40,6 @@ async function dropEverything() {
   await knex.schema.dropTableIfExists('event_owners');
   await knex.schema.dropTableIfExists('service_events');
   await knex.schema.dropTableIfExists('event_examples');
-}
-
-function getFiles(dir) {
-  const dirents = fs.readdirSync(dir, { withFileTypes: true });
-  const files = dirents.map((dirent) => {
-    const res = path.resolve(dir, dirent.name);
-    return dirent.isDirectory() ? getFiles(res) : res;
-  });
-  return Array.prototype.concat(...files);
 }
 
 async function handleDomainDirectoryChange(changes, directory) {
@@ -162,7 +153,7 @@ async function handleEventDirectoryChange(changes, directory) {
         event_version: _.trim(data.version),
         event_is_latest: isLatest,
         service_name: _.trim(serviceName.name),
-        role: 'publisher',
+        role: 'producer',
       };
     } else if (_.isString(serviceName)) {
       changes.service_events[
@@ -172,7 +163,7 @@ async function handleEventDirectoryChange(changes, directory) {
         event_version: _.trim(data.version),
         event_is_latest: isLatest,
         service_name: _.trim(serviceName),
-        role: 'publisher',
+        role: 'producer',
       };
     }
   });
@@ -187,7 +178,7 @@ async function handleEventDirectoryChange(changes, directory) {
         event_version: _.trim(data.version),
         event_is_latest: isLatest,
         service_name: _.trim(serviceName.name),
-        role: 'subscriber',
+        role: 'consumer',
       };
     } else if (_.isString(serviceName)) {
       changes.service_events[
@@ -197,7 +188,7 @@ async function handleEventDirectoryChange(changes, directory) {
         event_version: _.trim(data.version),
         event_is_latest: isLatest,
         service_name: _.trim(serviceName),
-        role: 'subscriber',
+        role: 'consumer',
       };
     }
   });
@@ -467,6 +458,9 @@ async function buildDatabase() {
     await knex.into('event_owners').insert(_.values(db.event_owners));
   if (!_.isEmpty(db.service_events))
     await knex.into('service_events').insert(_.values(db.service_events));
+
+  console.log("Updating hash")
+  writeCatalogHash()
 }
 
 module.exports = {

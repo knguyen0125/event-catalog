@@ -25,9 +25,9 @@ export class Event extends Model {
 
   summary?: string;
 
-  publishers?: Service[];
+  producers?: Service[];
 
-  subscribers?: Service[];
+  consumers?: Service[];
 
   domain?: Domain;
 
@@ -35,7 +35,7 @@ export class Event extends Model {
 
   content?: string;
 
-  domain_name?: string
+  domain_name?: string;
 
   static get modifiers() {
     return {
@@ -55,41 +55,49 @@ export class Event extends Model {
 
   static get relationMappings() {
     return {
-      publishers: {
+      producers: {
         relation: Model.ManyToManyRelation,
         modelClass: Service,
         join: {
           from: ['events.name', 'events.version', 'events.is_latest'],
           through: {
-            from: ['service_events.event_name', 'service_events.event_version', 'service_events.event_is_latest'],
+            from: [
+              'service_events.event_name',
+              'service_events.event_version',
+              'service_events.event_is_latest',
+            ],
             to: 'service_events.service_name',
             extra: ['role'],
             filter(builder: QueryBuilder<any>) {
-              builder.where('role', 'publisher');
+              builder.where('role', 'producer');
             },
             beforeInsert(model: any) {
               // eslint-disable-next-line no-param-reassign
-              model.role = 'publisher';
+              model.role = 'producer';
             },
           },
           to: 'services.name',
         },
       },
-      subscribers: {
+      consumers: {
         relation: Model.ManyToManyRelation,
         modelClass: Service,
         join: {
           from: ['events.name', 'events.version', 'events.is_latest'],
           through: {
-            from: ['service_events.event_name', 'service_events.event_version', 'service_events.event_is_latest'],
+            from: [
+              'service_events.event_name',
+              'service_events.event_version',
+              'service_events.event_is_latest',
+            ],
             to: 'service_events.service_name',
             extra: ['role'],
             filter(builder: QueryBuilder<any>) {
-              builder.where('role', 'subscriber');
+              builder.where('role', 'consumer');
             },
             beforeInsert(model: any) {
               // eslint-disable-next-line
-              model.role = 'subscriber';
+              model.role = 'consumer';
             },
           },
           to: 'services.name',
@@ -109,7 +117,11 @@ export class Event extends Model {
         join: {
           from: ['events.name', 'events.version', 'events.is_latest'],
           through: {
-            from: ['event_owners.event_name', 'event_owners.event_version', 'event_owners.event_is_latest'],
+            from: [
+              'event_owners.event_name',
+              'event_owners.event_version',
+              'event_owners.event_is_latest',
+            ],
             to: 'event_owners.owner_email',
           },
           to: ['owners.email'],
@@ -120,7 +132,11 @@ export class Event extends Model {
         modelClass: EventExamples,
         join: {
           from: ['events.name', 'events.version', 'events.is_latest'],
-          to: ['event_examples.event_name', 'event_examples.event_version', 'event_examples.event_is_latest'],
+          to: [
+            'event_examples.event_name',
+            'event_examples.event_version',
+            'event_examples.event_is_latest',
+          ],
         },
       },
     };
@@ -134,9 +150,9 @@ export class Service extends Model {
 
   content?: string;
 
-  publishedEvents?: Event[];
+  producesEvents?: Event[];
 
-  subscribedToEvents?: Event[];
+  consumesEvents?: Event[];
 
   owners?: Owner[];
 
@@ -152,39 +168,47 @@ export class Service extends Model {
 
   static get relationMappings() {
     return {
-      publishedEvents: {
+      producesEvents: {
         relation: Model.ManyToManyRelation,
         modelClass: Event,
         join: {
           from: 'services.name',
           through: {
             from: 'service_events.service_name',
-            to: ['service_events.event_name', 'service_events.event_version', 'service_events.event_is_latest'],
+            to: [
+              'service_events.event_name',
+              'service_events.event_version',
+              'service_events.event_is_latest',
+            ],
             extra: ['role'],
             filter(builder: QueryBuilder<any>) {
-              builder.where('role', 'publisher');
+              builder.where('role', 'producer');
             },
             beforeInsert(model: any) {
-              model.role = 'publisher';
+              model.role = 'producer';
             },
           },
           to: ['events.name', 'events.version', 'events.is_latest'],
         },
       },
-      subscribedToEvents: {
+      consumesEvents: {
         relation: Model.ManyToManyRelation,
         modelClass: Event,
         join: {
           from: 'services.name',
           through: {
             from: 'service_events.service_name',
-            to: ['service_events.event_name', 'service_events.event_version', 'service_events.event_is_latest'],
+            to: [
+              'service_events.event_name',
+              'service_events.event_version',
+              'service_events.event_is_latest',
+            ],
             extra: ['role'],
             filter(builder: QueryBuilder<any>) {
-              builder.where('role', 'subscriber');
+              builder.where('role', 'consumer');
             },
             beforeInsert(model: any) {
-              model.role = 'subscriber';
+              model.role = 'consumer';
             },
           },
           to: ['events.name', 'events.version', 'events.is_latest'],
@@ -315,7 +339,11 @@ export class Owner extends Model {
           from: 'owners.email',
           through: {
             from: 'event_owners.owner_email',
-            to: ['event_owners.event_name', 'event_owners.event_version', 'event_owners.event_is_latest'],
+            to: [
+              'event_owners.event_name',
+              'event_owners.event_version',
+              'event_owners.event_is_latest',
+            ],
           },
           to: ['events.name', 'events.version', 'events.is_latest'],
         },
@@ -347,7 +375,11 @@ export class EventExamples extends Model {
         relation: Model.BelongsToOneRelation,
         modelClass: Event,
         join: {
-          from: ['event_examples.event_name', 'event_examples.event_version', 'event_examples.event_is_latest'],
+          from: [
+            'event_examples.event_name',
+            'event_examples.event_version',
+            'event_examples.event_is_latest',
+          ],
           to: ['events.name', 'events.version', 'events.is_latest'],
         },
       },

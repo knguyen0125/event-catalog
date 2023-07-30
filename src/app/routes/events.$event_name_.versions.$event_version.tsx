@@ -8,6 +8,7 @@ import Container from '~/components/Container';
 import Badge from '~/components/Badge';
 import Breadcrumb from '~/components/Breadcrumb';
 import EventDetailPageSidebar from '~/components/event-detail-page/EventDetailPageSidebar';
+import catalogHash from '../../../catalogHash.json';
 
 export const meta: V2_MetaFunction<typeof loader> = ({ data }) => [
   { title: `Events - ${data?.event.name}` },
@@ -20,7 +21,7 @@ export async function loader({ params }: LoaderArgs) {
       name: params.event_name,
       version: params.event_version,
     })
-    .withGraphFetched('[publishers, subscribers, domain, owners]')
+    .withGraphFetched('[producers, consumers, domain, owners]')
     .first();
 
   if (!event) {
@@ -32,7 +33,7 @@ export async function loader({ params }: LoaderArgs) {
     .where({ name: params.event_name })
     .orderBy('version', 'desc');
 
-  return json({ event, eventVersions });
+  return json({ event, eventVersions, random: catalogHash });
 }
 
 const EventDetail = () => {

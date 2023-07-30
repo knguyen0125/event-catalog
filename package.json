@@ -3,7 +3,7 @@
   "sideEffects": false,
   "scripts": {
     "build": "remix build",
-    "dev": "remix dev --manual -c \"nodemon server.js\"",
+    "dev": "remix dev --manual -c \"node server.js\"",
     "start": "cross-env NODE_ENV=production node server.js",
     "typecheck": "tsc"
   },
@@ -22,6 +22,7 @@
     "chokidar": "^3.5.3",
     "clsx": "^2.0.0",
     "cross-env": "^7.0.3",
+    "eslint-plugin-prettier": "^5.0.0",
     "express": "^4.18.2",
     "gray-matter": "^4.0.3",
     "isbot": "^3.6.8",

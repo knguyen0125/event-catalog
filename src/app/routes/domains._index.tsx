@@ -10,6 +10,7 @@ import { Domain } from '~/database/models.server';
 import Container from '~/components/Container';
 import CardV2 from '~/components/CardV2';
 import Breadcrumb from '~/components/Breadcrumb';
+import catalogHash from '../../../catalogHash.json';
 
 export const meta: V2_MetaFunction = () => [
   { title: 'Domains' },
@@ -33,6 +34,7 @@ export async function loader() {
 
   return json({
     domains,
+    catalogHash,
   });
 }
 

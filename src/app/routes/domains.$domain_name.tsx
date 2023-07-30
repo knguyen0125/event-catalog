@@ -14,6 +14,7 @@ import Container from '~/components/Container';
 import Breadcrumb from '~/components/Breadcrumb';
 import Badge from '~/components/Badge';
 import Avatar from '~/components/Avatar';
+import catalogHash from '../../../catalogHash.json';
 
 export async function loader({ params }: LoaderArgs) {
   const domain = await Domain.query()
@@ -29,6 +30,7 @@ export async function loader({ params }: LoaderArgs) {
 
   return json({
     domain,
+    catalogHash,
   });
 }
 
@@ -108,7 +110,7 @@ const Sidebar = ({ domain }: { domain: ModelObject<Domain> }) => (
           <div className="flex flex-col  gap-2">
             {domain.owners.length > 0 ? (
               domain.owners?.map((owner) => (
-                <Link to={`/owners/${owner.email}`}>
+                <Link to={`/owners/${owner.email}`} key={owner.email}>
                   <div className="flex items-center gap-2">
                     <Avatar src={owner.image} alt={owner.name || owner.email} />
                     <span className="text-sm">{owner.name || owner.email}</span>

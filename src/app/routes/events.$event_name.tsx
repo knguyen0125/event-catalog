@@ -9,7 +9,7 @@ export async function loader({ params }: LoaderArgs) {
       name: params.event_name,
       is_latest: true,
     })
-    .withGraphFetched('[publishers, subscribers, domain, owners]')
+    .withGraphFetched('[producers, consumers, domain, owners]')
     .first();
 
   if (!event) {

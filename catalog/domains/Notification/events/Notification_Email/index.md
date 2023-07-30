@@ -1,0 +1,9 @@
+---
+version: '0.1.0'
+summary: |
+  New Email notification
+producers:
+  - name: Notification Service
+---
+
+test

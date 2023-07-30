@@ -14,7 +14,7 @@ module.exports = {
     v2_normalizeFormMethod: true,
     v2_routeConvention: true,
   },
-  watchPaths: [],
+  watchPaths: ['catalog', 'catalogHash.json'],
   tailwind: true,
   serverDependenciesToBundle: [
     /^react-markdown.*/,

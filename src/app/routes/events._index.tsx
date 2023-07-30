@@ -11,6 +11,7 @@ import Container from '~/components/Container';
 import { Event } from '~/database/models.server';
 import CardV2 from '~/components/CardV2';
 import Breadcrumb from '~/components/Breadcrumb';
+import catalogHash from '../../../catalogHash.json';
 
 export const meta: V2_MetaFunction = () => [
   { title: 'Events' },
@@ -20,7 +21,7 @@ export const meta: V2_MetaFunction = () => [
 export async function loader() {
   const events = await Event.query()
     .withGraphFetched(
-      '[publishers(selectName), subscribers(selectName), domain(selectName), owners(selectEmail)]',
+      '[producers(selectName), consumers(selectName), domain(selectName), owners(selectEmail)]',
     )
     .modifiers({
       selectName(builder) {
@@ -33,7 +34,7 @@ export async function loader() {
     .where('is_latest', true)
     .orderBy('name');
 
-  return json({ events });
+  return json({ events, catalogHash });
 }
 const EventsIndex = () => {
   const { events } = useLoaderData<typeof loader>();
@@ -57,12 +58,12 @@ const EventsIndex = () => {
                   {
                     icon: ArrowRightOnRectangleIcon,
                     iconClassName: 'text-blue-500',
-                    text: `Publishers (${event.publishers?.length || 0})`,
+                    text: `Producers (${event.producers?.length || 0})`,
                   },
                   {
                     icon: ArrowLeftOnRectangleIcon,
                     iconClassName: 'text-emerald-500',
-                    text: `Subscribers (${event.subscribers?.length || 0})`,
+                    text: `Consumers (${event.consumers?.length || 0})`,
                   },
                   {
                     icon: UserGroupIcon,

@@ -23,22 +23,22 @@ const EventDetailPageSidebar = ({
   <div className="md:min-h-screen">
     <aside className="hidden divide-y divide-gray-200 xl:block xl:pl-8">
       <h2 className="sr-only">Details</h2>
-      {event.publishers && event.publishers.length >= 0 && (
+      {event.producers && event.producers.length >= 0 && (
         <div className="py-6">
           <span className="inline-flex items-center gap-x-1 pb-4">
             <ArrowRightOnRectangleIcon
               className={clsx('h-4 w-4 text-blue-500')}
             />
             <span className="text-sm font-light">
-              Publishers ({event.publishers?.length || 0})
+              Producers ({event.producers?.length || 0})
             </span>
           </span>
           <div className="flex flex-wrap gap-1">
-            {event.publishers.length > 0 ? (
-              event.publishers?.map((publisher) => (
-                <Link to={`/services/${publisher.name}`} key={publisher.name}>
+            {event.producers.length > 0 ? (
+              event.producers?.map((producer) => (
+                <Link to={`/services/${producer.name}`} key={producer.name}>
                   <Badge
-                    key={publisher.name}
+                    key={producer.name}
                     className="inline-flex items-center rounded-full border hover:bg-gray-50 hover:shadow"
                   >
                     <div className="absolute flex flex-shrink-0 items-center justify-center">
@@ -47,30 +47,30 @@ const EventDetailPageSidebar = ({
                         aria-hidden
                       />
                     </div>
-                    <div className="ml-3.5">{publisher.name}</div>
+                    <div className="ml-3.5">{producer.name}</div>
                   </Badge>
                 </Link>
               ))
             ) : (
-              <div className="text-sm">No publishers</div>
+              <div className="text-sm">No producers</div>
             )}
           </div>
         </div>
       )}
-      {event.subscribers && event.subscribers.length >= 0 && (
+      {event.consumers && event.consumers.length >= 0 && (
         <div className="py-6">
           <span className="inline-flex items-center gap-x-1 pb-4">
             <ArrowLeftOnRectangleIcon
               className={clsx('h-4 w-4 text-emerald-500')}
             />
             <span className="text-sm font-light">
-              Subscribers ({event.subscribers?.length || 0})
+              Consumers ({event.consumers?.length || 0})
             </span>
           </span>
           <div className="flex flex-wrap gap-1">
-            {event.subscribers.length > 0 ? (
-              event.subscribers?.map((subscriber) => (
-                <Link to={`/services/${subscriber.name}`} key={subscriber.name}>
+            {event.consumers.length > 0 ? (
+              event.consumers?.map((consumer) => (
+                <Link to={`/services/${consumer.name}`} key={consumer.name}>
                   <Badge className="inline-flex items-center rounded-full border hover:bg-gray-50 hover:shadow">
                     <div className="absolute flex flex-shrink-0 items-center justify-center">
                       <span
@@ -78,12 +78,12 @@ const EventDetailPageSidebar = ({
                         aria-hidden
                       />
                     </div>
-                    <div className="ml-3.5">{subscriber.name}</div>
+                    <div className="ml-3.5">{consumer.name}</div>
                   </Badge>
                 </Link>
               ))
             ) : (
-              <div className="text-sm">No subscribers</div>
+              <div className="text-sm">No consumers</div>
             )}
           </div>
         </div>

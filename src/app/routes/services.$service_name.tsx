@@ -15,6 +15,7 @@ import Container from '~/components/Container';
 import Breadcrumb from '~/components/Breadcrumb';
 import Badge from '~/components/Badge';
 import Avatar from '~/components/Avatar';
+import catalogHash from '../../../catalogHash.json';
 
 export async function loader({ params }: LoaderArgs) {
   const service = await Service.query()
@@ -22,7 +23,7 @@ export async function loader({ params }: LoaderArgs) {
       name: params.service_name,
     })
     .withGraphFetched(
-      '[domain, owners, publishedEvents(isLatest), subscribedToEvents(isLatest)]',
+      '[domain, owners, producesEvents(isLatest), consumesEvents(isLatest)]',
     );
 
   if (!service) {
@@ -32,6 +33,7 @@ export async function loader({ params }: LoaderArgs) {
 
   return json({
     service,
+    catalogHash,
   });
 }
 
@@ -39,19 +41,19 @@ const Sidebar = ({ service }: { service: ModelObject<Service> }) => (
   <div className="md:min-h-screen">
     <aside className="hidden divide-y divide-gray-200 xl:block xl:pl-8">
       <h2 className="sr-only">Details</h2>
-      {service.publishedEvents && service.publishedEvents.length >= 0 && (
+      {service.producesEvents && service.producesEvents.length >= 0 && (
         <div className="py-6">
           <span className="inline-flex items-center gap-x-1 pb-4">
             <ArrowRightOnRectangleIcon
               className={clsx('h-4 w-4 text-blue-500')}
             />
             <span className="text-sm font-light">
-              Publishes ({service.publishedEvents?.length || 0})
+              Produces ({service.producesEvents?.length || 0})
             </span>
           </span>
           <div className="flex flex-wrap gap-1">
-            {service.publishedEvents.length > 0 ? (
-              service.publishedEvents?.map((publishedEvent) => (
+            {service.producesEvents.length > 0 ? (
+              service.producesEvents?.map((publishedEvent) => (
                 <Link
                   to={`/events/${publishedEvent.name}`}
                   key={publishedEvent.name}
@@ -76,20 +78,20 @@ const Sidebar = ({ service }: { service: ModelObject<Service> }) => (
           </div>
         </div>
       )}
-      {service.subscribedToEvents && service.subscribedToEvents.length >= 0 && (
+      {service.consumesEvents && service.consumesEvents.length >= 0 && (
         <div className="py-6">
           <span className="inline-flex items-center gap-x-1 pb-4">
             <ArrowLeftOnRectangleIcon
               className={clsx('h-4 w-4 text-emerald-500')}
             />
             <span className="text-sm font-light">
-              Subscribes to ({service.subscribedToEvents?.length || 0})
+              Consumes ({service.consumesEvents?.length || 0})
             </span>
           </span>
           <div className="flex flex-wrap gap-1">
-            {service.subscribedToEvents.length > 0 ? (
-              service.subscribedToEvents?.map((subscriber) => (
-                <Link to={`/events/${subscriber.name}`} key={subscriber.name}>
+            {service.consumesEvents.length > 0 ? (
+              service.consumesEvents?.map((consumer) => (
+                <Link to={`/events/${consumer.name}`} key={consumer.name}>
                   <Badge className="inline-flex items-center rounded-full border hover:bg-gray-50 hover:shadow">
                     <div className="absolute flex flex-shrink-0 items-center justify-center">
                       <span
@@ -97,7 +99,7 @@ const Sidebar = ({ service }: { service: ModelObject<Service> }) => (
                         aria-hidden
                       />
                     </div>
-                    <div className="ml-3.5">{subscriber.name}</div>
+                    <div className="ml-3.5">{consumer.name}</div>
                   </Badge>
                 </Link>
               ))
