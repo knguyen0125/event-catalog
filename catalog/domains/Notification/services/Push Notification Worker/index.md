@@ -6,8 +6,4 @@ owners:
 	- kien.nguyen@your.rentals
 ---
 
-Hello
-
-## Hello?
-
-Something here
+## Details

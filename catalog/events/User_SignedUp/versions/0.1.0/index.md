@@ -6,3 +6,7 @@ summary: |
 producers:
   - name: User Service
 ---
+
+## Details
+
+Version 0.1.0

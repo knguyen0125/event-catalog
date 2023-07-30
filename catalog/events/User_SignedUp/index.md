@@ -5,6 +5,10 @@ summary: |
   User has signed up
 producers:
   - name: User Service
+consumers:
+  - name: Notification Service
+owners:
+  - uyen.pham@your.rentals
 ---
 
-Hello
+## Details

@@ -11,4 +11,4 @@ owners:
   - kien.nguyen@your.rentals
 ---
 
-Something
+## Details

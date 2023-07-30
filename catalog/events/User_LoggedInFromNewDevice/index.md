@@ -10,5 +10,3 @@ consumers:
 ---
 
 ## Details
-
-This is good
