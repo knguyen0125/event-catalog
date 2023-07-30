@@ -1,5 +1,5 @@
 /** @type {import('eslint').Linter.Config} */
-export default {
+module.exports = {
   overrides: [
     {
       files: ['*.ts', '*.tsx'],

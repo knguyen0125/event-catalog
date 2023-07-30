@@ -1,11 +1,10 @@
 {
   "private": true,
   "sideEffects": false,
-  "type": "module",
   "scripts": {
     "build": "remix build",
-    "dev": "remix dev --manual -c \"nodemon server.mjs\"",
-    "start": "cross-env NODE_ENV=production node server.mjs",
+    "dev": "remix dev --manual -c \"nodemon server.js\"",
+    "start": "cross-env NODE_ENV=production node server.js",
     "typecheck": "tsc"
   },
   "dependencies": {
