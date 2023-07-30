@@ -16,8 +16,8 @@ import Breadcrumb from '~/components/Breadcrumb';
 import Badge from '~/components/Badge';
 import catalogHash from '../../../catalogHash.json';
 
-export const meta: V2_MetaFunction = () => [
-  { title: 'Owners' },
+export const meta: V2_MetaFunction<typeof loader> = ({ data }) => [
+  { title: `${data?.owner.name || data?.owner.email} | Owners` },
   { name: 'description', content: 'Owners' },
 ];
 

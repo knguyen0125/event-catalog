@@ -1,5 +1,5 @@
 import React from 'react';
-import { json, LoaderArgs } from '@remix-run/node';
+import { json, LoaderArgs, V2_MetaFunction } from '@remix-run/node';
 import { Link, useLoaderData } from '@remix-run/react';
 import { ModelObject } from 'objection';
 import {
@@ -16,6 +16,11 @@ import Breadcrumb from '~/components/Breadcrumb';
 import Badge from '~/components/Badge';
 import Avatar from '~/components/Avatar';
 import catalogHash from '../../../catalogHash.json';
+
+export const meta: V2_MetaFunction<typeof loader> = ({ data }) => [
+  { title: `${data?.service.name} | Services` },
+  { name: 'description', content: 'Services' },
+];
 
 export async function loader({ params }: LoaderArgs) {
   const service = await Service.query()
@@ -146,7 +151,7 @@ const Sidebar = ({ service }: { service: ModelObject<Service> }) => (
           <div className="flex flex-col  gap-2">
             {service.owners?.length > 0 ? (
               service.owners?.map((owner) => (
-                <Link to={`/owners/${owner.email}`}>
+                <Link to={`/owners/${owner.email}`} key={owner.email}>
                   <div className="flex items-center gap-2">
                     <Avatar src={owner.image} alt={owner.name || owner.email} />
                     <span className="text-sm">{owner.name || owner.email}</span>

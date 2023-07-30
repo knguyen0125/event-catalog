@@ -11,7 +11,7 @@ import EventDetailPageSidebar from '~/components/event-detail-page/EventDetailPa
 import catalogHash from '../../../catalogHash.json';
 
 export const meta: V2_MetaFunction<typeof loader> = ({ data }) => [
-  { title: `Events - ${data?.event.name}` },
+  { title: `${data?.event.name} | Events` },
   { name: 'description', content: 'Events' },
 ];
 

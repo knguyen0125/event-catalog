@@ -1,5 +1,5 @@
 import React from 'react';
-import { json, LoaderArgs } from '@remix-run/node';
+import { json, LoaderArgs, V2_MetaFunction } from '@remix-run/node';
 import { Link, useLoaderData } from '@remix-run/react';
 import { ModelObject } from 'objection';
 import {
@@ -15,6 +15,11 @@ import Breadcrumb from '~/components/Breadcrumb';
 import Badge from '~/components/Badge';
 import Avatar from '~/components/Avatar';
 import catalogHash from '../../../catalogHash.json';
+
+export const meta: V2_MetaFunction<typeof loader> = ({ data }) => [
+  { title: `${data?.domain.name} | Domains` },
+  { name: 'description', content: 'Domains' },
+];
 
 export async function loader({ params }: LoaderArgs) {
   const domain = await Domain.query()
