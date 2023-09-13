@@ -11,6 +11,7 @@ import {
   Position,
   ReactFlow,
 } from 'reactflow';
+import dagre from '@dagrejs/dagre';
 
 import { Event } from '~/database/models.server';
 
@@ -18,6 +19,44 @@ const EventVisualizer: React.FC<{ event: ModelObject<Event> }> = ({
   event,
 }) => {
   const navigate = useNavigate();
+  const graph = new dagre.graphlib.Graph();
+
+  graph.setGraph({
+    rankdir: 'LR',
+    ranker: 'network-simplex',
+    align: 'UL',
+  });
+  graph.setDefaultEdgeLabel(() => ({}));
+
+  graph.setNode(`event-${event.name}`, {
+    label: event.name,
+    width: Math.max(150, event.name.length * 10),
+    height: 36,
+  });
+
+  (event.producers || []).forEach((producer) => {
+    graph.setNode(`producer-${producer.name}`, {
+      label: producer.name,
+      width: 150,
+      height: 36,
+    });
+
+    graph.setEdge(`producer-${producer.name}`, `event-${event.name}`);
+  });
+
+  (event.consumers || []).forEach((consumer) => {
+    graph.setNode(`consumer-${consumer.name}`, {
+      label: consumer.name,
+      width: 150,
+      height: 36,
+    });
+
+    graph.setEdge(`event-${event.name}`, `consumer-${consumer.name}`);
+  });
+
+  dagre.layout(graph, {
+    rankdir: 'LR',
+  });
 
   const nodes: Node[] = [];
   const edges: Edge[] = [];
@@ -27,7 +66,7 @@ const EventVisualizer: React.FC<{ event: ModelObject<Event> }> = ({
     data: {
       label: event.name,
     },
-    position: { x: 0, y: 0 },
+    position: graph.node(`event-${event.name}`),
     targetPosition: Position.Left,
     sourcePosition: Position.Right,
     className: 'min-w-fit !cursor-auto',
@@ -40,7 +79,7 @@ const EventVisualizer: React.FC<{ event: ModelObject<Event> }> = ({
         label: producer.name,
         url: `/services/${producer.name}`,
       },
-      position: { x: -300, y: 100 * i },
+      position: graph.node(`producer-${producer.name}`),
       type: 'input',
       sourcePosition: Position.Right,
       className: '!border-blue-500 min-w-fit !cursor-pointer',
@@ -65,7 +104,7 @@ const EventVisualizer: React.FC<{ event: ModelObject<Event> }> = ({
         label: consumer.name,
         url: `/services/${consumer.name}`,
       },
-      position: { x: 300, y: 100 * i },
+      position: graph.node(`consumer-${consumer.name}`),
       type: 'output',
       targetPosition: Position.Left,
       className: '!border-green-500 min-w-fit !cursor-pointer',

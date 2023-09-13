@@ -8,6 +8,7 @@
     "typecheck": "tsc"
   },
   "dependencies": {
+    "@dagrejs/dagre": "^1.0.4",
     "@headlessui/react": "^1.7.15",
     "@heroicons/react": "^2.0.18",
     "@remix-run/css-bundle": "^1.19.1",
