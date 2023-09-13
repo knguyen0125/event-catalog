@@ -1,17 +1,8 @@
 import React from 'react';
 import type { LoaderArgs } from '@remix-run/node';
 import { json, redirect, Response, V2_MetaFunction } from '@remix-run/node';
-import { useLoaderData, useNavigate } from '@remix-run/react';
+import { useLoaderData } from '@remix-run/react';
 import Markdown from 'react-markdown';
-import {
-  Background,
-  BackgroundVariant,
-  Controls,
-  MarkerType,
-  MiniMap,
-  Position,
-  ReactFlow,
-} from 'reactflow';
 import { Event } from '~/database/models.server';
 import Container from '~/components/Container';
 import Badge from '~/components/Badge';
@@ -19,6 +10,7 @@ import Breadcrumb from '~/components/Breadcrumb';
 import EventDetailPageSidebar from '~/components/event-detail-page/EventDetailPageSidebar';
 import catalogHash from '../../../catalogHash.json';
 import FileViewer from '~/components/FileViewer';
+import EventVisualizer from '~/components/EventVisualizer';
 
 export const meta: V2_MetaFunction<typeof loader> = ({ data }) => [
   { title: `${data?.event.name} | Events` },
@@ -67,7 +59,6 @@ export async function loader({ params }: LoaderArgs) {
 
 const EventDetail = () => {
   const { event, eventVersions, crumbs } = useLoaderData<typeof loader>();
-  const navigate = useNavigate();
 
   return (
     <Container>
@@ -105,76 +96,9 @@ const EventDetail = () => {
               )}
             </div>
 
-            <div style={{ width: '100%', height: '500px' }}>
-              <ReactFlow
-                fitView
-                nodes={[
-                  {
-                    id: '1',
-                    position: { x: 0, y: 0 },
-                    data: {
-                      label: 'Notification Service',
-                      url: `/services/Notification Service`,
-                    },
-                    sourcePosition: Position.Right,
-                    targetPosition: Position.Left,
-                    type: 'input',
-                    className: '!border-blue-500',
-                  },
-                  {
-                    id: '2',
-                    position: { x: 200, y: 0 },
-                    data: {
-                      label: 'Notification_Email',
-                      url: '/events/Notification_Email',
-                    },
-                    sourcePosition: Position.Right,
-                    targetPosition: Position.Left,
-                  },
-                  {
-                    id: '3',
-                    position: { x: 400, y: 0 },
-                    data: {
-                      label: 'Notification Service',
-                      url: `/services/Notification Service`,
-                    },
-                    sourcePosition: Position.Right,
-                    targetPosition: Position.Left,
-                    type: 'output',
-                    className: '!border-green-500',
-                  },
-                ]}
-                edges={[
-                  {
-                    id: 'e1-2',
-                    source: '1',
-                    target: '2',
-                    animated: true,
-                    markerEnd: {
-                      type: MarkerType.Arrow,
-                    },
-                  },
-                  {
-                    id: 'e2-3',
-                    source: '2',
-                    target: '3',
-                    animated: true,
-                    markerEnd: {
-                      type: MarkerType.Arrow,
-                    },
-                  },
-                ]}
-                onNodeClick={(ev, node) => {
-                  navigate(`${node.data.url}`);
-                }}
-              >
-                <Controls />
-                <Background
-                  variant={BackgroundVariant.Dots}
-                  gap={12}
-                  size={1}
-                />
-              </ReactFlow>
+            <div>
+              <h2 className="py-4 text-2xl font-bold">Visualizer</h2>
+              <EventVisualizer event={event} />
             </div>
           </div>
         </div>
