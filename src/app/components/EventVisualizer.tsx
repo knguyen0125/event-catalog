@@ -26,12 +26,11 @@ const EventVisualizer: React.FC<{ event: ModelObject<Event> }> = ({
     id: `event-${event.name}`,
     data: {
       label: event.name,
-      url: `/events/${event.name}`,
     },
     position: { x: 0, y: 0 },
     targetPosition: Position.Left,
     sourcePosition: Position.Right,
-    className: 'min-w-fit !cursor-pointer',
+    className: 'min-w-fit !cursor-auto',
   });
 
   (event.producers || []).forEach((producer, i) => {
@@ -84,13 +83,16 @@ const EventVisualizer: React.FC<{ event: ModelObject<Event> }> = ({
   });
 
   return (
-    <div style={{ width: '100%', height: '500px' }}>
+    <div style={{ width: '100%', height: '250px' }}>
       <ReactFlow
         fitView
         nodes={nodes}
         edges={edges}
+        draggable={false}
         onNodeClick={(ev, node) => {
-          navigate(`${node.data.url}`);
+          if (node.data.url) {
+            navigate(`${node.data.url}`);
+          }
         }}
       >
         <Controls />

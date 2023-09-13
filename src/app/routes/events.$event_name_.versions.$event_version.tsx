@@ -79,6 +79,10 @@ const EventDetail = () => {
             </div>
             <p className="pb-4 text-gray-500">{event.summary}</p>
             <hr className="pb-4" />
+            <div>
+              <h2 className="py-4 text-2xl font-bold">Visualizer</h2>
+              <EventVisualizer event={event} />
+            </div>
             <div className="prose">
               {/* eslint-disable-next-line react/no-children-prop */}
               {event.content && <Markdown children={event.content} />}
@@ -94,11 +98,6 @@ const EventDetail = () => {
                   />
                 </div>
               )}
-            </div>
-
-            <div>
-              <h2 className="py-4 text-2xl font-bold">Visualizer</h2>
-              <EventVisualizer event={event} />
             </div>
           </div>
         </div>
