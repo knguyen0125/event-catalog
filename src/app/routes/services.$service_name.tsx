@@ -16,6 +16,7 @@ import Breadcrumb from '~/components/Breadcrumb';
 import Badge from '~/components/Badge';
 import Avatar from '~/components/Avatar';
 import catalogHash from '../../../catalogHash.json';
+import ServiceVisualizer from '~/components/ServiceVisualizer';
 
 export const meta: V2_MetaFunction<typeof loader> = ({ data }) => [
   { title: `${data?.service.name} | Services` },
@@ -194,6 +195,10 @@ const ServiceDetailPage = () => {
             <div className="prose">
               {/* eslint-disable-next-line react/no-children-prop */}
               {service.content && <Markdown children={service.content} />}
+            </div>
+            <div>
+              <h2 className="py-4 text-2xl font-bold">Visualizer</h2>
+              <ServiceVisualizer service={service} />
             </div>
           </div>
         </div>

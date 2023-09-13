@@ -14,14 +14,14 @@ import {
 import dagre from '@dagrejs/dagre';
 
 import { Cog8ToothIcon, EnvelopeIcon } from '@heroicons/react/24/outline';
-import { Event } from '~/database/models.server';
+import { Service } from '~/database/models.server';
 
 const getWidth = (text: string) => Math.max(150, text.length * 10);
 
-const EventVisualizer: React.FC<{
-  event: ModelObject<Event>;
+const ServiceVisualizer: React.FC<{
+  service: ModelObject<Service>;
   withLabel?: boolean;
-}> = ({ event, withLabel }) => {
+}> = ({ service, withLabel = true }) => {
   const navigate = useNavigate();
   const graph = new dagre.graphlib.Graph();
 
@@ -31,22 +31,22 @@ const EventVisualizer: React.FC<{
   });
   graph.setDefaultEdgeLabel(() => ({}));
 
-  graph.setNode(`event-${event.name}`, {
-    label: event.name,
-    width: getWidth(event.name),
+  graph.setNode(`service-${service.name}`, {
+    label: service.name,
+    width: getWidth(service.name),
     height: 36,
   });
 
-  (event.producers || []).forEach((producer) => {
-    graph.setNode(`producer-${producer.name}`, {
-      label: producer.name,
-      width: getWidth(producer.name),
+  (service.producesEvents || []).forEach((producedEvent) => {
+    graph.setNode(`produced-event-${producedEvent.name}`, {
+      label: producedEvent.name,
+      width: getWidth(producedEvent.name),
       height: 36,
     });
 
     graph.setEdge(
-      `producer-${producer.name}`,
-      `event-${event.name}`,
+      `service-${service.name}`,
+      `produced-event-${producedEvent.name}`,
       withLabel
         ? {
             label: 'produces',
@@ -56,20 +56,20 @@ const EventVisualizer: React.FC<{
     );
   });
 
-  (event.consumers || []).forEach((consumer) => {
-    graph.setNode(`consumer-${consumer.name}`, {
-      label: consumer.name,
-      width: getWidth(consumer.name),
+  (service.consumesEvents || []).forEach((consumedEvent) => {
+    graph.setNode(`consumed-event-${consumedEvent.name}`, {
+      label: consumedEvent.name,
+      width: getWidth(consumedEvent.name),
       height: 36,
     });
 
     graph.setEdge(
-      `event-${event.name}`,
-      `consumer-${consumer.name}`,
+      `consumed-event-${consumedEvent.name}`,
+      `service-${service.name}`,
       withLabel
         ? {
-            label: 'consumed by',
-            width: 'consumed by'.length * 8,
+            label: 'consumes',
+            width: 'consumes'.length * 8,
           }
         : {},
     );
@@ -83,43 +83,43 @@ const EventVisualizer: React.FC<{
   const edges: Edge[] = [];
 
   nodes.push({
-    id: `event-${event.name}`,
+    id: `service-${service.name}`,
     data: {
       label: (
         <div className="inline-flex items-center gap-x-1 align-bottom">
-          <EnvelopeIcon className="h-4 w-4" />
-          <span>{event.name}</span>
+          <Cog8ToothIcon className="h-4 w-4" />
+          <span>{service.name}</span>
         </div>
       ),
     },
-    position: graph.node(`event-${event.name}`),
+    position: graph.node(`service-${service.name}`),
     targetPosition: Position.Left,
     sourcePosition: Position.Right,
     className: 'min-w-fit !cursor-auto !hover:shadow-0',
   });
 
-  (event.producers || []).forEach((producer) => {
+  (service.producesEvents || []).forEach((producedEvent) => {
     nodes.push({
-      id: `producer-${producer.name}`,
+      id: `produced-event-${producedEvent.name}`,
       data: {
         label: (
           <div className="inline-flex items-center gap-x-1 align-bottom">
-            <Cog8ToothIcon className="h-4 w-4 text-blue-500" />
-            <span>{producer.name}</span>
+            <EnvelopeIcon className="h-4 w-4 text-blue-500" />
+            <span>{producedEvent.name}</span>
           </div>
         ),
-        url: `/services/${producer.name}`,
+        url: `/events/${producedEvent.name}`,
       },
-      position: graph.node(`producer-${producer.name}`),
-      type: 'input',
-      sourcePosition: Position.Right,
+      position: graph.node(`produced-event-${producedEvent.name}`),
+      type: 'output',
+      targetPosition: Position.Left,
       className: '!border-blue-500 min-w-fit !cursor-pointer',
     });
 
     edges.push({
-      id: `producer-${producer.name}-to-event-${event.name}`,
-      source: `producer-${producer.name}`,
-      target: `event-${event.name}`,
+      id: `service-${service.name}-to-produced-event-${producedEvent.name}`,
+      source: `service-${service.name}`,
+      target: `produced-event-${producedEvent.name}`,
       animated: true,
       markerEnd: {
         type: MarkerType.Arrow,
@@ -130,34 +130,34 @@ const EventVisualizer: React.FC<{
     });
   });
 
-  (event.consumers || []).forEach((consumer) => {
+  (service.consumesEvents || []).forEach((consumedEvent) => {
     nodes.push({
-      id: `consumer-${consumer.name}`,
+      id: `consumed-event-${consumedEvent.name}`,
       data: {
         label: (
           <div className="inline-flex items-center gap-x-1 align-bottom">
-            <Cog8ToothIcon className="h-4 w-4 text-emerald-500" />
-            <span>{consumer.name}</span>
+            <EnvelopeIcon className="h-4 w-4 text-emerald-500" />
+            <span>{consumedEvent.name}</span>
           </div>
         ),
-        url: `/services/${consumer.name}`,
+        url: `/events/${consumedEvent.name}`,
       },
-      position: graph.node(`consumer-${consumer.name}`),
-      type: 'output',
-      targetPosition: Position.Left,
+      position: graph.node(`consumed-event-${consumedEvent.name}`),
+      type: 'input',
+      sourcePosition: Position.Right,
       className: '!border-emerald-500 min-w-fit !cursor-pointer',
     });
 
     edges.push({
-      id: `event-${event.name}-to-consumer-${consumer.name}`,
-      source: `event-${event.name}`,
-      target: `consumer-${consumer.name}`,
+      id: `consumed-event-${consumedEvent.name}-to-service-${service.name}`,
+      source: `consumed-event-${consumedEvent.name}`,
+      target: `service-${service.name}`,
       animated: true,
       markerEnd: {
         type: MarkerType.Arrow,
       },
       type: 'smoothstep',
-      label: withLabel ? 'consumed by' : null,
+      label: withLabel ? 'consumes' : null,
     });
   });
 
@@ -181,4 +181,4 @@ const EventVisualizer: React.FC<{
   );
 };
 
-export default EventVisualizer;
+export default ServiceVisualizer;
