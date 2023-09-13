@@ -7,8 +7,11 @@ producers:
   - name: User Service
 consumers:
   - name: Notification Service
+  - name: Push Notification Worker
 owners:
   - uyen.pham@your.rentals
 ---
 
 ## Details
+
+Something something

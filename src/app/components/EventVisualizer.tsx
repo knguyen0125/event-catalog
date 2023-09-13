@@ -24,7 +24,6 @@ const EventVisualizer: React.FC<{ event: ModelObject<Event> }> = ({
   graph.setGraph({
     rankdir: 'LR',
     ranker: 'network-simplex',
-    align: 'UL',
   });
   graph.setDefaultEdgeLabel(() => ({}));
 
@@ -69,10 +68,10 @@ const EventVisualizer: React.FC<{ event: ModelObject<Event> }> = ({
     position: graph.node(`event-${event.name}`),
     targetPosition: Position.Left,
     sourcePosition: Position.Right,
-    className: 'min-w-fit !cursor-auto',
+    className: 'min-w-fit !cursor-auto !hover:shadow-0',
   });
 
-  (event.producers || []).forEach((producer, i) => {
+  (event.producers || []).forEach((producer) => {
     nodes.push({
       id: `producer-${producer.name}`,
       data: {
@@ -94,10 +93,11 @@ const EventVisualizer: React.FC<{ event: ModelObject<Event> }> = ({
         type: MarkerType.Arrow,
       },
       className: '!border-blue-500',
+      type: 'smoothstep',
     });
   });
 
-  (event.consumers || []).forEach((consumer, i) => {
+  (event.consumers || []).forEach((consumer) => {
     nodes.push({
       id: `consumer-${consumer.name}`,
       data: {
@@ -118,6 +118,7 @@ const EventVisualizer: React.FC<{ event: ModelObject<Event> }> = ({
       markerEnd: {
         type: MarkerType.Arrow,
       },
+      type: 'smoothstep',
     });
   });
 
