@@ -31,7 +31,7 @@ const EventVisualizer: React.FC<{ event: ModelObject<Event> }> = ({
     position: { x: 0, y: 0 },
     targetPosition: Position.Left,
     sourcePosition: Position.Right,
-    className: 'min-w-fit',
+    className: 'min-w-fit !cursor-pointer',
   });
 
   (event.producers || []).forEach((producer, i) => {
@@ -44,7 +44,7 @@ const EventVisualizer: React.FC<{ event: ModelObject<Event> }> = ({
       position: { x: -300, y: 100 * i },
       type: 'input',
       sourcePosition: Position.Right,
-      className: '!border-blue-500 min-w-fit',
+      className: '!border-blue-500 min-w-fit !cursor-pointer',
     });
 
     edges.push({
@@ -69,7 +69,7 @@ const EventVisualizer: React.FC<{ event: ModelObject<Event> }> = ({
       position: { x: 300, y: 100 * i },
       type: 'output',
       targetPosition: Position.Left,
-      className: '!border-green-500 min-w-fit',
+      className: '!border-green-500 min-w-fit !cursor-pointer',
     });
 
     edges.push({
