@@ -13,11 +13,13 @@ import {
 } from 'reactflow';
 import dagre from '@dagrejs/dagre';
 
+import { Cog8ToothIcon, EnvelopeIcon } from '@heroicons/react/24/outline';
 import { Event } from '~/database/models.server';
 
-const EventVisualizer: React.FC<{ event: ModelObject<Event> }> = ({
-  event,
-}) => {
+const EventVisualizer: React.FC<{
+  event: ModelObject<Event>;
+  withLabel: boolean;
+}> = ({ event, withLabel }) => {
   const navigate = useNavigate();
   const graph = new dagre.graphlib.Graph();
 
@@ -40,7 +42,16 @@ const EventVisualizer: React.FC<{ event: ModelObject<Event> }> = ({
       height: 36,
     });
 
-    graph.setEdge(`producer-${producer.name}`, `event-${event.name}`);
+    graph.setEdge(
+      `producer-${producer.name}`,
+      `event-${event.name}`,
+      withLabel
+        ? {
+            label: 'produces',
+            width: 'produces'.length * 8,
+          }
+        : {},
+    );
   });
 
   (event.consumers || []).forEach((consumer) => {
@@ -50,7 +61,16 @@ const EventVisualizer: React.FC<{ event: ModelObject<Event> }> = ({
       height: 36,
     });
 
-    graph.setEdge(`event-${event.name}`, `consumer-${consumer.name}`);
+    graph.setEdge(
+      `event-${event.name}`,
+      `consumer-${consumer.name}`,
+      withLabel
+        ? {
+            label: 'consumed by',
+            width: 'consumed by'.length * 8,
+          }
+        : {},
+    );
   });
 
   dagre.layout(graph, {
@@ -63,7 +83,12 @@ const EventVisualizer: React.FC<{ event: ModelObject<Event> }> = ({
   nodes.push({
     id: `event-${event.name}`,
     data: {
-      label: event.name,
+      label: (
+        <div className="inline-flex items-center gap-x-1 align-bottom">
+          <EnvelopeIcon className="h-4 w-4" />
+          <span>{event.name}</span>
+        </div>
+      ),
     },
     position: graph.node(`event-${event.name}`),
     targetPosition: Position.Left,
@@ -75,7 +100,12 @@ const EventVisualizer: React.FC<{ event: ModelObject<Event> }> = ({
     nodes.push({
       id: `producer-${producer.name}`,
       data: {
-        label: producer.name,
+        label: (
+          <div className="inline-flex items-center gap-x-1 align-bottom">
+            <Cog8ToothIcon className="h-4 w-4 text-blue-500" />
+            <span>{producer.name}</span>
+          </div>
+        ),
         url: `/services/${producer.name}`,
       },
       position: graph.node(`producer-${producer.name}`),
@@ -94,6 +124,7 @@ const EventVisualizer: React.FC<{ event: ModelObject<Event> }> = ({
       },
       className: '!border-blue-500',
       type: 'smoothstep',
+      label: withLabel ? 'produces' : null,
     });
   });
 
@@ -101,13 +132,18 @@ const EventVisualizer: React.FC<{ event: ModelObject<Event> }> = ({
     nodes.push({
       id: `consumer-${consumer.name}`,
       data: {
-        label: consumer.name,
+        label: (
+          <div className="inline-flex items-center gap-x-1 align-bottom">
+            <Cog8ToothIcon className="h-4 w-4 text-emerald-500" />
+            <span>{consumer.name}</span>
+          </div>
+        ),
         url: `/services/${consumer.name}`,
       },
       position: graph.node(`consumer-${consumer.name}`),
       type: 'output',
       targetPosition: Position.Left,
-      className: '!border-green-500 min-w-fit !cursor-pointer',
+      className: '!border-emerald-500 min-w-fit !cursor-pointer',
     });
 
     edges.push({
@@ -119,6 +155,7 @@ const EventVisualizer: React.FC<{ event: ModelObject<Event> }> = ({
         type: MarkerType.Arrow,
       },
       type: 'smoothstep',
+      label: withLabel ? 'consumed by' : null,
     });
   });
 
