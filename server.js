@@ -42,6 +42,8 @@ app.use(
 // more aggressive with this caching.
 app.use(express.static('public', { maxAge: '1h' }));
 
+app.use('/catalog', express.static('catalog', { maxAge: '1h' }));
+
 app.use(morgan('tiny'));
 
 app.all(
