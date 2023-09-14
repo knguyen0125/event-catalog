@@ -17,8 +17,7 @@ import dagre from '@dagrejs/dagre';
 import {
   Cog8ToothIcon,
   EnvelopeIcon,
-  RectangleGroupIcon,
-  RectangleStackIcon,
+  ArrowTopRightOnSquareIcon,
 } from '@heroicons/react/24/outline';
 import { Domain } from '~/database/models.server';
 
@@ -37,14 +36,6 @@ const DomainVisualizer: React.FC<{
   });
   graph.setDefaultEdgeLabel(() => ({}));
 
-  (domain.events || []).forEach((event) => {
-    graph.setNode(`event-${event.name}`, {
-      label: event.name,
-      width: getWidth(event.name),
-      height: 36,
-    });
-  });
-
   (domain.services || []).forEach((service) => {
     graph.setNode(`service-${service.name}`, {
       label: service.name,
@@ -53,15 +44,12 @@ const DomainVisualizer: React.FC<{
     });
 
     (service.producesEvents || []).forEach((producedEvent) => {
-      let eventId = `event-${producedEvent.name}`;
-      if (!_.includes(domain.events?.map((e) => e.name), producedEvent.name)) {
-        eventId = `service-${service.name}-produces-event-${producedEvent.name}`;
-        graph.setNode(eventId, {
-          label: producedEvent.name,
-          width: getWidth(producedEvent.name),
-          height: 36,
-        });
-      }
+      const eventId = `service-${service.name}-produces-event-${producedEvent.name}`;
+      graph.setNode(eventId, {
+        label: producedEvent.name,
+        width: getWidth(producedEvent.name),
+        height: 36,
+      });
 
       graph.setEdge(
         `service-${service.name}`,
@@ -76,15 +64,12 @@ const DomainVisualizer: React.FC<{
     });
 
     (service.consumesEvents || []).forEach((consumedEvent) => {
-      let eventId = `event-${consumedEvent.name}`;
-      if (!_.includes(domain.events?.map((e) => e.name), consumedEvent.name)) {
-        eventId = `service-${service.name}-consumes-event-${consumedEvent.name}`;
-        graph.setNode(eventId, {
-          label: consumedEvent.name,
-          width: getWidth(consumedEvent.name),
-          height: 36,
-        });
-      }
+      const eventId = `service-${service.name}-consumes-event-${consumedEvent.name}`;
+      graph.setNode(eventId, {
+        label: consumedEvent.name,
+        width: getWidth(consumedEvent.name),
+        height: 36,
+      });
 
       graph.setEdge(
         eventId,
@@ -106,25 +91,6 @@ const DomainVisualizer: React.FC<{
   const nodes: Node[] = [];
   const edges: Edge[] = [];
 
-  (domain.events || []).forEach((event) => {
-    nodes.push({
-      id: `event-${event.name}`,
-      data: {
-        label: (
-          <div className="inline-flex items-center gap-x-1 align-bottom">
-            <EnvelopeIcon className="h-4 w-4 text-blue-500" />
-            <span>{event.name}</span>
-          </div>
-        ),
-        url: `/events/${event.name}`,
-      },
-      position: graph.node(`event-${event.name}`),
-      targetPosition: Position.Left,
-      sourcePosition: Position.Right,
-      className: 'min-w-fit !cursor-auto !hover:shadow-0 !border-blue-500',
-    });
-  });
-
   (domain.services || []).forEach((service) => {
     nodes.push({
       id: `service-${service.name}`,
@@ -144,28 +110,27 @@ const DomainVisualizer: React.FC<{
     });
 
     (service.producesEvents || []).forEach((producedEvent) => {
-      let eventId = `event-${producedEvent.name}`;
-
-      if (!_.includes(domain.events?.map((e) => e.name), producedEvent.name)) {
-        eventId = `service-${service.name}-produces-event-${producedEvent.name}`;
-        nodes.push({
-          id: eventId,
-          data: {
-            label: (
-              <div className="inline-flex items-center gap-x-1 align-bottom">
-                <Cog8ToothIcon className="h-4 w-4 text-emerald-500" />
-                <span>{producedEvent.name}</span>
-              </div>
-            ),
-            url: `/events/${producedEvent.name}`,
-          },
-          position: graph.node(eventId),
-          targetPosition: Position.Left,
-          sourcePosition: Position.Right,
-          className:
-            'min-w-fit !cursor-auto !hover:shadow-0 !border-emerald-500',
-        });
-      }
+      const eventId = `service-${service.name}-produces-event-${producedEvent.name}`;
+      nodes.push({
+        id: eventId,
+        data: {
+          label: (
+            <div className="inline-flex items-center gap-x-1 align-bottom">
+              <EnvelopeIcon className="h-4 w-4 text-blue-500" />
+              <span>{producedEvent.name}</span>
+              {producedEvent.domain_name !== domain.name && (
+                <ArrowTopRightOnSquareIcon className="h-4 w-4 text-blue-500" />
+              )}
+            </div>
+          ),
+          url: `/events/${producedEvent.name}`,
+        },
+        position: graph.node(eventId),
+        type: 'output',
+        targetPosition: Position.Left,
+        sourcePosition: Position.Right,
+        className: 'min-w-fit !cursor-auto !hover:shadow-0 !border-blue-500',
+      });
 
       edges.push({
         id: `service-${service.name}-produces-event-${producedEvent.name}`,
@@ -182,28 +147,27 @@ const DomainVisualizer: React.FC<{
     });
 
     (service.consumesEvents || []).forEach((consumedEvent) => {
-      let eventId = `event-${consumedEvent.name}`;
-
-      if (!_.includes(domain.events?.map((e) => e.name), consumedEvent.name)) {
-        eventId = `service-${service.name}-consumes-event-${consumedEvent.name}`;
-        nodes.push({
-          id: eventId,
-          data: {
-            label: (
-              <div className="inline-flex items-center gap-x-1 align-bottom">
-                <Cog8ToothIcon className="h-4 w-4 text-emerald-500" />
-                <span>{consumedEvent.name}</span>
-              </div>
-            ),
-            url: `/events/${consumedEvent.name}`,
-          },
-          position: graph.node(eventId),
-          targetPosition: Position.Left,
-          sourcePosition: Position.Right,
-          className:
-            'min-w-fit !cursor-auto !hover:shadow-0 !border-emerald-500',
-        });
-      }
+      const eventId = `service-${service.name}-consumes-event-${consumedEvent.name}`;
+      nodes.push({
+        id: eventId,
+        data: {
+          label: (
+            <div className="inline-flex items-center gap-x-1 align-bottom">
+              <EnvelopeIcon className="h-4 w-4 text-blue-500" />
+              <span>{consumedEvent.name}</span>
+              {consumedEvent.domain_name !== domain.name && (
+                <ArrowTopRightOnSquareIcon className="h-4 w-4 text-blue-500" />
+              )}
+            </div>
+          ),
+          url: `/events/${consumedEvent.name}`,
+        },
+        position: graph.node(eventId),
+        type: 'input',
+        targetPosition: Position.Left,
+        sourcePosition: Position.Right,
+        className: 'min-w-fit !cursor-auto !hover:shadow-0 !border-blue-500',
+      });
 
       edges.push({
         id: `service-${service.name}-consumes-event-${consumedEvent.name}`,
