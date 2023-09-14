@@ -91,11 +91,12 @@ const ServicesVisualizer: React.FC<DomainVisualizerProps> = ({
 
     if (
       (service.producesEvents || []).length === 0 ||
-      _.every(
-        service.producesEvents,
-        (producedEvent) =>
-          considerExternalEvents && producedEvent.domain_name !== domainName,
-      )
+      (!showExternalEvents &&
+        _.every(
+          service.producesEvents,
+          (producedEvent) =>
+            considerExternalEvents && producedEvent.domain_name !== domainName,
+        ))
     ) {
       addProducedEvent('none');
     }
@@ -114,11 +115,12 @@ const ServicesVisualizer: React.FC<DomainVisualizerProps> = ({
 
     if (
       (service.consumesEvents || []).length === 0 ||
-      _.every(
-        service.consumesEvents,
-        (consumedEvent) =>
-          considerExternalEvents && consumedEvent.domain_name !== domainName,
-      )
+      (!showExternalEvents &&
+        _.every(
+          service.consumesEvents,
+          (consumedEvent) =>
+            considerExternalEvents && consumedEvent.domain_name !== domainName,
+        ))
     ) {
       addConsumedEvent('none');
     }
