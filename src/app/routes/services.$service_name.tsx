@@ -9,6 +9,7 @@ import {
   UserGroupIcon,
 } from '@heroicons/react/24/outline';
 import clsx from 'clsx';
+import SwaggerUI from 'swagger-ui-react';
 import Markdown from '~/components/Markdown';
 import { Service } from '~/database/models.server';
 import Container from '~/components/Container';
@@ -202,6 +203,14 @@ const ServiceDetailPage = () => {
                 <ServicesVisualizer services={[service]} />
               </div>
             </div>
+            {service.openapi && (
+              <div>
+                <h2 className="py-4 text-2xl font-bold">OpenAPI</h2>
+                <div className="h-[500px] w-full">
+                  <SwaggerUI spec={service.openapi} />
+                </div>
+              </div>
+            )}
           </div>
         </div>
         <Sidebar service={service} key={service.name} />

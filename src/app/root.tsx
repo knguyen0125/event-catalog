@@ -9,6 +9,7 @@ import {
   ScrollRestoration,
 } from '@remix-run/react';
 import reactFlowStyles from 'reactflow/dist/style.css';
+import swaggerUiStyles from 'swagger-ui-react/swagger-ui.css';
 import styles from './tailwind.css';
 import Navbar from '~/components/Navbar';
 
@@ -16,6 +17,7 @@ export const links: LinksFunction = () => [
   ...(cssBundleHref ? [{ rel: 'stylesheet', href: cssBundleHref }] : []),
   { rel: 'stylesheet', href: styles },
   { rel: 'stylesheet', href: reactFlowStyles },
+  { rel: 'stylesheet', href: swaggerUiStyles },
 ];
 
 const App = () => (

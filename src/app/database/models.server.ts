@@ -162,6 +162,8 @@ export class Service extends Model {
 
   domain?: Domain;
 
+  openapi?: string;
+
   static get tableName() {
     return 'services';
   }
