@@ -32,7 +32,7 @@ const DomainVisualizer: React.FC<{
   const reactFlowInstance = useReactFlow();
   const navigate = useNavigate();
   const graph = new dagre.graphlib.Graph();
-  const [showExternalEvents, setShowExternalEvents] = React.useState(false);
+  const [showExternalEvents, setShowExternalEvents] = React.useState(true);
 
   graph.setGraph({
     rankdir: 'LR',
