@@ -5,6 +5,7 @@ summary: |
   User has signed up
 producers:
   - name: User Service
+  - name: Notification Service
 consumers:
   - name: Notification Service
   - name: Push Notification Worker

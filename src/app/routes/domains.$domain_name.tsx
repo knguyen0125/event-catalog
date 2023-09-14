@@ -15,6 +15,7 @@ import Breadcrumb from '~/components/Breadcrumb';
 import Badge from '~/components/Badge';
 import Avatar from '~/components/Avatar';
 import catalogHash from '../../../catalogHash.json';
+import DomainVisualizer from '~/components/DomainVisualizer';
 
 export const meta: V2_MetaFunction<typeof loader> = ({ data }) => [
   { title: `${data?.domain.name} | Domains` },
@@ -26,7 +27,9 @@ export async function loader({ params }: LoaderArgs) {
     .findOne({
       name: params.domain_name,
     })
-    .withGraphFetched('[events(isLatest), services, owners]');
+    .withGraphFetched(
+      '[events(isLatest), services.[producesEvents, consumesEvents], owners]',
+    );
 
   if (!domain) {
     // eslint-disable-next-line @typescript-eslint/no-throw-literal
@@ -154,6 +157,10 @@ const DomainDetailPage = () => {
             <div className="prose">
               {/* eslint-disable-next-line react/no-children-prop */}
               {domain.content && <Markdown children={domain.content} />}
+            </div>
+            <div>
+              <h2 className="py-4 text-2xl font-bold">Visualizer</h2>
+              <DomainVisualizer domain={domain} />
             </div>
           </div>
         </div>
