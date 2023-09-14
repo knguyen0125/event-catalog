@@ -112,8 +112,8 @@ const DomainVisualizer: React.FC<{
         `service-${service.name}`,
         withLabel
           ? {
-              label: 'consumes',
-              width: 'consumes'.length * 8,
+              label: 'consumed by',
+              width: 'consumed by'.length * 8,
             }
           : {},
       );
@@ -247,7 +247,7 @@ const DomainVisualizer: React.FC<{
           type: MarkerType.Arrow,
         },
         className: '!border-emerald-500',
-        label: withLabel ? 'consumes' : null,
+        label: withLabel ? 'consumed by' : null,
       });
     });
   });

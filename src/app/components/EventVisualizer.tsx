@@ -21,7 +21,7 @@ const getWidth = (text: string) => Math.max(150, text.length * 10);
 const EventVisualizer: React.FC<{
   event: ModelObject<Event>;
   withLabel?: boolean;
-}> = ({ event, withLabel }) => {
+}> = ({ event, withLabel = true }) => {
   const navigate = useNavigate();
   const graph = new dagre.graphlib.Graph();
 

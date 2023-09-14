@@ -68,8 +68,8 @@ const ServiceVisualizer: React.FC<{
       `service-${service.name}`,
       withLabel
         ? {
-            label: 'consumes',
-            width: 'consumes'.length * 8,
+            label: 'consumed by',
+            width: 'consumed by'.length * 8,
           }
         : {},
     );
@@ -157,7 +157,7 @@ const ServiceVisualizer: React.FC<{
         type: MarkerType.Arrow,
       },
       type: 'smoothstep',
-      label: withLabel ? 'consumes' : null,
+      label: withLabel ? 'consumed by' : null,
     });
   });
 
