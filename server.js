@@ -87,7 +87,7 @@ function createDevRequestHandler() {
       build = await reimportServer();
 
       console.log('Rebuilding');
-      await broadcastDevReady(await build).then();
+      await broadcastDevReady(await build).catch(() => {});
     } catch (e) {
       console.log(e);
     }
@@ -95,7 +95,6 @@ function createDevRequestHandler() {
   const debouncedFunc = _.debounce(func, 200);
 
   catalogWatcher.on('all', async (e) => {
-    console.log(e);
     debouncedFunc();
   });
 
@@ -103,11 +102,6 @@ function createDevRequestHandler() {
     try {
       return createRequestHandler({
         build: await build,
-        getLoadContext() {
-          return {
-            test: Math.random(),
-          };
-        },
         mode: 'development',
       })(req, res, next);
     } catch (error) {

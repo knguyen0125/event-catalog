@@ -13,7 +13,6 @@ function getFiles(dir) {
 }
 
 function getCatalogFolderHash() {
-  console.log('test');
   const files = getFiles('./catalog');
 
   const hasher = crypto.createHash('md5');
@@ -28,12 +27,10 @@ function getCatalogFolderHash() {
 
 function writeCatalogHash() {
   const hash = getCatalogFolderHash();
-  console.log(hash);
   fs.writeFileSync('./catalogHash.json', JSON.stringify(hash));
 }
 
 module.exports = {
   getFiles,
   writeCatalogHash,
-  getCatalogFolderHash,
 };

@@ -264,19 +264,20 @@ const ServicesVisualizer: React.FC<DomainVisualizerProps> = ({
       <Background variant={BackgroundVariant.Dots} gap={12} size={1} />
       {considerExternalEvents && (
         <Panel position="top-right">
-          <div className="flex items-center gap-x-2 rounded bg-white p-2 shadow">
-            <label htmlFor="show-external-events" className="text-sm">
-              <input
-                id="show-external-events"
-                type="checkbox"
-                checked={showExternalEvents}
-                onChange={(ev) => {
-                  setShowExternalEvents(ev.target.checked);
-                }}
-              />
-              Show external events
-            </label>
-          </div>
+          <label
+            htmlFor="show-external-events"
+            className="flex items-center gap-x-2 rounded bg-white p-2 text-sm shadow"
+          >
+            <input
+              id="show-external-events"
+              type="checkbox"
+              checked={showExternalEvents}
+              onChange={(ev) => {
+                setShowExternalEvents(ev.target.checked);
+              }}
+            />
+            Show external events
+          </label>
         </Panel>
       )}
     </ReactFlow>
