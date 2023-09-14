@@ -1,3 +1,4 @@
+import _ from 'lodash';
 import { useNavigate } from '@remix-run/react';
 import { ModelObject } from 'objection';
 import React, { useEffect } from 'react';
@@ -32,7 +33,7 @@ const DomainVisualizer: React.FC<{
   const reactFlowInstance = useReactFlow();
   const navigate = useNavigate();
   const graph = new dagre.graphlib.Graph();
-  const [showExternalEvents, setShowExternalEvents] = React.useState(true);
+  const [showExternalEvents, setShowExternalEvents] = React.useState(false);
 
   graph.setGraph({
     rankdir: 'LR',
@@ -74,6 +75,25 @@ const DomainVisualizer: React.FC<{
       );
     });
 
+    if (
+      (service.producesEvents || []).length === 0 ||
+      _.every(
+        service.producesEvents,
+        (producedEvent) => producedEvent.domain_name !== domain.name,
+      )
+    ) {
+      graph.setNode(`service-${service.name}-produces-event-none`, {
+        label: 'none',
+        width: getWidth('none'),
+        height: 36,
+      });
+
+      graph.setEdge(
+        `service-${service.name}`,
+        `service-${service.name}-produces-event-none`,
+      );
+    }
+
     (service.consumesEvents || []).forEach((consumedEvent) => {
       const isExternalEvent = consumedEvent.domain_name !== domain.name;
 
@@ -98,11 +118,32 @@ const DomainVisualizer: React.FC<{
           : {},
       );
     });
+
+    if (
+      (service.consumesEvents || []).length === 0 ||
+      _.every(
+        service.consumesEvents,
+        (consumedEvent) => consumedEvent.domain_name !== domain.name,
+      )
+    ) {
+      graph.setNode(`service-${service.name}-consumes-event-none`, {
+        label: 'none',
+        width: getWidth('none'),
+        height: 36,
+      });
+
+      graph.setEdge(
+        `service-${service.name}-consumes-event-none`,
+        `service-${service.name}`,
+      );
+    }
   });
 
   dagre.layout(graph, {
     rankdir: 'LR',
   });
+
+  console.log(graph.nodes());
 
   const nodes: Node[] = [];
   const edges: Edge[] = [];
