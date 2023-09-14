@@ -79,7 +79,7 @@ function createDevRequestHandler() {
     // 1. purge require cache && load updated server build
     build = await reimportServer();
     // 2. tell dev server that this app server is now ready
-    broadcastDevReady(await build);
+    broadcastDevReady(await build).catch(() => {});
   });
 
   const catalogWatcher = chokidar.watch('./catalog', { ignoreInitial: true });
