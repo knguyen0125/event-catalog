@@ -45,12 +45,14 @@ async function dropEverything() {
 async function processMarkdown(content, directory) {
   const unified = (await import('unified')).unified;
   const remarkParse = (await import('remark-parse')).default;
+  const remarkEmoji = (await import('remark-emoji')).default;
   const remarkStringify = (await import('remark-stringify')).default;
   const transform = (await import('./transform.mjs')).default;
 
   const processedContent = await unified()
     .use(remarkParse)
     .use(transform, { dir: directory })
+    .use(remarkEmoji)
     .use(remarkStringify)
     .process(content);
 

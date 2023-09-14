@@ -9,7 +9,7 @@ import {
   UserGroupIcon,
 } from '@heroicons/react/24/outline';
 import clsx from 'clsx';
-import Markdown from 'react-markdown';
+import Markdown from '~/components/Markdown';
 import { Service } from '~/database/models.server';
 import Container from '~/components/Container';
 import Breadcrumb from '~/components/Breadcrumb';

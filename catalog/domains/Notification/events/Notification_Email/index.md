@@ -8,6 +8,16 @@ producers:
 
 ## Details
 
-Is this something that works?
+Is this something that ~works~?
 
 ![Images](./img.drawio.png)
+
+| Table | 1 |
+|-------|---|
+| Helo  |   |
+
+```ts
+import {} from 'test'
+```
+
+:dog: :cat:

@@ -2,7 +2,7 @@ import React from 'react';
 import type { LoaderArgs } from '@remix-run/node';
 import { json, redirect, Response, V2_MetaFunction } from '@remix-run/node';
 import { useLoaderData } from '@remix-run/react';
-import Markdown from 'react-markdown';
+import Markdown from '~/components/Markdown';
 import { Event } from '~/database/models.server';
 import Container from '~/components/Container';
 import Badge from '~/components/Badge';

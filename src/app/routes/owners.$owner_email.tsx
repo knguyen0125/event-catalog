@@ -9,7 +9,7 @@ import {
   RectangleStackIcon,
 } from '@heroicons/react/24/outline';
 import clsx from 'clsx';
-import Markdown from 'react-markdown';
+import Markdown from '~/components/Markdown';
 import Container from '~/components/Container';
 import { Owner } from '~/database/models.server';
 import Breadcrumb from '~/components/Breadcrumb';

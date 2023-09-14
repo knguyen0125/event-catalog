@@ -35,5 +35,8 @@ module.exports = {
     'trim-lines',
     'decode-named-character-reference',
     'character-entities',
+    'ccount',
+    'emoticon',
+    'escape-string-regexp',
   ],
 };
