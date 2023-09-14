@@ -15,7 +15,7 @@ import Breadcrumb from '~/components/Breadcrumb';
 import Badge from '~/components/Badge';
 import Avatar from '~/components/Avatar';
 import catalogHash from '../../../catalogHash.json';
-import DomainVisualizer from '~/components/visualizer/DomainVisualizer';
+import ServicesVisualizer from '~/components/visualizer/ServicesVisualizer';
 
 export const meta: V2_MetaFunction<typeof loader> = ({ data }) => [
   { title: `${data?.domain.name} | Domains` },
@@ -160,7 +160,10 @@ const DomainDetailPage = () => {
             </div>
             <div>
               <h2 className="py-4 text-2xl font-bold">Visualizer</h2>
-              <DomainVisualizer domain={domain} />
+              <ServicesVisualizer
+                domainName={domain.name}
+                services={domain.services || []}
+              />
             </div>
           </div>
         </div>

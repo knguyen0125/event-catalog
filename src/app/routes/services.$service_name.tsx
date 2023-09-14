@@ -16,7 +16,7 @@ import Breadcrumb from '~/components/Breadcrumb';
 import Badge from '~/components/Badge';
 import Avatar from '~/components/Avatar';
 import catalogHash from '../../../catalogHash.json';
-import ServiceVisualizer from '~/components/visualizer/ServiceVisualizer';
+import ServicesVisualizer from '~/components/visualizer/ServicesVisualizer';
 
 export const meta: V2_MetaFunction<typeof loader> = ({ data }) => [
   { title: `${data?.service.name} | Services` },
@@ -198,7 +198,7 @@ const ServiceDetailPage = () => {
             </div>
             <div>
               <h2 className="py-4 text-2xl font-bold">Visualizer</h2>
-              <ServiceVisualizer service={service} />
+              <ServicesVisualizer services={[service]} />
             </div>
           </div>
         </div>

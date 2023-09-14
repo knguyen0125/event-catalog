@@ -22,7 +22,7 @@ import {
   EnvelopeIcon,
   ArrowTopRightOnSquareIcon,
 } from '@heroicons/react/24/outline';
-import { Domain } from '~/database/models.server';
+import { Service } from '~/database/models.server';
 import {
   addGraphEdge,
   addGraphNode,
@@ -31,17 +31,27 @@ import {
   PRODUCER_EDGE_LABEL,
 } from '~/components/visualizer/common';
 
-const DomainVisualizer: React.FC<{
-  domain: ModelObject<Domain>;
+type DomainVisualizerProps = {
+  services: ModelObject<Service>[];
+  domainName?: string;
   withLabel?: boolean;
-}> = ({ domain, withLabel = true }) => {
+};
+
+const ServicesVisualizer: React.FC<DomainVisualizerProps> = ({
+  services,
+  domainName,
+  withLabel = true,
+}) => {
+  const considerExternalEvents = !!domainName;
   const reactFlowInstance = useReactFlow();
   const navigate = useNavigate();
-  const [showExternalEvents, setShowExternalEvents] = React.useState(true);
+  const [showExternalEvents, setShowExternalEvents] = React.useState(
+    considerExternalEvents,
+  );
 
   const graph = createGraph();
 
-  (domain.services || []).forEach((service) => {
+  (services || []).forEach((service) => {
     const serviceId = `service-${service.name}`;
     addGraphNode(graph, serviceId, service.name);
 
@@ -68,10 +78,12 @@ const DomainVisualizer: React.FC<{
     };
 
     (service.producesEvents || []).forEach((producedEvent) => {
-      const isExternalEvent = producedEvent.domain_name !== domain.name;
+      if (considerExternalEvents) {
+        const isExternalEvent = producedEvent.domain_name !== domainName;
 
-      if (isExternalEvent && !showExternalEvents) {
-        return;
+        if (isExternalEvent && !showExternalEvents) {
+          return;
+        }
       }
 
       addProducedEvent(producedEvent.name);
@@ -81,18 +93,22 @@ const DomainVisualizer: React.FC<{
       (service.producesEvents || []).length === 0 ||
       _.every(
         service.producesEvents,
-        (producedEvent) => producedEvent.domain_name !== domain.name,
+        (producedEvent) =>
+          considerExternalEvents && producedEvent.domain_name !== domainName,
       )
     ) {
       addProducedEvent('none');
     }
 
     (service.consumesEvents || []).forEach((consumedEvent) => {
-      const isExternalEvent = consumedEvent.domain_name !== domain.name;
+      if (considerExternalEvents) {
+        const isExternalEvent = consumedEvent.domain_name !== domainName;
 
-      if (isExternalEvent && !showExternalEvents) {
-        return;
+        if (isExternalEvent && !showExternalEvents) {
+          return;
+        }
       }
+
       addConsumedEvent(consumedEvent.name);
     });
 
@@ -100,7 +116,8 @@ const DomainVisualizer: React.FC<{
       (service.consumesEvents || []).length === 0 ||
       _.every(
         service.consumesEvents,
-        (consumedEvent) => consumedEvent.domain_name !== domain.name,
+        (consumedEvent) =>
+          considerExternalEvents && consumedEvent.domain_name !== domainName,
       )
     ) {
       addConsumedEvent('none');
@@ -112,7 +129,7 @@ const DomainVisualizer: React.FC<{
   const nodes: Node[] = [];
   const edges: Edge[] = [];
 
-  (domain.services || []).forEach((service) => {
+  (services || []).forEach((service) => {
     nodes.push({
       id: `service-${service.name}`,
       data: {
@@ -131,11 +148,14 @@ const DomainVisualizer: React.FC<{
     });
 
     (service.producesEvents || []).forEach((producedEvent) => {
-      const isExternalEvent = producedEvent.domain_name !== domain.name;
+      if (considerExternalEvents) {
+        const isExternalEvent = producedEvent.domain_name !== domainName;
 
-      if (isExternalEvent && !showExternalEvents) {
-        return;
+        if (isExternalEvent && !showExternalEvents) {
+          return;
+        }
       }
+
       const eventId = `service-${service.name}-produces-event-${producedEvent.name}`;
       nodes.push({
         id: eventId,
@@ -144,9 +164,10 @@ const DomainVisualizer: React.FC<{
             <div className="inline-flex items-center gap-x-1 align-bottom">
               <EnvelopeIcon className="h-4 w-4 text-blue-500" />
               <span>{producedEvent.name}</span>
-              {producedEvent.domain_name !== domain.name && (
-                <ArrowTopRightOnSquareIcon className="h-4 w-4 text-blue-500" />
-              )}
+              {considerExternalEvents &&
+                producedEvent.domain_name !== domainName && (
+                  <ArrowTopRightOnSquareIcon className="h-4 w-4 text-blue-500" />
+                )}
             </div>
           ),
           url: `/events/${producedEvent.name}`,
@@ -173,10 +194,12 @@ const DomainVisualizer: React.FC<{
     });
 
     (service.consumesEvents || []).forEach((consumedEvent) => {
-      const isExternalEvent = consumedEvent.domain_name !== domain.name;
+      if (considerExternalEvents) {
+        const isExternalEvent = consumedEvent.domain_name !== domainName;
 
-      if (isExternalEvent && !showExternalEvents) {
-        return;
+        if (isExternalEvent && !showExternalEvents) {
+          return;
+        }
       }
 
       const eventId = `service-${service.name}-consumes-event-${consumedEvent.name}`;
@@ -187,9 +210,10 @@ const DomainVisualizer: React.FC<{
             <div className="inline-flex items-center gap-x-1 align-bottom">
               <EnvelopeIcon className="h-4 w-4 text-blue-500" />
               <span>{consumedEvent.name}</span>
-              {consumedEvent.domain_name !== domain.name && (
-                <ArrowTopRightOnSquareIcon className="h-4 w-4 text-blue-500" />
-              )}
+              {considerExternalEvents &&
+                consumedEvent.domain_name !== domainName && (
+                  <ArrowTopRightOnSquareIcon className="h-4 w-4 text-blue-500" />
+                )}
             </div>
           ),
           url: `/events/${consumedEvent.name}`,
@@ -237,35 +261,34 @@ const DomainVisualizer: React.FC<{
       >
         <Controls />
         <Background variant={BackgroundVariant.Dots} gap={12} size={1} />
-        <Panel position="top-right">
-          <div className="flex items-center gap-x-2 rounded bg-white p-2 shadow">
-            <label htmlFor="show-external-events" className="text-sm">
-              <input
-                id="show-external-events"
-                type="checkbox"
-                checked={showExternalEvents}
-                onChange={(ev) => {
-                  setShowExternalEvents(ev.target.checked);
-                }}
-              />
-              Show external events
-            </label>
-          </div>
-        </Panel>
+        {considerExternalEvents && (
+          <Panel position="top-right">
+            <div className="flex items-center gap-x-2 rounded bg-white p-2 shadow">
+              <label htmlFor="show-external-events" className="text-sm">
+                <input
+                  id="show-external-events"
+                  type="checkbox"
+                  checked={showExternalEvents}
+                  onChange={(ev) => {
+                    setShowExternalEvents(ev.target.checked);
+                  }}
+                />
+                Show external events
+              </label>
+            </div>
+          </Panel>
+        )}
       </ReactFlow>
     </div>
   );
 };
 
-const WrappedDomainVisualizer: React.FC<{
-  domain: ModelObject<Domain>;
-  withLabel?: boolean;
-}> = ({ domain, withLabel = true }) => {
+const WrappedServicesVisualizer: React.FC<DomainVisualizerProps> = (props) => {
   return (
     <ReactFlowProvider>
-      <DomainVisualizer domain={domain} withLabel={withLabel} />
+      <ServicesVisualizer {...props} />
     </ReactFlowProvider>
   );
 };
 
-export default WrappedDomainVisualizer;
+export default WrappedServicesVisualizer;
