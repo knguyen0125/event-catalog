@@ -5,6 +5,8 @@ const Knex = require('knex');
 const YAML = require('js-yaml');
 const grayMatter = require('gray-matter');
 const { writeCatalogHash, getFiles } = require('./catalogHash');
+const Parser = require('@apidevtools/swagger-parser');
+const parser = new Parser();
 
 const regexes = {
   event: /^\/events\/(?<event_name>[^\/]+?)$/,
@@ -275,12 +277,19 @@ async function handleServiceDirectoryChange(db, dir) {
   );
 
   if (openApiFile) {
-    service.openapi = _.trim(
+    const isYaml =
+      openApiFile.endsWith('.yaml') || openApiFile.endsWith('.yml');
+    const openapi = _.trim(
       fs.readFileSync(
         path.join(process.cwd(), 'catalog', dir, openApiFile),
         'utf-8',
       ),
     );
+
+    const doc = isYaml ? YAML.load(openapi) : JSON.parse(openapi);
+
+    const bundle = await parser.dereference(doc);
+    service.openapi = YAML.dump(bundle);
   }
 
   db.services[serviceName] = service;

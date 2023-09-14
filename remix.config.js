@@ -38,5 +38,6 @@ module.exports = {
     'ccount',
     'emoticon',
     'escape-string-regexp',
+    'markdown-table',
   ],
 };
