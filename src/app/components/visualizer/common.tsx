@@ -7,6 +7,17 @@ export const getNodeWidth = (text: string) =>
 export const PRODUCER_EDGE_LABEL = 'produces';
 export const CONSUMER_EDGE_LABEL = 'consumed by';
 
+export const createGraph = () => {
+  const graph = new dagre.graphlib.Graph();
+
+  graph.setGraph({
+    rankdir: 'LR',
+    ranker: 'network-simplex',
+  });
+
+  return graph;
+};
+
 export const addGraphNode = (
   graph: dagre.graphlib.Graph,
   id: string,

@@ -27,6 +27,7 @@ import {
   addGraphEdge,
   addGraphNode,
   CONSUMER_EDGE_LABEL,
+  createGraph,
   PRODUCER_EDGE_LABEL,
 } from '~/components/visualizer/common';
 
@@ -36,14 +37,9 @@ const DomainVisualizer: React.FC<{
 }> = ({ domain, withLabel = true }) => {
   const reactFlowInstance = useReactFlow();
   const navigate = useNavigate();
-  const graph = new dagre.graphlib.Graph();
   const [showExternalEvents, setShowExternalEvents] = React.useState(true);
 
-  graph.setGraph({
-    rankdir: 'LR',
-    ranker: 'network-simplex',
-  });
-  graph.setDefaultEdgeLabel(() => ({}));
+  const graph = createGraph();
 
   (domain.services || []).forEach((service) => {
     const serviceId = `service-${service.name}`;
