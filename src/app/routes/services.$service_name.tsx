@@ -192,7 +192,7 @@ const ServiceDetailPage = () => {
             </div>
             <p className="pb-4 text-gray-500">{service.summary}</p>
             <hr className="pb-4" />
-            <div className="prose">
+            <div className="prose max-w-none">
               {/* eslint-disable-next-line react/no-children-prop */}
               {service.content && <Markdown children={service.content} />}
             </div>

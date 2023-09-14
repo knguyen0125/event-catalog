@@ -154,7 +154,7 @@ const DomainDetailPage = () => {
             </div>
             <p className="pb-4 text-gray-500">{domain.summary}</p>
             <hr className="pb-4" />
-            <div className="prose">
+            <div className="prose max-w-none">
               {/* eslint-disable-next-line react/no-children-prop */}
               {domain.content && <Markdown children={domain.content} />}
             </div>

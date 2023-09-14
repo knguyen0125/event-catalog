@@ -164,7 +164,7 @@ const OwnerDetailPage = () => {
             </div>
             <p className="pb-4 text-gray-500">{owner.email}</p>
             <hr className="pb-4" />
-            <div className="prose">
+            <div className="prose max-w-none">
               {/* eslint-disable-next-line react/no-children-prop */}
               {owner.content && <Markdown children={owner.content} />}
             </div>
