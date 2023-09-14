@@ -23,10 +23,7 @@ import {
   ArrowTopRightOnSquareIcon,
 } from '@heroicons/react/24/outline';
 import { Domain } from '~/database/models.server';
-import {
-  DEFAULT_NODE_HEIGHT,
-  getNodeWidth,
-} from '~/components/visualizer/common';
+import { addGraphEdge, addGraphNode } from '~/components/visualizer/common';
 
 const DomainVisualizer: React.FC<{
   domain: ModelObject<Domain>;
@@ -44,11 +41,7 @@ const DomainVisualizer: React.FC<{
   graph.setDefaultEdgeLabel(() => ({}));
 
   (domain.services || []).forEach((service) => {
-    graph.setNode(`service-${service.name}`, {
-      label: service.name,
-      width: getNodeWidth(service.name),
-      height: DEFAULT_NODE_HEIGHT,
-    });
+    addGraphNode(graph, `service-${service.name}`, service.name);
 
     (service.producesEvents || []).forEach((producedEvent) => {
       const eventId = `service-${service.name}-produces-event-${producedEvent.name}`;
@@ -59,21 +52,12 @@ const DomainVisualizer: React.FC<{
         return;
       }
 
-      graph.setNode(eventId, {
-        label: producedEvent.name,
-        width: getNodeWidth(producedEvent.name),
-        height: DEFAULT_NODE_HEIGHT,
-      });
-
-      graph.setEdge(
+      addGraphNode(graph, eventId, producedEvent.name);
+      addGraphEdge(
+        graph,
         `service-${service.name}`,
         eventId,
-        withLabel
-          ? {
-              label: 'produces',
-              width: 'produces'.length * 8,
-            }
-          : {},
+        withLabel ? 'produces' : undefined,
       );
     });
 
@@ -84,13 +68,14 @@ const DomainVisualizer: React.FC<{
         (producedEvent) => producedEvent.domain_name !== domain.name,
       )
     ) {
-      graph.setNode(`service-${service.name}-produces-event-none`, {
-        label: 'none',
-        width: getNodeWidth('none'),
-        height: DEFAULT_NODE_HEIGHT,
-      });
+      addGraphNode(
+        graph,
+        `service-${service.name}-produces-event-none`,
+        'none',
+      );
 
-      graph.setEdge(
+      addGraphEdge(
+        graph,
         `service-${service.name}`,
         `service-${service.name}-produces-event-none`,
       );
@@ -103,21 +88,13 @@ const DomainVisualizer: React.FC<{
         return;
       }
       const eventId = `service-${service.name}-consumes-event-${consumedEvent.name}`;
-      graph.setNode(eventId, {
-        label: consumedEvent.name,
-        width: getNodeWidth(consumedEvent.name),
-        height: DEFAULT_NODE_HEIGHT,
-      });
 
-      graph.setEdge(
+      addGraphNode(graph, eventId, consumedEvent.name);
+      addGraphEdge(
+        graph,
         eventId,
         `service-${service.name}`,
-        withLabel
-          ? {
-              label: 'consumed by',
-              width: 'consumed by'.length * 8,
-            }
-          : {},
+        withLabel ? 'consumed by' : undefined,
       );
     });
 
@@ -128,15 +105,16 @@ const DomainVisualizer: React.FC<{
         (consumedEvent) => consumedEvent.domain_name !== domain.name,
       )
     ) {
-      graph.setNode(`service-${service.name}-consumes-event-none`, {
-        label: 'none',
-        width: getNodeWidth('none'),
-        height: DEFAULT_NODE_HEIGHT,
-      });
-
-      graph.setEdge(
+      addGraphNode(
+        graph,
+        `service-${service.name}-consumes-event-none`,
+        'none',
+      );
+      addGraphEdge(
+        graph,
         `service-${service.name}-consumes-event-none`,
         `service-${service.name}`,
+        withLabel ? 'consumed by' : undefined,
       );
     }
   });
@@ -144,8 +122,6 @@ const DomainVisualizer: React.FC<{
   dagre.layout(graph, {
     rankdir: 'LR',
   });
-
-  console.log(graph.nodes());
 
   const nodes: Node[] = [];
   const edges: Edge[] = [];
