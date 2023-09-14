@@ -62,7 +62,7 @@ const EventVisualizer: React.FC<{
     data: {
       label: (
         <div className="inline-flex items-center gap-x-1 align-bottom">
-          <EnvelopeIcon className="h-4 w-4 text-emerald-500" />
+          <EnvelopeIcon className="h-4 w-4 text-blue-500" />
           <span>{event.name}</span>
         </div>
       ),
@@ -70,7 +70,7 @@ const EventVisualizer: React.FC<{
     position: graph.node(`event-${event.name}`),
     targetPosition: Position.Left,
     sourcePosition: Position.Right,
-    className: 'min-w-fit !cursor-auto !hover:shadow-0 !border-emerald-500',
+    className: 'min-w-fit !cursor-auto !hover:shadow-0 !border-blue-500',
   });
 
   (event.producers || []).forEach((producer) => {
@@ -79,7 +79,7 @@ const EventVisualizer: React.FC<{
       data: {
         label: (
           <div className="inline-flex items-center gap-x-1 align-bottom">
-            <Cog8ToothIcon className="h-4 w-4 text-blue-500" />
+            <Cog8ToothIcon className="h-4 w-4 text-emerald-500" />
             <span>{producer.name}</span>
           </div>
         ),
@@ -88,7 +88,7 @@ const EventVisualizer: React.FC<{
       position: graph.node(`producer-${producer.name}`),
       type: 'input',
       sourcePosition: Position.Right,
-      className: '!border-blue-500 min-w-fit !cursor-pointer',
+      className: '!border-emerald-500 min-w-fit !cursor-pointer',
     });
 
     edges.push({
@@ -111,7 +111,7 @@ const EventVisualizer: React.FC<{
       data: {
         label: (
           <div className="inline-flex items-center gap-x-1 align-bottom">
-            <Cog8ToothIcon className="h-4 w-4 text-blue-500" />
+            <Cog8ToothIcon className="h-4 w-4 text-emerald-500" />
             <span>{consumer.name}</span>
           </div>
         ),
@@ -120,7 +120,7 @@ const EventVisualizer: React.FC<{
       position: graph.node(`consumer-${consumer.name}`),
       type: 'output',
       targetPosition: Position.Left,
-      className: '!border-blue-500 min-w-fit !cursor-pointer',
+      className: '!border-emerald-500 min-w-fit !cursor-pointer',
     });
 
     edges.push({
