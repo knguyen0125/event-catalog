@@ -4,7 +4,7 @@ const _ = require('lodash');
 const Knex = require('knex');
 const YAML = require('js-yaml');
 const grayMatter = require('gray-matter');
-const {writeCatalogHash, getFiles} = require("./catalogHash");
+const { writeCatalogHash, getFiles } = require('./catalogHash');
 
 const regexes = {
   event: /^\/events\/(?<event_name>[^\/]+?)$/,
@@ -84,7 +84,8 @@ async function handleEventDirectoryChange(changes, directory) {
   const domainName =
     directory.match(regexes.domainEvent)?.groups?.domain_name ||
     directory.match(regexes.domainEventVersion)?.groups?.domain_name;
-  const isLatest = regexes.event.test(directory) || regexes.domainEvent.test(directory);
+  const isLatest =
+    regexes.event.test(directory) || regexes.domainEvent.test(directory);
   const folderEventVersion =
     directory.match(regexes.eventVersion)?.groups?.event_version ||
     directory.match(regexes.domainEventVersion)?.groups?.event_version;
@@ -113,7 +114,9 @@ async function handleEventDirectoryChange(changes, directory) {
 
   changes.events[`${eventName}-${folderEventVersion}-${isLatest}`] = event;
 
-  const fileNames = fs.readdirSync(path.join(process.cwd(), 'catalog', directory));
+  const fileNames = fs.readdirSync(
+    path.join(process.cwd(), 'catalog', directory),
+  );
   const schemaFile = _.find(fileNames, (file) =>
     _.includes(['schema.yaml', 'schema.yml', 'schema.json'], _.toLower(file)),
   );
@@ -135,7 +138,7 @@ async function handleEventDirectoryChange(changes, directory) {
   _.forEach(data.owners || [], (owner) => {
     changes.event_owners[
       `${eventName}-${folderEventVersion}-${isLatest}-${owner}`
-      ] = {
+    ] = {
       event_name: _.trim(eventName),
       event_version: _.trim(data.version),
       event_is_latest: isLatest,
@@ -147,8 +150,8 @@ async function handleEventDirectoryChange(changes, directory) {
   _.forEach(data.producers || [], (serviceName) => {
     if (_.isObject(serviceName)) {
       changes.service_events[
-        `${eventName}-${folderEventVersion}-${isLatest}-${serviceName.name}`
-        ] = {
+        `${eventName}-${folderEventVersion}-${isLatest}-${serviceName.name}-producer`
+      ] = {
         event_name: _.trim(eventName),
         event_version: _.trim(data.version),
         event_is_latest: isLatest,
@@ -157,8 +160,8 @@ async function handleEventDirectoryChange(changes, directory) {
       };
     } else if (_.isString(serviceName)) {
       changes.service_events[
-        `${eventName}-${folderEventVersion}-${isLatest}-${serviceName}`
-        ] = {
+        `${eventName}-${folderEventVersion}-${isLatest}-${serviceName}-producer`
+      ] = {
         event_name: _.trim(eventName),
         event_version: _.trim(data.version),
         event_is_latest: isLatest,
@@ -172,8 +175,8 @@ async function handleEventDirectoryChange(changes, directory) {
   _.forEach(data.consumers || [], (serviceName) => {
     if (_.isObject(serviceName)) {
       changes.service_events[
-        `${eventName}-${folderEventVersion}-${isLatest}-${serviceName.name}`
-        ] = {
+        `${eventName}-${folderEventVersion}-${isLatest}-${serviceName.name}-consumer`
+      ] = {
         event_name: _.trim(eventName),
         event_version: _.trim(data.version),
         event_is_latest: isLatest,
@@ -182,8 +185,8 @@ async function handleEventDirectoryChange(changes, directory) {
       };
     } else if (_.isString(serviceName)) {
       changes.service_events[
-        `${eventName}-${folderEventVersion}-${isLatest}-${serviceName}`
-        ] = {
+        `${eventName}-${folderEventVersion}-${isLatest}-${serviceName}-consumer`
+      ] = {
         event_name: _.trim(eventName),
         event_version: _.trim(data.version),
         event_is_latest: isLatest,
@@ -304,15 +307,12 @@ async function handleDirectoryChange(dirs) {
       await handleOwnerDirectoryChange(changes, dir);
     }
 
-    if (
-      regexes.service.test(dir) ||
-      regexes.domainService.test(dir)
-    ) {
+    if (regexes.service.test(dir) || regexes.domainService.test(dir)) {
       await handleServiceDirectoryChange(changes, dir);
     }
   }
 
-  return changes
+  return changes;
 }
 
 async function buildDatabase() {
@@ -326,16 +326,16 @@ async function buildDatabase() {
   });
 
   const dirs = _.chain(files)
-    .map(file => file.replace(path.resolve(process.cwd(), 'catalog'), ''))
+    .map((file) => file.replace(path.resolve(process.cwd(), 'catalog'), ''))
     .map((file) => path.dirname(file))
     .uniq()
     .value();
 
-  const db = await handleDirectoryChange(dirs)
+  const db = await handleDirectoryChange(dirs);
 
   // Write db
   if (!(await knex.schema.hasTable('events'))) {
-    console.log("Creating schema")
+    console.log('Creating schema');
     // Init schema
     await knex.schema
       .createTable('events', (table) => {
@@ -459,11 +459,11 @@ async function buildDatabase() {
   if (!_.isEmpty(db.service_events))
     await knex.into('service_events').insert(_.values(db.service_events));
 
-  console.log("Updating hash")
-  writeCatalogHash()
+  console.log('Updating hash');
+  writeCatalogHash();
 }
 
 module.exports = {
   dropEverything,
-  buildDatabase
-}
+  buildDatabase,
+};
