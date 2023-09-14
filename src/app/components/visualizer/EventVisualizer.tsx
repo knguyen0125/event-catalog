@@ -20,23 +20,17 @@ import {
   addGraphNode,
   CONSUMER_EDGE_LABEL,
   createGraph,
-  DEFAULT_NODE_HEIGHT,
-  getNodeWidth,
   PRODUCER_EDGE_LABEL,
 } from '~/components/visualizer/common';
 
 const EventVisualizer: React.FC<{
   event: ModelObject<Event>;
-  withLabel?: boolean;
-}> = ({ event, withLabel = true }) => {
+  withEdgeLabel?: boolean;
+}> = ({ event, withEdgeLabel = false }) => {
   const navigate = useNavigate();
   const graph = createGraph();
 
-  graph.setNode(`event-${event.name}`, {
-    label: event.name,
-    width: getNodeWidth(event.name),
-    height: DEFAULT_NODE_HEIGHT,
-  });
+  addGraphNode(graph, `event-${event.name}`, event.name);
 
   (event.producers || []).forEach((producer) => {
     addGraphNode(graph, `producer-${producer.name}`, producer.name);
@@ -44,7 +38,7 @@ const EventVisualizer: React.FC<{
       graph,
       `producer-${producer.name}`,
       `event-${event.name}`,
-      withLabel && PRODUCER_EDGE_LABEL,
+      withEdgeLabel && PRODUCER_EDGE_LABEL,
     );
   });
 
@@ -54,7 +48,7 @@ const EventVisualizer: React.FC<{
       graph,
       `event-${event.name}`,
       `consumer-${consumer.name}`,
-      withLabel && CONSUMER_EDGE_LABEL,
+      withEdgeLabel && CONSUMER_EDGE_LABEL,
     );
   });
 
@@ -107,7 +101,7 @@ const EventVisualizer: React.FC<{
       },
       className: '!border-blue-500',
       type: 'smoothstep',
-      label: withLabel ? 'produces' : null,
+      label: withEdgeLabel ? 'produces' : null,
     });
   });
 
@@ -138,7 +132,7 @@ const EventVisualizer: React.FC<{
         type: MarkerType.Arrow,
       },
       type: 'smoothstep',
-      label: withLabel ? 'consumed by' : null,
+      label: withEdgeLabel ? 'consumed by' : null,
     });
   });
 

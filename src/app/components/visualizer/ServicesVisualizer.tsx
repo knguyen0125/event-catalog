@@ -34,13 +34,13 @@ import {
 type DomainVisualizerProps = {
   services: ModelObject<Service>[];
   domainName?: string;
-  withLabel?: boolean;
+  withEdgeLabel?: boolean;
 };
 
 const ServicesVisualizer: React.FC<DomainVisualizerProps> = ({
   services,
   domainName,
-  withLabel = true,
+  withEdgeLabel = false,
 }) => {
   const considerExternalEvents = !!domainName;
   const reactFlowInstance = useReactFlow();
@@ -62,7 +62,7 @@ const ServicesVisualizer: React.FC<DomainVisualizerProps> = ({
         graph,
         serviceId,
         eventId,
-        withLabel ? PRODUCER_EDGE_LABEL : undefined,
+        withEdgeLabel ? PRODUCER_EDGE_LABEL : undefined,
       );
     };
 
@@ -73,7 +73,7 @@ const ServicesVisualizer: React.FC<DomainVisualizerProps> = ({
         graph,
         eventId,
         serviceId,
-        withLabel ? CONSUMER_EDGE_LABEL : undefined,
+        withEdgeLabel ? CONSUMER_EDGE_LABEL : undefined,
       );
     };
 
@@ -191,7 +191,7 @@ const ServicesVisualizer: React.FC<DomainVisualizerProps> = ({
           type: MarkerType.Arrow,
         },
         className: '!border-emerald-500',
-        label: withLabel ? PRODUCER_EDGE_LABEL : null,
+        label: withEdgeLabel ? PRODUCER_EDGE_LABEL : null,
       });
     });
 
@@ -237,7 +237,7 @@ const ServicesVisualizer: React.FC<DomainVisualizerProps> = ({
           type: MarkerType.Arrow,
         },
         className: '!border-emerald-500',
-        label: withLabel ? CONSUMER_EDGE_LABEL : null,
+        label: withEdgeLabel ? CONSUMER_EDGE_LABEL : null,
       });
     });
   });

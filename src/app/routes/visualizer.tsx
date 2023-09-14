@@ -27,7 +27,7 @@ const VisualizerPage = () => {
   const { services } = useLoaderData<typeof loader>();
   return (
     <div className="h-[calc(100vh-4rem)] w-screen">
-      <ServicesVisualizer services={services} />
+      <ServicesVisualizer services={services} withEdgeLabel />
     </div>
   );
 };
