@@ -160,10 +160,12 @@ const DomainDetailPage = () => {
             </div>
             <div>
               <h2 className="py-4 text-2xl font-bold">Visualizer</h2>
-              <ServicesVisualizer
-                domainName={domain.name}
-                services={domain.services || []}
-              />
+              <div className="h-[500px] w-full">
+                <ServicesVisualizer
+                  domainName={domain.name}
+                  services={domain.services || []}
+                />
+              </div>
             </div>
           </div>
         </div>

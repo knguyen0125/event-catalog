@@ -143,22 +143,20 @@ const EventVisualizer: React.FC<{
   });
 
   return (
-    <div style={{ width: '100%', height: '250px' }}>
-      <ReactFlow
-        fitView
-        nodes={nodes}
-        edges={edges}
-        draggable={false}
-        onNodeClick={(ev, node) => {
-          if (node.data.url) {
-            navigate(`${node.data.url}`);
-          }
-        }}
-      >
-        <Controls />
-        <Background variant={BackgroundVariant.Dots} gap={12} size={1} />
-      </ReactFlow>
-    </div>
+    <ReactFlow
+      fitView
+      nodes={nodes}
+      edges={edges}
+      draggable={false}
+      onNodeClick={(ev, node) => {
+        if (node.data.url) {
+          navigate(`${node.data.url}`);
+        }
+      }}
+    >
+      <Controls />
+      <Background variant={BackgroundVariant.Dots} gap={12} size={1} />
+    </ReactFlow>
   );
 };
 

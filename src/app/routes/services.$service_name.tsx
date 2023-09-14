@@ -198,7 +198,9 @@ const ServiceDetailPage = () => {
             </div>
             <div>
               <h2 className="py-4 text-2xl font-bold">Visualizer</h2>
-              <ServicesVisualizer services={[service]} />
+              <div className="h-[500px] w-full">
+                <ServicesVisualizer services={[service]} />
+              </div>
             </div>
           </div>
         </div>

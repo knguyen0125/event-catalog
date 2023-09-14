@@ -85,7 +85,9 @@ const EventDetail = () => {
             </div>
             <div>
               <h2 className="py-4 text-2xl font-bold">Visualizer</h2>
-              <EventVisualizer event={event} />
+              <div className="h-[500px] w-full">
+                <EventVisualizer event={event} />
+              </div>
             </div>
             <div>
               {event.schema && (

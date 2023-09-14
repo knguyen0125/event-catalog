@@ -249,39 +249,37 @@ const ServicesVisualizer: React.FC<DomainVisualizerProps> = ({
   }, [nodes]);
 
   return (
-    <div style={{ width: '100%', height: '500px' }}>
-      <ReactFlow
-        fitView
-        nodes={nodes}
-        edges={edges}
-        draggable={false}
-        onNodeClick={(ev, node) => {
-          if (node.data.url) {
-            navigate(`${node.data.url}`);
-          }
-        }}
-      >
-        <Controls />
-        <Background variant={BackgroundVariant.Dots} gap={12} size={1} />
-        {considerExternalEvents && (
-          <Panel position="top-right">
-            <div className="flex items-center gap-x-2 rounded bg-white p-2 shadow">
-              <label htmlFor="show-external-events" className="text-sm">
-                <input
-                  id="show-external-events"
-                  type="checkbox"
-                  checked={showExternalEvents}
-                  onChange={(ev) => {
-                    setShowExternalEvents(ev.target.checked);
-                  }}
-                />
-                Show external events
-              </label>
-            </div>
-          </Panel>
-        )}
-      </ReactFlow>
-    </div>
+    <ReactFlow
+      fitView
+      nodes={nodes}
+      edges={edges}
+      draggable={false}
+      onNodeClick={(ev, node) => {
+        if (node.data.url) {
+          navigate(`${node.data.url}`);
+        }
+      }}
+    >
+      <Controls />
+      <Background variant={BackgroundVariant.Dots} gap={12} size={1} />
+      {considerExternalEvents && (
+        <Panel position="top-right">
+          <div className="flex items-center gap-x-2 rounded bg-white p-2 shadow">
+            <label htmlFor="show-external-events" className="text-sm">
+              <input
+                id="show-external-events"
+                type="checkbox"
+                checked={showExternalEvents}
+                onChange={(ev) => {
+                  setShowExternalEvents(ev.target.checked);
+                }}
+              />
+              Show external events
+            </label>
+          </div>
+        </Panel>
+      )}
+    </ReactFlow>
   );
 };
 
