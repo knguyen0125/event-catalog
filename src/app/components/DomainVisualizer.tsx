@@ -1,7 +1,6 @@
-import _ from 'lodash';
 import { useNavigate } from '@remix-run/react';
 import { ModelObject } from 'objection';
-import React from 'react';
+import React, { useEffect } from 'react';
 import {
   Background,
   BackgroundVariant,
@@ -9,8 +8,11 @@ import {
   Edge,
   MarkerType,
   Node,
+  Panel,
   Position,
   ReactFlow,
+  ReactFlowProvider,
+  useReactFlow,
 } from 'reactflow';
 import dagre from '@dagrejs/dagre';
 
@@ -27,8 +29,10 @@ const DomainVisualizer: React.FC<{
   domain: ModelObject<Domain>;
   withLabel?: boolean;
 }> = ({ domain, withLabel = true }) => {
+  const reactFlowInstance = useReactFlow();
   const navigate = useNavigate();
   const graph = new dagre.graphlib.Graph();
+  const [showExternalEvents, setShowExternalEvents] = React.useState(false);
 
   graph.setGraph({
     rankdir: 'LR',
@@ -45,6 +49,13 @@ const DomainVisualizer: React.FC<{
 
     (service.producesEvents || []).forEach((producedEvent) => {
       const eventId = `service-${service.name}-produces-event-${producedEvent.name}`;
+
+      const isExternalEvent = producedEvent.domain_name !== domain.name;
+
+      if (isExternalEvent && !showExternalEvents) {
+        return;
+      }
+
       graph.setNode(eventId, {
         label: producedEvent.name,
         width: getWidth(producedEvent.name),
@@ -64,6 +75,11 @@ const DomainVisualizer: React.FC<{
     });
 
     (service.consumesEvents || []).forEach((consumedEvent) => {
+      const isExternalEvent = consumedEvent.domain_name !== domain.name;
+
+      if (isExternalEvent && !showExternalEvents) {
+        return;
+      }
       const eventId = `service-${service.name}-consumes-event-${consumedEvent.name}`;
       graph.setNode(eventId, {
         label: consumedEvent.name,
@@ -110,6 +126,11 @@ const DomainVisualizer: React.FC<{
     });
 
     (service.producesEvents || []).forEach((producedEvent) => {
+      const isExternalEvent = producedEvent.domain_name !== domain.name;
+
+      if (isExternalEvent && !showExternalEvents) {
+        return;
+      }
       const eventId = `service-${service.name}-produces-event-${producedEvent.name}`;
       nodes.push({
         id: eventId,
@@ -147,6 +168,12 @@ const DomainVisualizer: React.FC<{
     });
 
     (service.consumesEvents || []).forEach((consumedEvent) => {
+      const isExternalEvent = consumedEvent.domain_name !== domain.name;
+
+      if (isExternalEvent && !showExternalEvents) {
+        return;
+      }
+
       const eventId = `service-${service.name}-consumes-event-${consumedEvent.name}`;
       nodes.push({
         id: eventId,
@@ -184,6 +211,12 @@ const DomainVisualizer: React.FC<{
     });
   });
 
+  useEffect(() => {
+    setTimeout(() => {
+      reactFlowInstance.fitView();
+    }, 0);
+  }, [nodes]);
+
   return (
     <div style={{ width: '100%', height: '500px' }}>
       <ReactFlow
@@ -199,9 +232,35 @@ const DomainVisualizer: React.FC<{
       >
         <Controls />
         <Background variant={BackgroundVariant.Dots} gap={12} size={1} />
+        <Panel position="top-right">
+          <div className="flex items-center gap-x-2 rounded bg-white p-2 shadow">
+            <label htmlFor="show-external-events" className="text-sm">
+              <input
+                id="show-external-events"
+                type="checkbox"
+                checked={showExternalEvents}
+                onChange={(ev) => {
+                  setShowExternalEvents(ev.target.checked);
+                }}
+              />
+              Show external events
+            </label>
+          </div>
+        </Panel>
       </ReactFlow>
     </div>
   );
 };
 
-export default DomainVisualizer;
+const WrappedDomainVisualizer: React.FC<{
+  domain: ModelObject<Domain>;
+  withLabel?: boolean;
+}> = ({ domain, withLabel = true }) => {
+  return (
+    <ReactFlowProvider>
+      <DomainVisualizer domain={domain} withLabel={withLabel} />
+    </ReactFlowProvider>
+  );
+};
+
+export default WrappedDomainVisualizer;
