@@ -56,17 +56,21 @@ app.all(
 );
 
 const port = process.env.PORT || 3000;
-dropEverything()
-  .then(() => buildDatabase())
-  .then(() =>
-    app.listen(port, async () => {
-      console.log(`Express server listening on port ${port}`);
+if (process.env.NODE_ENV === 'development') {
+  dropEverything()
+    .then(() => buildDatabase())
+    .then(() =>
+      app.listen(port, async () => {
+        console.log(`Express server listening on port ${port}`);
 
-      if (process.env.NODE_ENV === 'development') {
         broadcastDevReady(build);
-      }
-    }),
-  );
+      }),
+    );
+} else {
+  app.listen(port, () => {
+    console.log(`Express server listening on port ${port}`);
+  });
+}
 
 function createDevRequestHandler() {
   const watcher = chokidar.watch(BUILD_PATH, { ignoreInitial: true });
@@ -115,9 +119,6 @@ function createDevRequestHandler() {
 function createProdRequestHandler() {
   return async (req, res, next) => {
     try {
-      // Build database
-      await buildDatabase();
-
       return createRequestHandler({
         build: await build,
         mode: 'production',

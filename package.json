@@ -4,7 +4,7 @@
   "scripts": {
     "build": "DB_PATH=./build/db.sqlite3 remix build",
     "dev": "DB_PATH=./build/db.sqlite3 remix dev --manual -c \"node server.js\"",
-    "start": "cross-env NODE_ENV=production node server.js",
+    "start": "cross-env NODE_ENV=production DB_PATH=./build/db.sqlite3 node server.js",
     "typecheck": "tsc"
   },
   "dependencies": {
