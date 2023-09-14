@@ -15,7 +15,7 @@ import Breadcrumb from '~/components/Breadcrumb';
 import Badge from '~/components/Badge';
 import Avatar from '~/components/Avatar';
 import catalogHash from '../../../catalogHash.json';
-import DomainVisualizer from '~/components/DomainVisualizer';
+import DomainVisualizer from '~/components/visualizer/DomainVisualizer';
 
 export const meta: V2_MetaFunction<typeof loader> = ({ data }) => [
   { title: `${data?.domain.name} | Domains` },

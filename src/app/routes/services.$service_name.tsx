@@ -16,7 +16,7 @@ import Breadcrumb from '~/components/Breadcrumb';
 import Badge from '~/components/Badge';
 import Avatar from '~/components/Avatar';
 import catalogHash from '../../../catalogHash.json';
-import ServiceVisualizer from '~/components/ServiceVisualizer';
+import ServiceVisualizer from '~/components/visualizer/ServiceVisualizer';
 
 export const meta: V2_MetaFunction<typeof loader> = ({ data }) => [
   { title: `${data?.service.name} | Services` },

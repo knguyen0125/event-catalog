@@ -10,7 +10,7 @@ import Breadcrumb from '~/components/Breadcrumb';
 import EventDetailPageSidebar from '~/components/event-detail-page/EventDetailPageSidebar';
 import catalogHash from '../../../catalogHash.json';
 import FileViewer from '~/components/FileViewer';
-import EventVisualizer from '~/components/EventVisualizer';
+import EventVisualizer from '~/components/visualizer/EventVisualizer';
 
 export const meta: V2_MetaFunction<typeof loader> = ({ data }) => [
   { title: `${data?.event.name} | Events` },

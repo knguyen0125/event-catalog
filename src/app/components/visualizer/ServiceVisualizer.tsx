@@ -15,8 +15,10 @@ import dagre from '@dagrejs/dagre';
 
 import { Cog8ToothIcon, EnvelopeIcon } from '@heroicons/react/24/outline';
 import { Service } from '~/database/models.server';
-
-const getWidth = (text: string) => Math.max(150, text.length * 10);
+import {
+  DEFAULT_NODE_HEIGHT,
+  getNodeWidth,
+} from '~/components/visualizer/common';
 
 const ServiceVisualizer: React.FC<{
   service: ModelObject<Service>;
@@ -33,15 +35,15 @@ const ServiceVisualizer: React.FC<{
 
   graph.setNode(`service-${service.name}`, {
     label: service.name,
-    width: getWidth(service.name),
-    height: 36,
+    width: getNodeWidth(service.name),
+    height: DEFAULT_NODE_HEIGHT,
   });
 
   (service.producesEvents || []).forEach((producedEvent) => {
     graph.setNode(`produced-event-${producedEvent.name}`, {
       label: producedEvent.name,
-      width: getWidth(producedEvent.name),
-      height: 36,
+      width: getNodeWidth(producedEvent.name),
+      height: DEFAULT_NODE_HEIGHT,
     });
 
     graph.setEdge(
@@ -59,8 +61,8 @@ const ServiceVisualizer: React.FC<{
   (service.consumesEvents || []).forEach((consumedEvent) => {
     graph.setNode(`consumed-event-${consumedEvent.name}`, {
       label: consumedEvent.name,
-      width: getWidth(consumedEvent.name),
-      height: 36,
+      width: getNodeWidth(consumedEvent.name),
+      height: DEFAULT_NODE_HEIGHT,
     });
 
     graph.setEdge(

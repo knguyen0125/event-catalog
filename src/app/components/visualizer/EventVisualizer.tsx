@@ -15,8 +15,10 @@ import dagre from '@dagrejs/dagre';
 
 import { Cog8ToothIcon, EnvelopeIcon } from '@heroicons/react/24/outline';
 import { Event } from '~/database/models.server';
-
-const getWidth = (text: string) => Math.max(150, text.length * 10);
+import {
+  DEFAULT_NODE_HEIGHT,
+  getNodeWidth,
+} from '~/components/visualizer/common';
 
 const EventVisualizer: React.FC<{
   event: ModelObject<Event>;
@@ -33,15 +35,15 @@ const EventVisualizer: React.FC<{
 
   graph.setNode(`event-${event.name}`, {
     label: event.name,
-    width: getWidth(event.name),
-    height: 36,
+    width: getNodeWidth(event.name),
+    height: DEFAULT_NODE_HEIGHT,
   });
 
   (event.producers || []).forEach((producer) => {
     graph.setNode(`producer-${producer.name}`, {
       label: producer.name,
-      width: getWidth(producer.name),
-      height: 36,
+      width: getNodeWidth(producer.name),
+      height: DEFAULT_NODE_HEIGHT,
     });
 
     graph.setEdge(
@@ -59,8 +61,8 @@ const EventVisualizer: React.FC<{
   (event.consumers || []).forEach((consumer) => {
     graph.setNode(`consumer-${consumer.name}`, {
       label: consumer.name,
-      width: getWidth(consumer.name),
-      height: 36,
+      width: getNodeWidth(consumer.name),
+      height: DEFAULT_NODE_HEIGHT,
     });
 
     graph.setEdge(
