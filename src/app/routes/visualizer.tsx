@@ -12,7 +12,7 @@ export const meta: V2_MetaFunction<typeof loader> = ({ data }) => [
   { name: 'description', content: 'Visualizer' },
 ];
 
-export async function loader({ params }: LoaderArgs) {
+export async function loader() {
   const services = await Service.query().withGraphFetched(
     '[domain, owners, producesEvents(isLatest), consumesEvents(isLatest)]',
   );
@@ -20,14 +20,13 @@ export async function loader({ params }: LoaderArgs) {
   return json({
     services,
     catalogHash,
-    crumbs: [{ name: 'Visualizer', to: '/visualizer' }],
   });
 }
 
 const VisualizerPage = () => {
-  const { services, crumbs } = useLoaderData<typeof loader>();
+  const { services } = useLoaderData<typeof loader>();
   return (
-    <div className="h-[90vh] w-screen">
+    <div className="h-[calc(100vh-4rem)] w-screen">
       <ServicesVisualizer services={services} />
     </div>
   );
