@@ -34,7 +34,7 @@ export const addGraphEdge = (
   graph: dagre.graphlib.Graph,
   sourceId: string,
   targetId: string,
-  label?: string,
+  label?: string | null | false,
 ) =>
   graph.setEdge(
     sourceId,

@@ -16,8 +16,13 @@ import dagre from '@dagrejs/dagre';
 import { Cog8ToothIcon, EnvelopeIcon } from '@heroicons/react/24/outline';
 import { Event } from '~/database/models.server';
 import {
+  addGraphEdge,
+  addGraphNode,
+  CONSUMER_EDGE_LABEL,
+  createGraph,
   DEFAULT_NODE_HEIGHT,
   getNodeWidth,
+  PRODUCER_EDGE_LABEL,
 } from '~/components/visualizer/common';
 
 const EventVisualizer: React.FC<{
@@ -25,13 +30,7 @@ const EventVisualizer: React.FC<{
   withLabel?: boolean;
 }> = ({ event, withLabel = true }) => {
   const navigate = useNavigate();
-  const graph = new dagre.graphlib.Graph();
-
-  graph.setGraph({
-    rankdir: 'LR',
-    ranker: 'network-simplex',
-  });
-  graph.setDefaultEdgeLabel(() => ({}));
+  const graph = createGraph();
 
   graph.setNode(`event-${event.name}`, {
     label: event.name,
@@ -40,46 +39,26 @@ const EventVisualizer: React.FC<{
   });
 
   (event.producers || []).forEach((producer) => {
-    graph.setNode(`producer-${producer.name}`, {
-      label: producer.name,
-      width: getNodeWidth(producer.name),
-      height: DEFAULT_NODE_HEIGHT,
-    });
-
-    graph.setEdge(
+    addGraphNode(graph, `producer-${producer.name}`, producer.name);
+    addGraphEdge(
+      graph,
       `producer-${producer.name}`,
       `event-${event.name}`,
-      withLabel
-        ? {
-            label: 'produces',
-            width: 'produces'.length * 8,
-          }
-        : {},
+      withLabel && PRODUCER_EDGE_LABEL,
     );
   });
 
   (event.consumers || []).forEach((consumer) => {
-    graph.setNode(`consumer-${consumer.name}`, {
-      label: consumer.name,
-      width: getNodeWidth(consumer.name),
-      height: DEFAULT_NODE_HEIGHT,
-    });
-
-    graph.setEdge(
+    addGraphNode(graph, `consumer-${consumer.name}`, consumer.name);
+    addGraphEdge(
+      graph,
       `event-${event.name}`,
       `consumer-${consumer.name}`,
-      withLabel
-        ? {
-            label: 'consumed by',
-            width: 'consumed by'.length * 8,
-          }
-        : {},
+      withLabel && CONSUMER_EDGE_LABEL,
     );
   });
 
-  dagre.layout(graph, {
-    rankdir: 'LR',
-  });
+  dagre.layout(graph);
 
   const nodes: Node[] = [];
   const edges: Edge[] = [];
@@ -89,7 +68,7 @@ const EventVisualizer: React.FC<{
     data: {
       label: (
         <div className="inline-flex items-center gap-x-1 align-bottom">
-          <EnvelopeIcon className="h-4 w-4" />
+          <EnvelopeIcon className="h-4 w-4 text-emerald-500" />
           <span>{event.name}</span>
         </div>
       ),
@@ -97,7 +76,7 @@ const EventVisualizer: React.FC<{
     position: graph.node(`event-${event.name}`),
     targetPosition: Position.Left,
     sourcePosition: Position.Right,
-    className: 'min-w-fit !cursor-auto !hover:shadow-0',
+    className: 'min-w-fit !cursor-auto !hover:shadow-0 !border-emerald-500',
   });
 
   (event.producers || []).forEach((producer) => {
@@ -138,7 +117,7 @@ const EventVisualizer: React.FC<{
       data: {
         label: (
           <div className="inline-flex items-center gap-x-1 align-bottom">
-            <Cog8ToothIcon className="h-4 w-4 text-emerald-500" />
+            <Cog8ToothIcon className="h-4 w-4 text-blue-500" />
             <span>{consumer.name}</span>
           </div>
         ),
@@ -147,7 +126,7 @@ const EventVisualizer: React.FC<{
       position: graph.node(`consumer-${consumer.name}`),
       type: 'output',
       targetPosition: Position.Left,
-      className: '!border-emerald-500 min-w-fit !cursor-pointer',
+      className: '!border-blue-500 min-w-fit !cursor-pointer',
     });
 
     edges.push({
