@@ -22,8 +22,13 @@ import {
   EnvelopeIcon,
   ArrowTopRightOnSquareIcon,
 } from '@heroicons/react/24/outline';
-import { Domain } from '~/database/models.server';
-import { addGraphEdge, addGraphNode } from '~/components/visualizer/common';
+import { Domain, Event } from '~/database/models.server';
+import {
+  addGraphEdge,
+  addGraphNode,
+  CONSUMER_EDGE_LABEL,
+  PRODUCER_EDGE_LABEL,
+} from '~/components/visualizer/common';
 
 const DomainVisualizer: React.FC<{
   domain: ModelObject<Domain>;
@@ -41,24 +46,39 @@ const DomainVisualizer: React.FC<{
   graph.setDefaultEdgeLabel(() => ({}));
 
   (domain.services || []).forEach((service) => {
-    addGraphNode(graph, `service-${service.name}`, service.name);
+    const serviceId = `service-${service.name}`;
+    addGraphNode(graph, serviceId, service.name);
+
+    const addProducedEvent = (eventName: string) => {
+      const eventId = `service-${service.name}-produces-event-${eventName}`;
+      addGraphNode(graph, eventId, eventName);
+      addGraphEdge(
+        graph,
+        serviceId,
+        eventId,
+        withLabel ? PRODUCER_EDGE_LABEL : undefined,
+      );
+    };
+
+    const addConsumedEvent = (eventName: string) => {
+      const eventId = `service-${service.name}-consumes-event-${eventName}`;
+      addGraphNode(graph, eventId, eventName);
+      addGraphEdge(
+        graph,
+        eventId,
+        serviceId,
+        withLabel ? CONSUMER_EDGE_LABEL : undefined,
+      );
+    };
 
     (service.producesEvents || []).forEach((producedEvent) => {
-      const eventId = `service-${service.name}-produces-event-${producedEvent.name}`;
-
       const isExternalEvent = producedEvent.domain_name !== domain.name;
 
       if (isExternalEvent && !showExternalEvents) {
         return;
       }
 
-      addGraphNode(graph, eventId, producedEvent.name);
-      addGraphEdge(
-        graph,
-        `service-${service.name}`,
-        eventId,
-        withLabel ? 'produces' : undefined,
-      );
+      addProducedEvent(producedEvent.name);
     });
 
     if (
@@ -68,17 +88,7 @@ const DomainVisualizer: React.FC<{
         (producedEvent) => producedEvent.domain_name !== domain.name,
       )
     ) {
-      addGraphNode(
-        graph,
-        `service-${service.name}-produces-event-none`,
-        'none',
-      );
-
-      addGraphEdge(
-        graph,
-        `service-${service.name}`,
-        `service-${service.name}-produces-event-none`,
-      );
+      addProducedEvent('none');
     }
 
     (service.consumesEvents || []).forEach((consumedEvent) => {
@@ -87,15 +97,7 @@ const DomainVisualizer: React.FC<{
       if (isExternalEvent && !showExternalEvents) {
         return;
       }
-      const eventId = `service-${service.name}-consumes-event-${consumedEvent.name}`;
-
-      addGraphNode(graph, eventId, consumedEvent.name);
-      addGraphEdge(
-        graph,
-        eventId,
-        `service-${service.name}`,
-        withLabel ? 'consumed by' : undefined,
-      );
+      addConsumedEvent(consumedEvent.name);
     });
 
     if (
@@ -105,23 +107,11 @@ const DomainVisualizer: React.FC<{
         (consumedEvent) => consumedEvent.domain_name !== domain.name,
       )
     ) {
-      addGraphNode(
-        graph,
-        `service-${service.name}-consumes-event-none`,
-        'none',
-      );
-      addGraphEdge(
-        graph,
-        `service-${service.name}-consumes-event-none`,
-        `service-${service.name}`,
-        withLabel ? 'consumed by' : undefined,
-      );
+      addConsumedEvent('none');
     }
   });
 
-  dagre.layout(graph, {
-    rankdir: 'LR',
-  });
+  dagre.layout(graph);
 
   const nodes: Node[] = [];
   const edges: Edge[] = [];
@@ -182,7 +172,7 @@ const DomainVisualizer: React.FC<{
           type: MarkerType.Arrow,
         },
         className: '!border-emerald-500',
-        label: withLabel ? 'produces' : null,
+        label: withLabel ? PRODUCER_EDGE_LABEL : null,
       });
     });
 
@@ -225,7 +215,7 @@ const DomainVisualizer: React.FC<{
           type: MarkerType.Arrow,
         },
         className: '!border-emerald-500',
-        label: withLabel ? 'consumed by' : null,
+        label: withLabel ? CONSUMER_EDGE_LABEL : null,
       });
     });
   });
