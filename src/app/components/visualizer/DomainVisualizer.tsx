@@ -22,7 +22,7 @@ import {
   EnvelopeIcon,
   ArrowTopRightOnSquareIcon,
 } from '@heroicons/react/24/outline';
-import { Domain, Event } from '~/database/models.server';
+import { Domain } from '~/database/models.server';
 import {
   addGraphEdge,
   addGraphNode,
