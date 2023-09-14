@@ -42,6 +42,21 @@ async function dropEverything() {
   await knex.schema.dropTableIfExists('event_examples');
 }
 
+async function processMarkdown(content, directory) {
+  const unified = (await import('unified')).unified;
+  const remarkParse = (await import('remark-parse')).default;
+  const remarkStringify = (await import('remark-stringify')).default;
+  const transform = (await import('./transform.mjs')).default;
+
+  const processedContent = await unified()
+    .use(remarkParse)
+    .use(transform, { dir: directory })
+    .use(remarkStringify)
+    .process(content);
+
+  return processedContent.toString();
+}
+
 async function handleDomainDirectoryChange(changes, directory) {
   // Get domain name
   const domainName = directory.match(regexes.domain)?.groups?.domain_name;
@@ -62,7 +77,7 @@ async function handleDomainDirectoryChange(changes, directory) {
   const domain = {
     name: _.trim(domainName),
     summary: _.trim(data.summary),
-    content: _.trim(content),
+    content: _.trim(await processMarkdown(content, directory)),
   };
 
   changes.domains[domainName] = domain;
@@ -107,7 +122,7 @@ async function handleEventDirectoryChange(changes, directory) {
     name: _.trim(eventName),
     version: _.trim(data.version),
     summary: _.trim(data.summary),
-    content: _.trim(content),
+    content: _.trim(await processMarkdown(content, directory)),
     domain_name: _.trim(domainName),
     is_latest: isLatest,
   };
@@ -218,7 +233,7 @@ async function handleOwnerDirectoryChange(changes, directory) {
     name: _.trim(data.name),
     role: _.trim(data.role),
     image: _.trim(data.image),
-    content: _.trim(content),
+    content: _.trim(await processMarkdown(content, directory)),
   };
 
   changes.owners[email] = owner;
@@ -244,7 +259,7 @@ async function handleServiceDirectoryChange(db, dir) {
 
   const service = {
     name: _.trim(serviceName),
-    content: _.trim(content),
+    content: _.trim(await processMarkdown(content, dir)),
     domain_name: _.trim(domainName),
   };
 
