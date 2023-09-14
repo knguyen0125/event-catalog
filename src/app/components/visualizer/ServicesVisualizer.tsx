@@ -40,7 +40,7 @@ type DomainVisualizerProps = {
 const ServicesVisualizer: React.FC<DomainVisualizerProps> = ({
   services,
   domainName,
-  withEdgeLabel = false,
+  withEdgeLabel = true,
 }) => {
   const considerExternalEvents = !!domainName;
   const reactFlowInstance = useReactFlow();

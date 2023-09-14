@@ -20,4 +20,4 @@ Is this something that ~works~?
 import {} from 'test'
 ```
 
-:dog: :cat:
+:dog: :cat: :rocket:

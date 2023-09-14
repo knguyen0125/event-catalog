@@ -26,7 +26,7 @@ import {
 const EventVisualizer: React.FC<{
   event: ModelObject<Event>;
   withEdgeLabel?: boolean;
-}> = ({ event, withEdgeLabel = false }) => {
+}> = ({ event, withEdgeLabel = true }) => {
   const navigate = useNavigate();
   const graph = createGraph();
 
