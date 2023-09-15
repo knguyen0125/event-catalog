@@ -1,5 +1,11 @@
 import React from 'react';
-import { json, LoaderArgs, redirect, V2_MetaFunction } from '@remix-run/node';
+import {
+  json,
+  LinksFunction,
+  LoaderArgs,
+  redirect,
+  V2_MetaFunction,
+} from '@remix-run/node';
 import { Link, useLoaderData } from '@remix-run/react';
 import { ModelObject } from 'objection';
 import {
@@ -10,7 +16,7 @@ import {
 } from '@heroicons/react/24/outline';
 import clsx from 'clsx';
 import SwaggerUI from 'swagger-ui-react';
-import Markdown from '~/components/Markdown';
+import swaggerUiStyles from 'swagger-ui-react/swagger-ui.css';
 import { Service } from '~/database/models.server';
 import Container from '~/components/Container';
 import Breadcrumb from '~/components/Breadcrumb';
@@ -18,6 +24,10 @@ import Badge from '~/components/Badge';
 import Avatar from '~/components/Avatar';
 import catalogHash from '../../../catalogHash.json';
 import ServicesVisualizer from '~/components/visualizer/ServicesVisualizer';
+
+export const links: LinksFunction = () => [
+  { rel: 'stylesheet', href: swaggerUiStyles },
+];
 
 export const meta: V2_MetaFunction<typeof loader> = ({ data }) => [
   { title: `${data?.service.name} | Services` },
@@ -195,7 +205,9 @@ const ServiceDetailPage = () => {
             <hr className="pb-4" />
             <div className="prose max-w-none">
               {/* eslint-disable-next-line react/no-children-prop */}
-              {service.content && <Markdown children={service.content} />}
+              {service.content && (
+                <div dangerouslySetInnerHTML={{ __html: service.content }} />
+              )}
             </div>
             <div>
               <h2 className="py-4 text-2xl font-bold">Visualizer</h2>

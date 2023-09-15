@@ -1,4 +1,3 @@
-import _ from 'lodash';
 import { useNavigate } from '@remix-run/react';
 import { ModelObject } from 'objection';
 import React, { useEffect } from 'react';
@@ -92,8 +91,7 @@ const ServicesVisualizer: React.FC<DomainVisualizerProps> = ({
     if (
       (service.producesEvents || []).length === 0 ||
       (!showExternalEvents &&
-        _.every(
-          service.producesEvents,
+        (service.producesEvents || []).every(
           (producedEvent) =>
             considerExternalEvents && producedEvent.domain_name !== domainName,
         ))
@@ -116,8 +114,7 @@ const ServicesVisualizer: React.FC<DomainVisualizerProps> = ({
     if (
       (service.consumesEvents || []).length === 0 ||
       (!showExternalEvents &&
-        _.every(
-          service.consumesEvents,
+        (service.consumesEvents || []).every(
           (consumedEvent) =>
             considerExternalEvents && consumedEvent.domain_name !== domainName,
         ))
@@ -287,6 +284,7 @@ const ServicesVisualizer: React.FC<DomainVisualizerProps> = ({
 const WrappedServicesVisualizer: React.FC<DomainVisualizerProps> = (props) => {
   return (
     <ReactFlowProvider>
+      {/* eslint-disable-next-line react/jsx-props-no-spreading */}
       <ServicesVisualizer {...props} />
     </ReactFlowProvider>
   );

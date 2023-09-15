@@ -8,7 +8,6 @@ import {
   UserGroupIcon,
 } from '@heroicons/react/24/outline';
 import clsx from 'clsx';
-import Markdown from '~/components/Markdown';
 import { Domain } from '~/database/models.server';
 import Container from '~/components/Container';
 import Breadcrumb from '~/components/Breadcrumb';
@@ -156,7 +155,9 @@ const DomainDetailPage = () => {
             <hr className="pb-4" />
             <div className="prose max-w-none">
               {/* eslint-disable-next-line react/no-children-prop */}
-              {domain.content && <Markdown children={domain.content} />}
+              {domain.content && (
+                <div dangerouslySetInnerHTML={{ __html: domain.content }} />
+              )}
             </div>
             <div>
               <h2 className="py-4 text-2xl font-bold">Visualizer</h2>

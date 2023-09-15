@@ -2,7 +2,6 @@ import React from 'react';
 import type { LoaderArgs } from '@remix-run/node';
 import { json, redirect, Response, V2_MetaFunction } from '@remix-run/node';
 import { useLoaderData } from '@remix-run/react';
-import Markdown from '~/components/Markdown';
 import { Event } from '~/database/models.server';
 import Container from '~/components/Container';
 import Badge from '~/components/Badge';
@@ -80,8 +79,10 @@ const EventDetail = () => {
             <p className="pb-4 text-gray-500">{event.summary}</p>
             <hr className="pb-4" />
             <div className="prose max-w-none">
-              {/* eslint-disable-next-line react/no-children-prop */}
-              {event.content && <Markdown children={event.content} />}
+              {/* eslint-disable-next-line react/no-children-prop,react/no-danger */}
+              {event.content && (
+                <div dangerouslySetInnerHTML={{ __html: event.content }} />
+              )}
             </div>
             <div>
               <h2 className="py-4 text-2xl font-bold">Visualizer</h2>

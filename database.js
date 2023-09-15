@@ -48,20 +48,27 @@ async function dropEverything() {
   await knex.schema.dropTableIfExists('event_owners');
   await knex.schema.dropTableIfExists('service_events');
   await knex.schema.dropTableIfExists('event_examples');
+  await knex.schema.dropTableIfExists('docs');
+  await knex.schema.dropTableIfExists('service_docs');
+  await knex.schema.dropTableIfExists('domain_docs');
 }
 
 async function processMarkdown(content, directory) {
   const unified = (await import('unified')).unified;
   const remarkParse = (await import('remark-parse')).default;
+  const remarkGfm = (await import('remark-gfm')).default;
   const remarkEmoji = (await import('remark-emoji')).default;
-  const remarkStringify = (await import('remark-stringify')).default;
+  const remarkRehype = (await import('remark-rehype')).default;
+  const rehypeStringify = (await import('rehype-stringify')).default;
   const transform = (await import('./transform.mjs')).default;
 
   const processedContent = await unified()
     .use(remarkParse)
+    .use(remarkGfm)
     .use(transform, { dir: directory })
     .use(remarkEmoji)
-    .use(remarkStringify)
+    .use(remarkRehype)
+    .use(rehypeStringify)
     .process(content);
 
   return processedContent.toString();
