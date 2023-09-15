@@ -26,7 +26,7 @@ export async function loader() {
 const VisualizerPage = () => {
   const { services } = useLoaderData<typeof loader>();
   return (
-    <div className="h-[calc(100vh-4rem)] w-screen">
+    <div className="h-[calc(100vh-4rem)] w-full">
       <ServicesVisualizer services={services} withEdgeLabel />
     </div>
   );

@@ -9,8 +9,9 @@ import {
   ScrollRestoration,
 } from '@remix-run/react';
 import reactFlowStyles from 'reactflow/dist/style.css';
+import { Transition } from '@headlessui/react';
 import styles from './tailwind.css';
-import Navbar from '~/components/Navbar';
+import Layout from '~/components/Layout';
 
 export const links: LinksFunction = () => [
   ...(cssBundleHref ? [{ rel: 'stylesheet', href: cssBundleHref }] : []),
@@ -26,9 +27,10 @@ const App = () => (
       <Meta />
       <Links />
     </head>
-    <body>
-      <Navbar />
-      <Outlet />
+    <body className="h-full">
+      <Layout>
+        <Outlet />
+      </Layout>
       <ScrollRestoration />
       <Scripts />
       <LiveReload />
