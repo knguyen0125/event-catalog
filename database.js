@@ -17,9 +17,15 @@ const regexes = {
   domainEventVersion:
     /^\/domains\/(?<domain_name>[^\/]+?)\/events\/(?<event_name>[^\/]+?)\/versions\/(?<event_version>[^\/]+?)$/,
   service: /^\/services\/(?<service_name>[^\/]+?)$/,
+  serviceDocs:
+    /^\/services\/(?<service_name>[^\/]+?)\/docs\/(?<doc_name>[^\/]+?)$/,
   domainService:
     /^\/domains\/(?<domain_name>[^\/]+?)\/services\/(?<service_name>[^\/]+?)$/,
+  domainServiceDocs:
+    /^\/domains\/(?<domain_name>[^\/]+?)\/services\/(?<service_name>[^\/]+?)\/docs\/(?<doc_name>[^\/]+?)$/,
   domain: /^\/domains\/(?<domain_name>[^\/]+?)$/,
+  domainDocs:
+    /^\/domains\/(?<domain_name>[^\/]+?)\/docs\/(?<doc_name>[^\/]+?)$/,
   owner: /^\/owners\/(?<owner_email>[^\/]+?)$/,
 };
 
@@ -313,6 +319,9 @@ async function handleDirectoryChange(dirs) {
     services: {},
     service_events: {},
     service_owners: {},
+    docs: {},
+    service_docs: {},
+    domain_docs: {},
   };
 
   for (const dir of dirs) {
@@ -453,6 +462,22 @@ async function buildDatabase() {
           'event_is_latest',
           'example_name',
         ]);
+      })
+      .createTable('docs', (table) => {
+        table.text('path').primary();
+        table.text('name');
+        table.text('content');
+        table.text('author_name');
+      })
+      .createTable('service_docs', (table) => {
+        table.text('doc_path');
+        table.text('service_name');
+        table.primary(['doc_path', 'service_name']);
+      })
+      .createTable('domain_docs', (table) => {
+        table.text('doc_path');
+        table.text('domain_name');
+        table.primary(['doc_path', 'domain_name']);
       });
   } else {
     console.log('Truncating tables');
@@ -461,6 +486,9 @@ async function buildDatabase() {
     await knex('services').truncate();
     await knex('domains').truncate();
     await knex('owners').truncate();
+    await knex('docs').truncate();
+    await knex('service_docs').truncate();
+    await knex('domain_docs').truncate();
     await knex('service_owners').truncate();
     await knex('domain_owners').truncate();
     await knex('event_owners').truncate();
@@ -484,6 +512,11 @@ async function buildDatabase() {
     await knex.into('event_owners').insert(_.values(db.event_owners));
   if (!_.isEmpty(db.service_events))
     await knex.into('service_events').insert(_.values(db.service_events));
+  if (!_.isEmpty(db.docs)) await knex.into('docs').insert(_.values(db.docs));
+  if (!_.isEmpty(db.service_docs))
+    await knex.into('service_docs').insert(_.values(db.service_docs));
+  if (!_.isEmpty(db.domain_docs))
+    await knex.into('domain_docs').insert(_.values(db.domain_docs));
 
   console.log('Updating hash');
   writeCatalogHash();
