@@ -17,15 +17,13 @@ const regexes = {
   domainEventVersion:
     /^\/domains\/(?<domain_name>[^\/]+?)\/events\/(?<event_name>[^\/]+?)\/versions\/(?<event_version>[^\/]+?)$/,
   service: /^\/services\/(?<service_name>[^\/]+?)$/,
-  serviceDocs:
-    /^\/services\/(?<service_name>[^\/]+?)\/docs\/(?<doc_name>[^\/]+?)$/,
+  serviceDocs: /^\/services\/(?<service_name>[^\/]+?)\/docs$/,
   domainService:
     /^\/domains\/(?<domain_name>[^\/]+?)\/services\/(?<service_name>[^\/]+?)$/,
   domainServiceDocs:
-    /^\/domains\/(?<domain_name>[^\/]+?)\/services\/(?<service_name>[^\/]+?)\/docs\/(?<doc_name>[^\/]+?)$/,
+    /^\/domains\/(?<domain_name>[^\/]+?)\/services\/(?<service_name>[^\/]+?)\/docs$/,
   domain: /^\/domains\/(?<domain_name>[^\/]+?)$/,
-  domainDocs:
-    /^\/domains\/(?<domain_name>[^\/]+?)\/docs\/(?<doc_name>[^\/]+?)$/,
+  domainDocs: /^\/domains\/(?<domain_name>[^\/]+?)\/docs$/,
   owner: /^\/owners\/(?<owner_email>[^\/]+?)$/,
 };
 
@@ -51,6 +49,7 @@ async function dropEverything() {
   await knex.schema.dropTableIfExists('docs');
   await knex.schema.dropTableIfExists('service_docs');
   await knex.schema.dropTableIfExists('domain_docs');
+  await knex.schema.dropTableIfExists('doc_owners');
 }
 
 async function processMarkdown(content, directory) {
@@ -316,6 +315,64 @@ async function handleServiceDirectoryChange(db, dir) {
   });
 }
 
+async function handleDocDirectoryChange(db, dir) {
+  console.log(dir);
+  const serviceName =
+    dir.match(regexes.serviceDocs)?.groups?.service_name ||
+    dir.match(regexes.domainServiceDocs)?.groups?.service_name;
+  const domainName = dir.match(regexes.domainServiceDocs)?.groups?.domain_name;
+
+  // For each markdown file
+  const files = fs.readdirSync(path.join(process.cwd(), 'catalog', dir));
+  const markdownFiles = _.filter(files, (file) => file.endsWith('.md'));
+
+  for (const markdownFile of markdownFiles) {
+    const docPath = path.join(dir, markdownFile);
+    const docFile = fs.readFileSync(
+      path.join(process.cwd(), 'catalog', docPath),
+      'utf-8',
+    );
+
+    // Parse file
+    const { data, content } = grayMatter(docFile);
+    const fileName = markdownFile.replace(/\.md$/, '');
+
+    db.docs[docPath] = {
+      path: _.trim(docPath),
+      title: _.trim(data.title) || _.trim(fileName),
+      summary: _.trim(data.summary),
+      content: _.trim(await processMarkdown(content, dir)),
+      domain_name: _.trim(domainName),
+      service_name: _.trim(serviceName),
+      file_name: _.trim(markdownFile).replace(/\.md$/, ''),
+    };
+
+    // Process doc owners
+    _.forEach(data.owners || [], (owner) => {
+      db.doc_owners[`${docPath}-${owner}`] = {
+        doc_path: _.trim(docPath),
+        owner_email: _.trim(owner),
+      };
+    });
+
+    // Process service docs
+    if (serviceName) {
+      db.service_docs[`${docPath}-${serviceName}`] = {
+        doc_path: _.trim(docPath),
+        service_name: _.trim(serviceName),
+      };
+    }
+
+    // Process domain docs
+    if (domainName) {
+      db.domain_docs[`${docPath}-${domainName}`] = {
+        doc_path: _.trim(docPath),
+        domain_name: _.trim(domainName),
+      };
+    }
+  }
+}
+
 async function handleDirectoryChange(dirs) {
   const changes = {
     domains: {},
@@ -327,11 +384,13 @@ async function handleDirectoryChange(dirs) {
     service_events: {},
     service_owners: {},
     docs: {},
+    doc_owners: {},
     service_docs: {},
     domain_docs: {},
   };
 
   for (const dir of dirs) {
+    console.log(dir);
     if (regexes.domain.test(dir)) {
       await handleDomainDirectoryChange(changes, dir);
     }
@@ -351,6 +410,10 @@ async function handleDirectoryChange(dirs) {
 
     if (regexes.service.test(dir) || regexes.domainService.test(dir)) {
       await handleServiceDirectoryChange(changes, dir);
+    }
+
+    if (regexes.serviceDocs.test(dir) || regexes.domainServiceDocs.test(dir)) {
+      await handleDocDirectoryChange(changes, dir);
     }
   }
 
@@ -472,9 +535,17 @@ async function buildDatabase() {
       })
       .createTable('docs', (table) => {
         table.text('path').primary();
-        table.text('name');
+        table.text('title');
+        table.text('summary');
         table.text('content');
-        table.text('author_name');
+        table.text('domain_name');
+        table.text('service_name');
+        table.text('file_name');
+      })
+      .createTable('doc_owners', (table) => {
+        table.text('doc_path');
+        table.text('owner_email');
+        table.primary(['doc_path', 'owner_email']);
       })
       .createTable('service_docs', (table) => {
         table.text('doc_path');
@@ -501,6 +572,7 @@ async function buildDatabase() {
     await knex('event_owners').truncate();
     await knex('service_events').truncate();
     await knex('event_examples').truncate();
+    await knex('doc_owners').truncate();
   }
   // Drop DB
   if (!_.isEmpty(db.events))
@@ -524,6 +596,8 @@ async function buildDatabase() {
     await knex.into('service_docs').insert(_.values(db.service_docs));
   if (!_.isEmpty(db.domain_docs))
     await knex.into('domain_docs').insert(_.values(db.domain_docs));
+  if (!_.isEmpty(db.doc_owners))
+    await knex.into('doc_owners').insert(_.values(db.doc_owners));
 
   console.log('Updating hash');
   writeCatalogHash();
