@@ -320,7 +320,9 @@ async function handleDocDirectoryChange(db, dir) {
   const serviceName =
     dir.match(regexes.serviceDocs)?.groups?.service_name ||
     dir.match(regexes.domainServiceDocs)?.groups?.service_name;
-  const domainName = dir.match(regexes.domainServiceDocs)?.groups?.domain_name;
+  const domainName =
+    dir.match(regexes.domainServiceDocs)?.groups?.domain_name ||
+    dir.match(regexes.domainDocs)?.groups?.domain_name;
 
   // For each markdown file
   const files = fs.readdirSync(path.join(process.cwd(), 'catalog', dir));
@@ -412,7 +414,11 @@ async function handleDirectoryChange(dirs) {
       await handleServiceDirectoryChange(changes, dir);
     }
 
-    if (regexes.serviceDocs.test(dir) || regexes.domainServiceDocs.test(dir)) {
+    if (
+      regexes.serviceDocs.test(dir) ||
+      regexes.domainServiceDocs.test(dir) ||
+      regexes.domainDocs.test(dir)
+    ) {
       await handleDocDirectoryChange(changes, dir);
     }
   }
