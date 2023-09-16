@@ -316,7 +316,6 @@ async function handleServiceDirectoryChange(db, dir) {
 }
 
 async function handleDocDirectoryChange(db, dir) {
-  console.log(dir);
   const serviceName =
     dir.match(regexes.serviceDocs)?.groups?.service_name ||
     dir.match(regexes.domainServiceDocs)?.groups?.service_name;
@@ -356,22 +355,6 @@ async function handleDocDirectoryChange(db, dir) {
         owner_email: _.trim(owner),
       };
     });
-
-    // Process service docs
-    if (serviceName) {
-      db.service_docs[`${docPath}-${serviceName}`] = {
-        doc_path: _.trim(docPath),
-        service_name: _.trim(serviceName),
-      };
-    }
-
-    // Process domain docs
-    if (domainName) {
-      db.domain_docs[`${docPath}-${domainName}`] = {
-        doc_path: _.trim(docPath),
-        domain_name: _.trim(domainName),
-      };
-    }
   }
 }
 
@@ -387,8 +370,6 @@ async function handleDirectoryChange(dirs) {
     service_owners: {},
     docs: {},
     doc_owners: {},
-    service_docs: {},
-    domain_docs: {},
   };
 
   for (const dir of dirs) {
@@ -552,16 +533,6 @@ async function buildDatabase() {
         table.text('doc_path');
         table.text('owner_email');
         table.primary(['doc_path', 'owner_email']);
-      })
-      .createTable('service_docs', (table) => {
-        table.text('doc_path');
-        table.text('service_name');
-        table.primary(['doc_path', 'service_name']);
-      })
-      .createTable('domain_docs', (table) => {
-        table.text('doc_path');
-        table.text('domain_name');
-        table.primary(['doc_path', 'domain_name']);
       });
   } else {
     console.log('Truncating tables');
@@ -571,8 +542,6 @@ async function buildDatabase() {
     await knex('domains').truncate();
     await knex('owners').truncate();
     await knex('docs').truncate();
-    await knex('service_docs').truncate();
-    await knex('domain_docs').truncate();
     await knex('service_owners').truncate();
     await knex('domain_owners').truncate();
     await knex('event_owners').truncate();
@@ -598,10 +567,6 @@ async function buildDatabase() {
   if (!_.isEmpty(db.service_events))
     await knex.into('service_events').insert(_.values(db.service_events));
   if (!_.isEmpty(db.docs)) await knex.into('docs').insert(_.values(db.docs));
-  if (!_.isEmpty(db.service_docs))
-    await knex.into('service_docs').insert(_.values(db.service_docs));
-  if (!_.isEmpty(db.domain_docs))
-    await knex.into('domain_docs').insert(_.values(db.domain_docs));
   if (!_.isEmpty(db.doc_owners))
     await knex.into('doc_owners').insert(_.values(db.doc_owners));
 
