@@ -45,7 +45,7 @@ const Layout: React.FC<React.PropsWithChildren<{}>> = ({ children }) => {
   ];
 
   return (
-    <div>
+    <div className="h-full">
       <Transition.Root show={sidebarOpen} as={Fragment}>
         <Dialog
           as="div"

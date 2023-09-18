@@ -9,9 +9,9 @@ import {
   ScrollRestoration,
 } from '@remix-run/react';
 import reactFlowStyles from 'reactflow/dist/style.css';
-import { Transition } from '@headlessui/react';
 import styles from './tailwind.css';
 import Layout from '~/components/Layout';
+import GlobalLoadingIndicator from '~/components/GlobalLoadingIndicator';
 
 export const links: LinksFunction = () => [
   ...(cssBundleHref ? [{ rel: 'stylesheet', href: cssBundleHref }] : []),
@@ -27,10 +27,11 @@ const App = () => (
       <Meta />
       <Links />
     </head>
-    <body className="h-full">
+    <body>
       <Layout>
         <Outlet />
       </Layout>
+      <GlobalLoadingIndicator />
       <ScrollRestoration />
       <Scripts />
       <LiveReload />

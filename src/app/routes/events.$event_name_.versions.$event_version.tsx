@@ -79,7 +79,6 @@ const EventDetail = () => {
             <p className="pb-4 text-gray-500">{event.summary}</p>
             <hr className="pb-4" />
             <div className="prose max-w-none">
-              {/* eslint-disable-next-line react/no-children-prop,react/no-danger */}
               {event.content && (
                 <div dangerouslySetInnerHTML={{ __html: event.content }} />
               )}
