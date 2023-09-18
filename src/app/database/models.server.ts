@@ -12,6 +12,7 @@ const db = Knex({
     },
   },
   useNullAsDefault: true,
+  debug: true,
 });
 
 Model.knex(db);
@@ -164,6 +165,8 @@ export class Service extends Model {
 
   openapi?: string;
 
+  docs?: Doc[];
+
   static get tableName() {
     return 'services';
   }
@@ -240,6 +243,14 @@ export class Service extends Model {
           to: 'owners.email',
         },
       },
+      docs: {
+        relation: Model.HasManyRelation,
+        modelClass: Doc,
+        join: {
+          from: 'services.name',
+          to: 'docs.service_name',
+        },
+      },
     };
   }
 }
@@ -256,6 +267,8 @@ export class Domain extends Model {
   services?: Service[];
 
   owners?: Owner[];
+
+  docs?: Doc[];
 
   static get tableName() {
     return 'domains';
@@ -293,6 +306,14 @@ export class Domain extends Model {
             to: 'domain_owners.owner_email',
           },
           to: 'owners.email',
+        },
+      },
+      docs: {
+        relation: Model.HasManyRelation,
+        modelClass: Doc,
+        join: {
+          from: 'services.name',
+          to: 'docs.service_name',
         },
       },
     };
@@ -387,6 +408,68 @@ export class EventExamples extends Model {
             'event_examples.event_is_latest',
           ],
           to: ['events.name', 'events.version', 'events.is_latest'],
+        },
+      },
+    };
+  }
+}
+export class Doc extends Model {
+  path!: string;
+
+  id!: string;
+
+  title?: string;
+
+  summary?: string;
+
+  content?: string;
+
+  domain?: Domain;
+
+  service?: Service;
+
+  owners?: Owner[];
+
+  last_updated_at!: string;
+
+  file_name!: string;
+
+  static get tableName() {
+    return 'docs';
+  }
+
+  static get idColumn() {
+    return 'path';
+  }
+
+  static get relationMappings() {
+    return {
+      service: {
+        relation: Model.BelongsToOneRelation,
+        modelClass: Service,
+        join: {
+          from: 'docs.service_name',
+          to: 'services.name',
+        },
+      },
+      domain: {
+        relation: Model.BelongsToOneRelation,
+        modelClass: Domain,
+        join: {
+          from: 'docs.domain_name',
+          to: ['domains.name'],
+        },
+      },
+      owners: {
+        relation: Model.ManyToManyRelation,
+        modelClass: Owner,
+        join: {
+          from: 'docs.path',
+          through: {
+            from: 'doc_owners.doc_path',
+            to: 'doc_owners.owner_email',
+          },
+          to: 'owners.email',
         },
       },
     };

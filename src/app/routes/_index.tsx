@@ -3,12 +3,13 @@ import { Link, useLoaderData } from '@remix-run/react';
 import {
   ChevronRightIcon,
   Cog8ToothIcon,
+  DocumentIcon,
   EnvelopeIcon,
   RectangleStackIcon,
   UserGroupIcon,
 } from '@heroicons/react/24/outline';
 import clsx from 'clsx';
-import { Domain, Event, Owner, Service } from '~/database/models.server';
+import { Doc, Domain, Event, Owner, Service } from '~/database/models.server';
 
 export const meta: V2_MetaFunction = () => [
   { title: 'Event Catalog' },
@@ -16,25 +17,26 @@ export const meta: V2_MetaFunction = () => [
 ];
 
 export async function loader() {
-  const [eventCount, domainCount, serviceCount, ownerCount] = await Promise.all(
-    [
+  const [eventCount, domainCount, serviceCount, ownerCount, docCount] =
+    await Promise.all([
       Event.query().where('is_latest', true).resultSize(),
       Domain.query().distinct('name').resultSize(),
       Service.query().distinct('name').resultSize(),
       Owner.query().distinct('email').resultSize(),
-    ],
-  );
+      Doc.query().distinct('path').resultSize(),
+    ]);
 
   return {
     eventCount,
     domainCount,
     serviceCount,
     ownerCount,
+    docCount,
   };
 }
 
 const Index = () => {
-  const { eventCount, domainCount, serviceCount, ownerCount } =
+  const { eventCount, domainCount, serviceCount, ownerCount, docCount } =
     useLoaderData<typeof loader>();
   const data = [
     {
@@ -65,6 +67,13 @@ const Index = () => {
       icon: UserGroupIcon,
       iconColor: 'bg-yellow-500',
     },
+    {
+      name: 'Docs',
+      count: docCount,
+      to: '/docs',
+      icon: DocumentIcon,
+      iconColor: 'bg-stone-500',
+    },
   ];
 
   return (
@@ -73,7 +82,7 @@ const Index = () => {
       <div className="mt-2 text-lg font-light">
         Discover, Explore, and Document your Event Driven Architectures
       </div>
-      <div className="mt-8 grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-4">
+      <div className="mt-8 grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5">
         {data.map((item) => (
           <Link
             className="rounded-lg bg-white px-4 py-4 shadow transition duration-200 ease-in-out hover:shadow-lg"

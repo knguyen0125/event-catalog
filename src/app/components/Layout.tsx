@@ -9,6 +9,7 @@ import {
   UserGroupIcon,
   XMarkIcon,
   EyeIcon,
+  DocumentIcon,
 } from '@heroicons/react/24/outline';
 import React, { Fragment } from 'react';
 import logo from '~/assets/logo.svg';
@@ -36,6 +37,11 @@ const Layout: React.FC<React.PropsWithChildren<{}>> = ({ children }) => {
       name: 'Owners',
       path: '/owners',
       icon: UserGroupIcon,
+    },
+    {
+      name: 'Docs',
+      path: '/docs',
+      icon: DocumentIcon,
     },
     {
       name: 'Visualizer',

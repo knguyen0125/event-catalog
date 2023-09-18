@@ -6,6 +6,7 @@ const YAML = require('js-yaml');
 const grayMatter = require('gray-matter');
 const { writeCatalogHash, getFiles } = require('./catalogHash');
 const Parser = require('@apidevtools/swagger-parser');
+const crypto = require('node:crypto');
 const parser = new Parser();
 
 const regexes = {
@@ -333,6 +334,7 @@ async function handleDocDirectoryChange(db, dir) {
       path.join(process.cwd(), 'catalog', docPath),
       'utf-8',
     );
+    const docStats = fs.statSync(path.join(process.cwd(), 'catalog', docPath));
 
     // Parse file
     const { data, content } = grayMatter(docFile);
@@ -340,12 +342,21 @@ async function handleDocDirectoryChange(db, dir) {
 
     db.docs[docPath] = {
       path: _.trim(docPath),
+      // 8 character hex
+      id: crypto
+        .createHash('md5')
+        .update(
+          `${_.trim(domainName)}-${_.trim(serviceName)}-${_.trim(fileName)}`,
+        )
+        .digest('hex')
+        .slice(0, 8),
       title: _.trim(data.title) || _.trim(fileName),
       summary: _.trim(data.summary),
       content: _.trim(await processMarkdown(content, dir)),
       domain_name: _.trim(domainName),
       service_name: _.trim(serviceName),
-      file_name: _.trim(markdownFile).replace(/\.md$/, ''),
+      file_name: fileName,
+      last_updated_at: new Date(docStats.mtime).toISOString(),
     };
 
     // Process doc owners
@@ -373,7 +384,6 @@ async function handleDirectoryChange(dirs) {
   };
 
   for (const dir of dirs) {
-    console.log(dir);
     if (regexes.domain.test(dir)) {
       await handleDomainDirectoryChange(changes, dir);
     }
@@ -522,12 +532,14 @@ async function buildDatabase() {
       })
       .createTable('docs', (table) => {
         table.text('path').primary();
+        table.text('id');
         table.text('title');
         table.text('summary');
         table.text('content');
         table.text('domain_name');
         table.text('service_name');
         table.text('file_name');
+        table.text('last_updated_at');
       })
       .createTable('doc_owners', (table) => {
         table.text('doc_path');
