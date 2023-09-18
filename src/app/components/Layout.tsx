@@ -176,9 +176,7 @@ const Layout: React.FC<React.PropsWithChildren<{}>> = ({ children }) => {
         </div>
       </div>
 
-      <main className="lg:pl-20">
-        <div className="px-4 py-10 sm:px-6 lg:px-8 lg:py-6">{children}</div>
-      </main>
+      <main className="lg:pl-20">{children}</main>
     </div>
   );
 };
