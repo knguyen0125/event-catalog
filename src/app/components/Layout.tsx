@@ -1,4 +1,4 @@
-import { NavLink } from '@remix-run/react';
+import { Link, NavLink } from '@remix-run/react';
 import clsx from 'clsx';
 import { Transition, Dialog } from '@headlessui/react';
 import {
@@ -100,9 +100,9 @@ const Layout: React.FC<React.PropsWithChildren<{}>> = ({ children }) => {
                 </Transition.Child>
 
                 <div className="flex grow flex-col gap-y-5 overflow-y-auto bg-gray-900 px-6 pb-2 ring-1 ring-white/10">
-                  <div className="flex h-16 shrink-0 items-center">
+                  <Link className="flex h-16 shrink-0 items-center" to="/">
                     <img className="h-8 w-auto" src={logo} alt="Your.Rentals" />
-                  </div>
+                  </Link>
                   <nav className="flex flex-1 flex-col">
                     <ul className="-mx-2 flex-1 space-y-1">
                       {routes.map((route) => (
@@ -136,9 +136,9 @@ const Layout: React.FC<React.PropsWithChildren<{}>> = ({ children }) => {
 
       {/* Static sidebar for desktop */}
       <div className="hidden lg:fixed lg:inset-y-0 lg:left-0 lg:z-50 lg:block lg:w-20 lg:overflow-y-auto lg:bg-gray-900 lg:pb-4">
-        <div className="flex h-16 shrink-0 items-center justify-center">
+        <Link className="flex h-16 shrink-0 items-center justify-center" to="/">
           <img className="h-8 w-auto" src={logo} alt="Your.Rentals" />
-        </div>
+        </Link>
         <nav className="mt-8">
           <ul className="flex flex-col items-center space-y-1">
             {routes.map((route) => (
@@ -172,7 +172,7 @@ const Layout: React.FC<React.PropsWithChildren<{}>> = ({ children }) => {
           <Bars3Icon className="h-6 w-6" aria-hidden="true" />
         </button>
         <div className="flex-1 text-sm font-semibold leading-6 text-white">
-          Dashboard
+          Your.Rentals
         </div>
       </div>
 
