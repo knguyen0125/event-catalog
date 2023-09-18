@@ -9,7 +9,6 @@ import {
 } from '@heroicons/react/24/outline';
 import clsx from 'clsx';
 import { Domain } from '~/database/models.server';
-import Container from '~/components/Container';
 import Breadcrumb from '~/components/Breadcrumb';
 import Badge from '~/components/Badge';
 import Avatar from '~/components/Avatar';
@@ -138,7 +137,7 @@ const DomainDetailPage = () => {
   const { domain } = useLoaderData<typeof loader>();
 
   return (
-    <Container>
+    <div>
       <Breadcrumb
         crumbs={[
           { name: 'Domains', to: '/domains' },
@@ -172,7 +171,7 @@ const DomainDetailPage = () => {
         </div>
         <Sidebar domain={domain} key={domain.name} />
       </div>
-    </Container>
+    </div>
   );
 };
 

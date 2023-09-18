@@ -7,7 +7,6 @@ import {
   UserGroupIcon,
 } from '@heroicons/react/24/outline';
 import { Domain } from '~/database/models.server';
-import Container from '~/components/Container';
 import CardV2 from '~/components/CardV2';
 import Breadcrumb from '~/components/Breadcrumb';
 import catalogHash from '../../../catalogHash.json';
@@ -41,7 +40,7 @@ export async function loader() {
 const DomainIndex = () => {
   const { domains } = useLoaderData<typeof loader>();
   return (
-    <Container>
+    <div>
       <Breadcrumb crumbs={[{ name: 'Domains', to: '.' }]} />
       <h1 className="py-4 text-2xl font-bold">Domains ({domains.length})</h1>
       <hr className="py-4" />
@@ -74,7 +73,7 @@ const DomainIndex = () => {
           </li>
         ))}
       </ul>
-    </Container>
+    </div>
   );
 };
 

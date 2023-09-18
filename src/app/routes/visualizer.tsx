@@ -1,13 +1,11 @@
 import React from 'react';
-import { json, LoaderArgs, redirect, V2_MetaFunction } from '@remix-run/node';
+import { json, V2_MetaFunction } from '@remix-run/node';
 import { useLoaderData } from '@remix-run/react';
-import Container from '~/components/Container';
 import { Service } from '~/database/models.server';
 import catalogHash from '../../../catalogHash.json';
-import Breadcrumb from '~/components/Breadcrumb';
 import ServicesVisualizer from '~/components/visualizer/ServicesVisualizer';
 
-export const meta: V2_MetaFunction<typeof loader> = ({ data }) => [
+export const meta: V2_MetaFunction<typeof loader> = ({}) => [
   { title: `Visualizer` },
   { name: 'description', content: 'Visualizer' },
 ];

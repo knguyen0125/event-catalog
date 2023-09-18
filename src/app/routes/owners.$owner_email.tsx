@@ -9,7 +9,6 @@ import {
   RectangleStackIcon,
 } from '@heroicons/react/24/outline';
 import clsx from 'clsx';
-import Container from '~/components/Container';
 import { Owner } from '~/database/models.server';
 import Breadcrumb from '~/components/Breadcrumb';
 import Badge from '~/components/Badge';
@@ -145,7 +144,7 @@ const OwnerDetailPage = () => {
   const { owner } = useLoaderData<typeof loader>();
 
   return (
-    <Container>
+    <div>
       <Breadcrumb
         crumbs={[
           { name: 'Owners', to: '/owners' },
@@ -173,7 +172,7 @@ const OwnerDetailPage = () => {
         </div>
         <Sidebar owner={owner} key={owner.name} />
       </div>
-    </Container>
+    </div>
   );
 };
 

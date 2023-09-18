@@ -18,7 +18,6 @@ import clsx from 'clsx';
 import SwaggerUI from 'swagger-ui-react';
 import swaggerUiStyles from 'swagger-ui-react/swagger-ui.css';
 import { Service } from '~/database/models.server';
-import Container from '~/components/Container';
 import Breadcrumb from '~/components/Breadcrumb';
 import Badge from '~/components/Badge';
 import Avatar from '~/components/Avatar';
@@ -193,7 +192,7 @@ const ServiceDetailPage = () => {
   const { service, crumbs } = useLoaderData<typeof loader>();
 
   return (
-    <Container>
+    <div>
       <Breadcrumb crumbs={crumbs} />
       <div className="xl:grid xl:grid-cols-4">
         <div className="flex flex-col justify-between xl:col-span-3 xl:border-r xl:border-gray-200 xl:pr-8">
@@ -227,7 +226,7 @@ const ServiceDetailPage = () => {
         </div>
         <Sidebar service={service} key={service.name} />
       </div>
-    </Container>
+    </div>
   );
 };
 

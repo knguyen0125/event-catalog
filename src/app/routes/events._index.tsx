@@ -7,7 +7,6 @@ import {
   RectangleStackIcon,
   UserGroupIcon,
 } from '@heroicons/react/24/outline';
-import Container from '~/components/Container';
 import { Event } from '~/database/models.server';
 import CardV2 from '~/components/CardV2';
 import Breadcrumb from '~/components/Breadcrumb';
@@ -40,7 +39,7 @@ const EventsIndex = () => {
   const { events } = useLoaderData<typeof loader>();
 
   return (
-    <Container>
+    <div>
       <Breadcrumb crumbs={[{ name: 'Events', to: '.' }]} />
       <h1 className="py-4 text-2xl font-bold">Events ({events.length})</h1>
       <hr className="py-4" />
@@ -83,7 +82,7 @@ const EventsIndex = () => {
           </li>
         ))}
       </ul>
-    </Container>
+    </div>
   );
 };
 

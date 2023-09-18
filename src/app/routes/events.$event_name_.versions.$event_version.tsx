@@ -3,7 +3,6 @@ import type { LoaderArgs } from '@remix-run/node';
 import { json, redirect, Response, V2_MetaFunction } from '@remix-run/node';
 import { useLoaderData } from '@remix-run/react';
 import { Event } from '~/database/models.server';
-import Container from '~/components/Container';
 import Badge from '~/components/Badge';
 import Breadcrumb from '~/components/Breadcrumb';
 import EventDetailPageSidebar from '~/components/event-detail-page/EventDetailPageSidebar';
@@ -60,7 +59,7 @@ const EventDetail = () => {
   const { event, eventVersions, crumbs } = useLoaderData<typeof loader>();
 
   return (
-    <Container>
+    <div>
       <Breadcrumb crumbs={crumbs} />
       <div className="xl:grid xl:grid-cols-4">
         <div className="flex flex-col justify-between xl:col-span-3 xl:border-r xl:border-gray-200 xl:pr-8">
@@ -109,7 +108,7 @@ const EventDetail = () => {
           key={event.name}
         />
       </div>
-    </Container>
+    </div>
   );
 };
 
