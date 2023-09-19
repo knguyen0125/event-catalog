@@ -1,0 +1,583 @@
+openapi: 3.0.3
+x-stoplight:
+  id: g2yrv2b259g35
+info:
+  title: Payment Service
+  version: 0.1.0
+  description: |-
+    Payment Service provide the ability for other YR services to make payment-related actions. Such as:
+    - Guests make their payment on their booking & extra orders via Guest gateways
+    - Admin team to manage booking payment related issues
+  contact:
+    name: Hoan Le
+    email: hoan.le01@your.rentals
+    url: 'https://your.rentals'
+servers:
+  - url: 'http://localhost:8080'
+    description: Local
+  - url: 'https://api-internal-v2-dev.your.rentals/payment-management'
+    description: Development
+  - url: 'https://api-internal-v2.your.rentals/payment-management'
+    description: Production
+paths:
+  '/gateways/{gatewayId}/payment-sessions':
+    post:
+      summary: Create Payment Session
+      operationId: createPaymentSession
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/payment-session.entity.v1'
+      description:
+        Create Payment Session to begin processing payment. Currently only
+        support one time instant payment
+      tags:
+        - Payment Sessions
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/payment-session.dto.v1'
+        description: ''
+    parameters:
+      - schema:
+          type: string
+        name: gatewayId
+        in: path
+        required: true
+        description: Gateway ID. Currently support 'stripe'
+  '/gateways/{gatewayId}/payment-sessions/{paymentSessionId}':
+    parameters:
+      - schema:
+          type: string
+        name: gatewayId
+        in: path
+        required: true
+        description: "Gateway ID, currently only support 'stripe'"
+      - schema:
+          type: string
+        name: paymentSessionId
+        in: path
+        required: true
+        description: Payment Session ID
+    get:
+      summary: Get Payment Session By ID
+      tags:
+        - Payment Sessions
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/payment-session.entity.v1'
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+      operationId: getPaymentSessionById
+      description:
+        Get Payment Session data for given gateway and payment session id
+  '/gateways/{gatewayId}/payment-sessions/{paymentSessionId}/token':
+    parameters:
+      - schema:
+          type: string
+        name: gatewayId
+        in: path
+        required: true
+        description: Gateway ID
+      - schema:
+          type: string
+        name: paymentSessionId
+        in: path
+        required: true
+        description: Payment Session ID
+    get:
+      summary: Get Payment Session Token
+      tags:
+        - Payment Sessions
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                oneOf:
+                  - $ref: '#/components/schemas/payment-session-token.stripe.v1'
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+      operationId: getPaymentSessionToken
+      description:
+        Get Payment Session Token which is neccessary for payment execution
+  '/gateways/{gatewayId}/payment-sessions/{paymentSessionId}/cancel':
+    parameters:
+      - schema:
+          type: string
+        name: gatewayId
+        in: path
+        required: true
+        description: Gateway ID
+      - schema:
+          type: string
+        name: paymentSessionId
+        in: path
+        required: true
+        description: Payment Session ID
+    post:
+      summary: Cancel an on going payment
+      operationId: paymentCancelling
+      responses:
+        '200':
+          description: OK
+        '405':
+          description: Method Not Allowed
+      description: |-
+        Cancel an on going payment: Payment status must be in cancellable state
+        - NEW
+        - REQUIRES_ACTION
+        - PROCESSING
+      tags:
+        - Payment Sessions
+  '/gateways/{gatewayId}/payment-refunds':
+    parameters:
+      - schema:
+          type: string
+        name: gatewayId
+        in: path
+        required: true
+        description: Gateway ID
+    post:
+      summary: Issue a refund
+      operationId: createPaymentRefund
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/payment-refund.entity.v1'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code:
+                    type: string
+                    description: Code of failure
+                    enum:
+                      - REFUND_AMOUNT_EXCEEDED
+                      - INVALID_PARAMS
+                      - UNKNOWN_ERROR
+                  gatewayErrorDetails:
+                    type: string
+                    description: Gateway Error description if provided
+                    example: insufficient_funds
+                required:
+                  - code
+      description: |
+        Issue a payment refund request for existing payment session
+        - Amount to be refunded must be provided in original currency.
+        - Payment Refund is immediately issued and is not cancellable (except rare special cases)
+        - Multi refunds can be issued but the total amount can not be exceeds original paid amount
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/payment-refund.dto.v1'
+      tags:
+        - Refund API
+  '/gateways/{gatewayId}/payment-refunds/search':
+    parameters:
+      - schema:
+          type: string
+        name: gatewayId
+        in: path
+        required: true
+    post:
+      summary: Search for payment refund
+      operationId: searchPaymentRefunds
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/paginate-response.v1'
+                  - type: object
+                    properties:
+                      results:
+                        type: array
+                        items:
+                          $ref: '#/components/schemas/payment-refund.entity.v1'
+      tags:
+        - Refund API
+      description: Return a list of payment refund based on given search
+      parameters:
+        - $ref: '#/components/parameters/pagination.cursor.v1'
+        - $ref: '#/components/parameters/pagination.limit.v1'
+        - $ref: '#/components/parameters/pagination.sort.v1'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                paymentSessionIds:
+                  type: array
+                  description:
+                    Payment Session Ids to search for payment refunds on
+                  nullable: true
+                  items:
+                    type: string
+                    format: uuid
+                paymentRefundStatuses:
+                  type: array
+                  description: Payment Refund status to filter the search
+                  nullable: true
+                  items:
+                    type: string
+                    enum:
+                      - NEW
+                      - REQUIRES_ACTION
+                      - DONE
+                      - FAILED
+                      - CANCELLED
+  '/gateways/{gatewayId}/payment-refunds/{refundId}':
+    parameters:
+      - schema:
+          type: string
+        name: gatewayId
+        in: path
+        required: true
+        description: Gateway ID
+      - schema:
+          type: string
+          format: uuid
+        name: refundId
+        in: path
+        required: true
+        description: Refund ID
+    get:
+      summary: Retrieve a payment refund
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/payment-refund.entity.v1'
+        '404':
+          description: Not Found
+      operationId: getPaymentRefundById
+      description: Return payment refund by given id
+      tags:
+        - Refund API
+  '/gateways/{gatewayId}/payment-refunds/{refundId}/cancel':
+    parameters:
+      - schema:
+          type: string
+        name: gatewayId
+        in: path
+        required: true
+        description: Gateway ID
+      - schema:
+          type: string
+        name: refundId
+        in: path
+        required: true
+        description: Refund ID
+    post:
+      summary: Cancel a refund
+      operationId: refundCancelling
+      responses:
+        '200':
+          description: OK
+        '405':
+          description: Method Not Allowed
+      tags:
+        - Refund API
+      description:
+        Allow to cancel the refund which being REQUIRES_ACTION. Return HTTP 405
+        (Method Not Allowed) if the refund is not cancellable
+components:
+  schemas:
+    db-entity.partial.v1:
+      title: db-entity.partial.v1
+      x-stoplight:
+        id: m3ydowrz0iyxt
+      type: object
+      description: DB Entity schema commons fields
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: ID of the entity
+          readOnly: true
+        createdAt:
+          type: string
+          description: The timestamp by which the entity was inserted
+          format: date-time
+          pattern: 'YYYY-MM-DD hh:mm:ss'
+          readOnly: true
+        updatedAt:
+          type: string
+          description: The timestamp by which the entity was updated
+          format: date-time
+          pattern: 'YYYY-MM-DD hh:mm:ss'
+          readOnly: true
+      required:
+        - id
+    payment-session.dto.v1:
+      title: payment-session.dto.v1
+      x-stoplight:
+        id: 3b471c54dd5ad
+      type: object
+      description: Payment Session data
+      properties:
+        amount:
+          type: number
+          description:
+            Amount of this payment. Must be positive number and allow maximum 3
+            digits after decimal point
+          minimum: 0.001
+          example: 0.5
+        currency:
+          type: string
+          description:
+            Currency of this payment. Follow ISO-4217 currency code standard
+          example: eur
+        description:
+          type: string
+          description:
+            Description for this payment. May be statement description
+          nullable: true
+        metadata:
+          type: object
+          description:
+            Metadata of this payment. Must be object with pairs of key and value
+            with string type
+        callbackUrl:
+          type: string
+          format: uri
+          description:
+            'Call back URL: listener endpoint which will handle this payment
+            update-events'
+          nullable: true
+      required:
+        - amount
+        - currency
+    payment-session-gateway-data.v1:
+      title: payment-session-gateway-specific.v1
+      x-stoplight:
+        id: b707dc5877f2a
+      type: object
+      description:
+        'Payment Session specific gateway data (Paypal, Stripe, v/v...)'
+      properties:
+        gatewayId:
+          type: string
+          description: Gateway Identifier
+          example: stripe
+        gatewayReferenceId:
+          type: string
+          description:
+            Reference ID of the corresponding payment entity on the selected
+            gateway side
+          example: pi_1GszYJ2eZvKYlo2C251w8eSb
+      required:
+        - gatewayId
+    payment-session-token.stripe.v1:
+      title: payment-session-token.stripe.v1
+      x-stoplight:
+        id: 8sto5tedx0wkl
+      type: object
+      description: Payment Session token of Stripe gateway
+      properties:
+        token:
+          type: string
+          description: Secret token of the payment session
+          example: pi_1GszYJ2eZvKYlo2C251w8eSb_secret_v0Sce0ooBxbDxJaFeWHjwSkqP
+      required:
+        - token
+    payment-session.entity.v1:
+      allOf:
+        - $ref: '#/components/schemas/db-entity.partial.v1'
+        - $ref: '#/components/schemas/payment-session.dto.v1'
+        - $ref: '#/components/schemas/payment-session-gateway-data.v1'
+        - type: object
+          properties:
+            status:
+              type: string
+              description: |-
+                Status of the payment session:
+                - NEW: Just created
+                - PROCESSING: Payment is processing on the PSP side
+                - FAILED: Payment failed
+                - REQUIRES_ACTION: Payment needs further action to continue processing
+                - PAID: Payment was successfull
+              enum:
+                - NEW
+                - PROCESSING
+                - FAILED
+                - REQUIRES_ACTION
+                - PAID
+              default: NEW
+          required:
+            - status
+      x-stoplight:
+        id: 3b471c54dd5ad
+      title: Payment Session
+      description: Payment session entity
+    payment-refund.dto.v1:
+      allOf:
+        - type: object
+          properties:
+            paymentSessionId:
+              type: string
+              format: uuid
+              description: The ID of origin payment to issue the refund on
+          required:
+            - paymentSessionId
+        - oneOf:
+            - $ref: '#/components/schemas/payment-refund-partial-amount.dto.v1'
+            - $ref: '#/components/schemas/payment-refund-full-amount.dto.v1'
+    payment-refund.entity.v1:
+      allOf:
+        - $ref: '#/components/schemas/db-entity.partial.v1'
+        - type: object
+          properties:
+            paymentSessionId:
+              type: string
+              description:
+                Corresponding payment session id which this refund is issued on
+            amount:
+              type: number
+              minimum: 0.001
+              example: 0.5
+            status:
+              type: string
+              description: |-
+                Status of the refund:
+                - NEW: initial state
+                - REQUIRES_ACTION: need the guest interaction to complete the refund
+                - DONE: the refund was successful
+                - FAILED: failed to process refund
+                - CANCELLED: the refund was cancelled
+              enum:
+                - NEW
+                - REQUIRES_ACTION
+                - DONE
+                - FAILED
+                - CANCELLED
+          required:
+            - paymentSessionId
+            - amount
+            - status
+        - $ref: '#/components/schemas/payment-refund-gateway-data.v1'
+      title: Payment Refund
+      description: Payment Refund entity
+    payment-refund-gateway-data.v1:
+      title: payment-refund-gateway-data.v1
+      x-stoplight:
+        id: g01pd42yrr79w
+      type: object
+      description: Payment specific data on the gateway side
+      properties:
+        gatewayId:
+          type: string
+          description: Gateway Identifier
+          example: stripe
+        gatewayReferenceId:
+          type: string
+          description:
+            Reference ID of the corresponding payment entity on the selected
+            gateway side
+          example: re_1N1h6q2eZvKYlo2C2iQEZTni
+      required:
+        - gatewayId
+    payment-refund-full-amount.dto.v1:
+      title: payment-refund-full-amount.dto.v1
+      x-stoplight:
+        id: 7u9ls13tfflhc
+      type: object
+      properties:
+        isFullAmount:
+          type: boolean
+          default: true
+          description: Whether if the refund is full amount
+          readOnly: true
+      required:
+        - isFullAmount
+    payment-refund-partial-amount.dto.v1:
+      title: payment-refund-partial-amount.dto.v1
+      x-stoplight:
+        id: jrbfyqafmq40p
+      type: object
+      properties:
+        amount:
+          type: number
+          description: |-
+            Amount to be refunded, in original currency. The total amount of all refunds must not exceed the original amount
+             of the payment
+          minimum: 0.001
+          example: 0.5
+      required:
+        - amount
+    paginate-response.v1:
+      title: paginate-response.v1
+      x-stoplight:
+        id: z6fces55npyu4
+      type: object
+      properties:
+        pagination:
+          type: object
+          description: Pagination information
+          properties:
+            nextCursor:
+              type: string
+              description: |
+                The cursor to use to get the next page. If this is `null`, empty, or `''`, there are no more pages.
+  securitySchemes:
+    bearer:
+      type: http
+      scheme: bearer
+  parameters:
+    pagination.cursor.v1:
+      name: _cursor
+      in: query
+      required: false
+      schema:
+        type: string
+      description:
+        'The cursor to use to get the next page. If omitted, the first page will
+        be returned'
+    pagination.limit.v1:
+      name: _limit
+      in: query
+      required: false
+      schema:
+        type: string
+      description:
+        'The number of records to return per page. If omitted, the default limit
+        will be used'
+    pagination.sort.v1:
+      name: _sort
+      in: query
+      required: false
+      schema:
+        type: string
+      description:
+        'The field to sort by. If omitted, the default sort will be used'
+tags:
+  - name: Payment Sessions
+  - name: Refund API
+security:
+  - bearer: []

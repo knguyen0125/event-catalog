@@ -1,0 +1,70 @@
+openapi: 3.0.3
+info:
+  title: Calendar Service
+  description: |
+    Calendar Service is a service that manage sync booking. <!-- ReDoc-Inject: <security-definitions> -->
+  version: 0.1.0
+  contact:
+    email: cong.nguyen@your.rentals
+    name: Cong Nguyen
+servers:
+  - url: 'http://api-internal-local.your.rentals/calendar'
+    description: Local
+  - url: 'https://api-internal-dev.your.rentals/calendar'
+    description: Development
+  - url: 'https://api-internal.your.rentals/calendar'
+    description: Production
+security:
+  - bearerAuth: []
+tags:
+  - name: Calendar Script
+paths:
+  /script/import-manual-booking-by-ical:
+    post:
+      summary: Script import manual bookings by Ical link
+      operationId: scriptImportManualBookingByIcal
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/common.success.v1'
+        '400':
+          description: Bad Request
+        '401':
+          description: Unauthorized
+      description:
+        Migrate bookings from ical link to manual booking with reason `Other`
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                url:
+                  type: string
+                  description: Ical link
+                  example: https://admin.booking.com/hotel/hoteladmin/ical.html?t=ea642f1a-be71-4d53-b2cb-7bb6badbf53b
+                listingId:
+                  type: integer
+                  minimum: 0
+                  exclusiveMinimum: true
+                  example: 344519
+                  description: Listing ID
+              required:
+                - url
+                - listingId
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+  schemas:
+    common.success.v1:
+      type: object
+      properties:
+        success:
+          type: boolean
+          description: Message
+          example: true

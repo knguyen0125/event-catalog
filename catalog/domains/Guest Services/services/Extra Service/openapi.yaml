@@ -1,0 +1,1320 @@
+openapi: 3.0.3
+info:
+  title: Extra Service Definition Management
+  description: Internal APIs for extra service definition management
+  version: 0.1.0
+  contact:
+    email: phuc.nguyen@your.rentals
+    name: Phuc Nguyen
+servers:
+  - url: 'http://api-internal-v2-local.your.rentals'
+    description: Local
+  - url: 'https://api-internal-v2-dev.your.rentals'
+    description: Development
+  - url: 'https://api-internal-v2.your.rentals'
+    description: Production
+security:
+  - bearerAuth: []
+paths:
+  /extra-service-definitions/search:
+    post:
+      summary: Search Extra Service Definitions
+      security: []
+      description: |
+        Using for search extra service definitions
+      operationId: searchExtraDefinitions
+      requestBody:
+        content:
+          application/json:
+            examples:
+              payload:
+                value:
+                  listingIds:
+                    - 123
+                    - 456
+                  accountIds:
+                    - accountIdA
+                    - accountIdB
+            schema:
+              type: object
+              properties:
+                listingIds:
+                  type: array
+                  description: |
+                    The list of listing ids that extra should be associated to
+                  example:
+                    - 123
+                    - 456
+                accountIds:
+                  type: array
+                  description: |
+                    The list of account ids that extra should be associated to
+                  example:
+                    - accountA
+                    - accountB
+      responses:
+        '201':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/paginated-extra-definition'
+      tags:
+        - Extra Service Definitions
+  '/extra-service-definitions/{extraServiceDefinitionId}':
+    get:
+      summary: Get Extra Service Definitions By ID
+      security: []
+      description: |
+        Get detail of one extra service definition by id
+      operationId: getExtraDefinitionsById
+      parameters:
+        - description: Extra Service Definition ID
+          name: extraServiceDefinitionId
+          in: path
+          required: true
+          schema:
+            type: string
+            example: id
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/extra-definition'
+      tags:
+        - Extra Service Definitions
+    put:
+      tags:
+        - Extra Service Definitions
+      summary: Update Extra Service Definitions By ID
+      security: []
+      description: |
+        Update extra service definition by id
+      operationId: updateExtraDefinitionsById
+      parameters:
+        - required: true
+          description: Extra Service Definition ID
+          name: extraServiceDefinitionId
+          in: path
+          schema:
+            type: string
+            example: extraDefinitionId
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/update-extra-definition-payload'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/extra-definition'
+    delete:
+      tags:
+        - Extra Service Definitions
+      summary: Delete Extra Service Definitions By ID
+      security: []
+      description: |
+        Delete extra service definition by id
+      operationId: deleteExtraDefinitionsById
+      parameters:
+        - required: true
+          description: Extra Service Definition ID
+          name: extraServiceDefinitionId
+          in: path
+          schema:
+            type: string
+            example: id
+      responses:
+        '200':
+          description: OK
+  /extra-service-definitions:
+    post:
+      summary: Create Extra Service Definitions
+      security: []
+      description: |
+        Create extra service definition
+      operationId: createExtraDefinition
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/create-extra-definition-payload'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/extra-definition'
+      tags:
+        - Extra Service Definitions
+  '/extra-service-definitions/{extraServiceDefinitionId}/batch-associate-listings':
+    post:
+      summary: Batch Associate Extra Service Definition To Listings
+      security: []
+      description: |
+        Batch associate Extra Service Definition to listings.
+        This api will link the extra service definition
+        of an account to other listings.
+      operationId: batchAssociateExtraDefinition
+      parameters:
+        - name: extraServiceDefinitionId
+          required: true
+          in: path
+          schema:
+            type: string
+            example: id
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                listingIds:
+                  type: array
+                  description: List listing Ids
+                  example:
+                    - 123
+                    - 456
+      responses:
+        '200':
+          description: OK
+      tags:
+        - Extra Service Definitions
+  '/extra-service-definitions/{extraServiceDefinitionId}/batch-disassociate-listings':
+    post:
+      summary: Batch Disassociate Extra Service Definition From Listings
+      security: []
+      description: |
+        Batch disassociate Extra Service Definition from listings.
+        This api will unlink the extra service definition
+        of an account from other listings.
+      operationId: batchDisassociateExtraDefinition
+      parameters:
+        - name: extraServiceDefinitionId
+          required: true
+          in: path
+          schema:
+            type: string
+            example: id
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                listingIds:
+                  type: array
+                  description: List listing Ids
+                  example:
+                    - 123
+                    - 456
+      responses:
+        '200':
+          description: OK
+      tags:
+        - Extra Service Definitions
+  /fee-bases:
+    get:
+      summary: Get All Fee Basis
+      security: []
+      description: Get all configured fee basis from system
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/fee-basis'
+      tags:
+        - Fee Basis
+      operationId: getAllFeeBases
+    parameters: []
+  /extra-service-orders/search:
+    post:
+      tags:
+        - Extra Service Orders
+      summary: Search Extra Service Orders
+      security: []
+      description: |
+        Search extra service definition
+      operationId: searchExtraServiceOrders
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                listingIds:
+                  type: array
+                  description:
+                    Listing Ids that the extra service orders are belonged
+                  example:
+                    - 123
+                    - 456
+                bookingIds:
+                  type: array
+                  description:
+                    Booking Ids that the extra service orders are belonged
+                  example:
+                    - bookingA
+                    - bookingB
+                accountIds:
+                  type: array
+                  description:
+                    Account Ids that the extra service orders are belonged
+                  example:
+                    - accountA
+                    - accountB
+                paymentStatuses:
+                  type: array
+                  description: Payment statuses of the extra service orders
+                  items:
+                    type: string
+                    enum:
+                      - PAID
+                      - NEW
+                      - FAILED
+                      - PROCESSING
+                  example:
+                    - PAID
+                    - NEW
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/paginated-extra-service-order'
+  '/extra-service-orders/{extraOrderId}':
+    get:
+      tags:
+        - Extra Service Orders
+      summary: Get Extra Service Order
+      security: []
+      description: |
+        Get extra service order by id
+      operationId: getExtraServiceOrderById
+      parameters:
+        - name: extraOrderId
+          required: true
+          in: path
+          schema:
+            type: string
+            example: id
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/extra-service-order'
+  /extra-service-orders:
+    post:
+      tags:
+        - Extra Service Orders
+      summary: Create Extra Service Order
+      security: []
+      description: |
+        Create an extra service order
+      operationId: createExtraServiceOrder
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/create-extra-order-payload'
+      responses:
+        '201':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/extra-service-order'
+  /extra-service-orders/quote:
+    post:
+      tags:
+        - Extra Service Orders
+      summary: Get Extra Service Order Quote
+      security: []
+      description: |
+        Get an extra service order quote after each change of the order
+      operationId: getExtraServiceOrderQuote
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/create-extra-order-payload'
+      responses:
+        '201':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/extra-service-order'
+  '/extra-service-orders/{extraOrderId}/payment-sessions':
+    post:
+      tags:
+        - Extra Service Orders
+      summary: Create Payment Session
+      security: []
+      description: |
+        Create an extra service order payment session. Throw bad request if the order is confirmed, cancelled or expired.
+      operationId: createPaymentSession
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/create-extra-order-payment-session-payload'
+      parameters:
+        - name: extraOrderId
+          required: true
+          in: path
+          schema:
+            type: string
+            example: id
+      responses:
+        '201':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  token:
+                    type: string
+                    description: |
+                      The secret token for client to use to secure and
+                      proceed the payment session. This token should be unique
+                      for each session.
+                    example: pi_SERECTID_secret_SECRETSTRING
+        '400':
+          description: Bad Request
+  '/extra-service-orders/{extraOrderId}/cancel':
+    parameters:
+      - schema:
+          type: string
+        name: extraOrderId
+        in: path
+        required: true
+        description: Extra Order ID
+    post:
+      summary: Cancel The Extra Order
+      operationId: cancelExtraServiceOrder
+      responses:
+        '200':
+          description: OK
+        '400':
+          description: Bad Request
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '404':
+          description: Not Found
+      tags:
+        - Extra Service Orders
+      description: |-
+        Cancel an extra order:
+        - If the current order is not on payment processing or paid states, mark it as cancelled.
+        - If the current order is paid. Cancellation follows the most strictly cancellation policy from the extra items in the current order.
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                reason:
+                  type: string
+                  description: Reason of this cancel request
+                  nullable: true
+        description: ''
+  /v1-event-handlers:
+    post:
+      summary: V1 Event Handlers
+      operationId: v1EventHandlers
+      responses:
+        '200':
+          description: OK
+        '400':
+          description: Bad Request
+        '401':
+          description: Unauthorized
+      tags:
+        - V1 Event Handlers
+      description: Handle v1 event to update the booking's extra orders'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                eventType:
+                  type: string
+                  enum:
+                    - automatic_booking_updated
+                    - booking_cancelled_by_admin
+                    - booking_cancelled_by_guest
+                    - booking_cancelled_by_pm
+                    - account_currency_changed
+                    - listing_cloned
+                  description: Event Type
+                payload:
+                  oneOf:
+                    - $ref: '#/components/schemas/automatic-booking-updated-event.v1'
+                    - $ref: '#/components/schemas/booking-cancelled-event.v1'
+                    - $ref: '#/components/schemas/account-currency-changed-event.v1'
+                    - $ref: '#/components/schemas/listing-cloned-event.v1'
+                    - $ref: '#/components/schemas/booking-moved-event.v1'
+              required:
+                - eventType
+                - payload
+        description: ''
+      x-internal: true
+components:
+  schemas:
+    paginated-extra-definition:
+      type: object
+      properties:
+        pagination:
+          type: object
+          properties:
+            nextCursor:
+              type: string
+              description:
+                Next cursor to fetch next page of extra service definition
+              example: nextCursor
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/extra-definition'
+    paginated-extra-service-order:
+      type: object
+      properties:
+        pagination:
+          type: object
+          properties:
+            nextCursor:
+              type: string
+              description:
+                Next cursor to fetch next page of extra service orders
+              example: nextCursor
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/extra-service-order'
+    extra-definition:
+      type: object
+      properties:
+        id:
+          type: string
+          description: The id of extra service definition.
+          example: extraDefinitionId
+        accountId:
+          type: string
+          description: The account id that extra definition belongs to.
+          example: accountId
+        createdAt:
+          type: string
+          description: When was the extra created
+          example: '2023-03-30T02:50:03.000Z'
+          format: date-time
+        updatedAt:
+          type: string
+          description: When was the extra updated
+          example: '2023-03-30T02:50:03.000Z'
+          format: date-time
+        currency:
+          type: string
+          description: The currency of extra service definition.
+          example: EUR
+        unitPrice:
+          type: number
+          description: The unit price of extra service definition
+          example: 69
+        earliestOrderRule:
+          type: string
+          description: The earliest time when extra definition can be ordered
+          example: AT_THE_TIME_BOOKING
+          enum:
+            - AT_THE_TIME_BOOKING
+            - 48H_BEFORE_CHECK_IN
+            - 24H_BEFORE_CHECK_IN
+            - 48H_BEFORE_CHECK_OUt
+            - 24H_BEFORE_CHECK_OUt
+        latestOrderRule:
+          type: string
+          description: The latest time when extra definition can be ordered
+          example: NO_RESTRICTION
+          enum:
+            - 48H_BEFORE_CHECK_IN
+            - 24H_BEFORE_CHECK_IN
+            - 48H_BEFORE_CHECK_OUt
+            - 24H_BEFORE_CHECK_OUt
+            - NO_RESTRICTION
+        cancellationOrderRule:
+          type: string
+          description:
+            The time rule when extra definition order can be cancelled
+          example: NONE_REFUNDABLE
+          enum:
+            - NONE_REFUNDABLE
+            - ONE_DAY_BEFORE_CHECK_IN
+            - ANY_TIME_BEFORE_CHECK_OUT
+        iconUrl:
+          type: string
+          description: The icon of extra definition
+          example: lnr-star
+        feeBasis:
+          type: string
+          description: The fee basis of extra definition
+          example: PER_UNIT
+          enum:
+            - FREE
+            - PER_UNIT
+            - PER_UNIT_PER_DAY
+            - PER_DAY
+            - PER_PERSON_PER_WEEK
+            - PER_PERSON_PER_DAY
+            - PER_WEEK
+            - PER_PERSON
+        descriptions:
+          type: array
+          description: The list of translated descriptions of extra definition
+          example:
+            - name: Free Coke
+              languageCode: EN
+              descriptions: Descriptions
+            - name: Free Coke ES
+              languageCode: ES
+              descriptions: Descriptions
+          items: {}
+        additionalDetails:
+          type: array
+          description:
+            The list of translated additional details of extra definition
+          example:
+            - content: Additional details
+              languageCode: EN
+            - content: Additional details ES
+              languageCode: ES
+          items: {}
+        listingAssociations:
+          type: array
+          description:
+            The list of listing id that extra definition is associated to
+          example:
+            - listingId: 123
+            - listingId: 456
+          items: {}
+    create-extra-definition-payload:
+      type: object
+      properties:
+        accountId:
+          type: string
+          description: The account id that extra definition belongs to.
+          example: accountId
+        unitPrice:
+          type: number
+          description:
+            The unit price of extra service definition. Must be 0 for FREE basis
+          example: 69
+          minimum: 0
+        currency:
+          type: string
+          description: The currency of extra service definition
+          example: EUR
+        earliestOrderRule:
+          type: string
+          description: The earliest time when extra definition can be ordered
+          example: AT_THE_TIME_BOOKING
+          enum:
+            - AT_THE_TIME_BOOKING
+            - 48H_BEFORE_CHECK_IN
+            - 24H_BEFORE_CHECK_IN
+            - 48H_BEFORE_CHECK_OUt
+            - 24H_BEFORE_CHECK_OUt
+        latestOrderRule:
+          type: string
+          description: The latest time when extra definition can be ordered
+          example: NO_RESTRICTION
+          enum:
+            - 48H_BEFORE_CHECK_IN
+            - 24H_BEFORE_CHECK_IN
+            - 48H_BEFORE_CHECK_OUt
+            - 24H_BEFORE_CHECK_OUt
+            - NO_RESTRICTION
+        cancellationOrderRule:
+          type: string
+          description:
+            The time rule when extra definition order can be cancelled
+          example: NONE_REFUNDABLE
+          enum:
+            - NONE_REFUNDABLE
+            - ONE_DAY_BEFORE_CHECK_IN
+            - ANY_TIME_BEFORE_CHECK_OUT
+        feeBasis:
+          type: string
+          description: The fee basis of extra definition
+          example: PER_UNIT
+          enum:
+            - FREE
+            - PER_UNIT
+            - PER_UNIT_PER_DAY
+            - PER_DAY
+            - PER_PERSON_PER_WEEK
+            - PER_PERSON_PER_DAY
+            - PER_WEEK
+            - PER_PERSON
+        descriptions:
+          type: array
+          description: The list of translated descriptions of extra definition
+          example:
+            - name: Free Coke
+              languageCode: EN
+              descriptions: Descriptions
+            - name: Free Coke ES
+              languageCode: ES
+              descriptions: Descriptions
+          items: {}
+        additionalDetails:
+          type: array
+          description:
+            The list of translated additional details of extra definition
+          example:
+            - content: Additional details
+              languageCode: EN
+            - content: Additional details ES
+              languageCode: ES
+          items: {}
+        iconUrl:
+          type: string
+          description: The icon of extra definition
+          example: lnr-star
+      required:
+        - accountId
+        - unitPrice
+        - currency
+        - earliestOrderRule
+        - latestOrderRule
+        - cancellationOrderRule
+        - feeBasis
+        - descriptions
+        - additionalDetails
+    update-extra-definition-payload:
+      type: object
+      properties:
+        accountId:
+          type: string
+          description: The account id that extra definition belongs to.
+          example: accountId
+        unitPrice:
+          type: number
+          description:
+            The unit price of extra service definition. Must be 0 if feeBasis to
+            update is FREE
+          example: 69
+          minimum: 0
+        feeBasis:
+          type: string
+          description: The fee basis of extra definition
+          example: PER_UNIT
+          enum:
+            - FREE
+            - PER_UNIT
+            - PER_UNIT_PER_DAY
+            - PER_DAY
+            - PER_PERSON_PER_WEEK
+            - PER_PERSON_PER_DAY
+            - PER_WEEK
+            - PER_PERSON
+        earliestOrderRule:
+          type: string
+          description: The earliest time when extra definition can be ordered
+          example: AT_THE_TIME_BOOKING
+          enum:
+            - AT_THE_TIME_BOOKING
+            - 48H_BEFORE_CHECK_IN
+            - 24H_BEFORE_CHECK_IN
+            - 48H_BEFORE_CHECK_OUt
+            - 24H_BEFORE_CHECK_OUt
+        latestOrderRule:
+          type: string
+          description:
+            'The latest time when extra definition can be ordered. Must provide
+            both earliestOrderRule with latestOrderRule, provide just one of the
+            two is forbidden'
+          example: NO_RESTRICTION
+          enum:
+            - 48H_BEFORE_CHECK_IN
+            - 24H_BEFORE_CHECK_IN
+            - 48H_BEFORE_CHECK_OUt
+            - 24H_BEFORE_CHECK_OUt
+            - NO_RESTRICTION
+        cancellationOrderRule:
+          type: string
+          description:
+            The time rule when extra definition order can be cancelled
+          example: NONE_REFUNDABLE
+          enum:
+            - NONE_REFUNDABLE
+            - ONE_DAY_BEFORE_CHECK_IN
+            - ANY_TIME_BEFORE_CHECK_OUT
+        descriptions:
+          type: array
+          description: The list of translated descriptions of extra definition
+          example:
+            - name: Free Coke
+              languageCode: EN
+              descriptions: Descriptions
+            - name: Free Coke ES
+              languageCode: ES
+              descriptions: Descriptions
+          items: {}
+        additionalDetails:
+          type: array
+          description:
+            The list of translated additional details of extra definition
+          example:
+            - content: Additional details
+              languageCode: EN
+            - content: Additional details ES
+              languageCode: ES
+          items: {}
+        iconUrl:
+          type: string
+          description: The icon of extra definition
+          example: lnr-star
+    fee-basis:
+      type: object
+      description: The configured fee basis of system
+      required:
+        - id
+        - perDay
+        - perWeek
+        - perPerson
+        - perUnit
+        - feeBasisTranslation
+      properties:
+        id:
+          type: string
+          example: PER_UNIT
+        perDay:
+          type: boolean
+          description: Is the fee basis calculated by per day
+          example: false
+        perWeek:
+          type: boolean
+          description: Is the fee basis calculated by per week
+          example: false
+        perUnit:
+          type: boolean
+          description: Is the fee basis calculated by per unit
+          example: true
+        perPerson:
+          type: boolean
+          description: Is the fee basis calculated by per person
+          example: false
+        feeBasisTranslation:
+          type: array
+          description: The translation values of the fee basis
+          example:
+            - languageCode: EN
+              name: Per unit
+            - languageCode: ES
+              name: Per unita
+    extra-service-order:
+      type: object
+      properties:
+        id:
+          type: string
+          description: id of the order
+          example: orderId
+        bookingId:
+          type: string
+          description: Booking id of the extra service order
+          example: ABCD
+        listingId:
+          type: number
+          description: Listing id of the extra service order
+          example: 1234
+        accountId:
+          type: string
+          description: Account id of the extra service order
+          example: accountId
+        status:
+          type: string
+          description: Status of the order
+          enum:
+            - CONFIRMED
+            - NEW
+            - CANCELLED
+          example: NEW
+        paymentStatus:
+          type: string
+          description: Status of the order
+          enum:
+            - PAID
+            - NEW
+            - FAILED
+            - PROCESSING
+          example: NEW
+        totalAmount:
+          type: number
+          description: Total amount of the in Base currency (YR currency)
+          example: 100
+        serviceFeePercentage:
+          type: number
+          description: |
+            The service fee percentage (with VAT) that is applied for the order.
+            This value can be either direct booking service fee
+            or normal service fee of the account.
+          example: 0.05
+        serviceFee:
+          type: number
+          description: |
+            The service fee (with VAT) of the order in Base currency (YR currency).
+            Calculated based on serviceFeePercentage
+          example: 5
+        vatPercentage:
+          type: number
+          description: |
+            The VAT percentage that is applied for the order.
+            The value can be found from account information.
+          example: 0.25
+        vatFee:
+          type: number
+          description: |
+            The VAT fee of the order in Base currency (YR currency).
+            Calculated based on vatPercentage and serviceFee.
+          example: 1.25
+        payout:
+          type: number
+          description: |
+            Payout value for pm in Base currency (YR currency).
+            Calculated by totalAmount - serviceFee - vatFee
+          example: 93.75
+        pmCurrency:
+          type: string
+          description: |
+            The currency of PM at the time the order was created
+          example: EUR
+        guestCurrency:
+          type: string
+          description: |
+            The currency that the Guest used for ordering extra service definitions
+          example: EUR
+        bookingSnapshot:
+          type: object
+          description: |
+            The snapshot of booking at the time the order was created.
+            This only store some basic information, not all.
+          properties:
+            from:
+              type: string
+              description: Booking check in day
+              example: '2023-04-01'
+            to:
+              type: string
+              description: Booking check out day
+              example: '2023-04-01'
+            numberOfPets:
+              type: number
+              description: Number of pet of the booking
+              example: 0
+            numberOfAdults:
+              type: number
+              description: Number of adults of the booking
+              example: 1
+            numberOfInfants:
+              type: number
+              description: Number of infants of the booking
+              example: 0
+            numberOfChildren:
+              type: number
+              description: Number of children of the booking
+              example: 0
+        baseCurrencyToPmCurrencyExchangeRate:
+          type: number
+          description: |
+            The exchange rate from base currency to pm's currency
+            at the time of the order created.
+          example: 1.0847
+        baseCurrencyToGuestCurrencyExchangeRate:
+          type: number
+          description: |
+            The exchange rate from base currency to guest's currency
+            at the time of the order created.
+          example: 1
+        cancelledReason:
+          type: string
+          description: |
+            The reason why the extra service order was cancelled
+          example: Booking was cancelled
+        cancelledAt:
+          type: string
+          description: When the order's cancelled
+          example: '2023-03-30T10:48:06.000Z'
+        paidAt:
+          type: string
+          description: When system charged amount from guest successfully
+          example: '2023-03-30T10:48:06.000Z'
+        confirmedAt:
+          type: string
+          description: When the order's confirmed
+          example: '2023-03-30T10:48:06.000Z'
+        baseCurrency:
+          type: string
+          description: The currency of YR using (EUR)
+          example: EUR
+        totalAmountInBaseCurrency:
+          type: number
+          description: The total amount in Base currency (YR currency)
+          example: 100
+        totalAmountInPmCurrency:
+          type: number
+          description: The total amount in Pm currency
+          example: 100
+        totalAmountInGuestCurrency:
+          type: number
+          description: The total amount in Guest currency
+          example: 100
+        payoutInPmCurrency:
+          type: number
+          description: The payout amount in Pm currency
+          example: 100
+        serviceFeeInPmCurrency:
+          type: number
+          description: The service fee (include VAT) amount in Pm currency
+          example: 100
+        serviceFeeWithoutVATInPmCurrency:
+          type: number
+          description: The service fee without VAT fee amount in Pm currency
+          example: 100
+        serviceFeePercentageWithoutVAT:
+          type: number
+          description: The service fee percentage without VAT fee
+          example: 0.05
+        vatFeeInPmCurrency:
+          type: number
+          description: The VAT fee of the service order in Pm currency
+          example: 1.25
+        createdAt:
+          type: string
+          description: When the order was created
+          example: '2023-03-30T10:47:51.000Z'
+        updatedAt:
+          type: string
+          description: When the order was created
+          example: '2023-03-30T10:47:51.000Z'
+        extraOrderItems:
+          type: array
+          items:
+            $ref: '#/components/schemas/extra-order-item'
+    extra-order-item:
+      type: object
+      properties:
+        id:
+          type: string
+          description: Id of order item
+          example: id
+        quantity:
+          type: number
+          description: The total quantity of order item
+          example: 100
+        metadata:
+          type: object
+          description: |
+            Metadata of the order item.
+            E.g: unit quantity, duration quantity,...
+          properties:
+            unitQuantity:
+              type: number
+              description: The unit quantity of the order item
+              example: 10
+            durationQuantity:
+              type: number
+              description: The duration quantity of the order item
+              example: 10
+        extraServiceDefinitionSnapshot:
+          type: object
+          description: |
+            The snapshot of the extra service definition at the time
+            the order is created. This contain only necessary fields.
+          properties:
+            id:
+              type: string
+              description: The id of extra service definition.
+              example: extraDefinitionId
+            accountId:
+              type: string
+              description: The account id that extra definition belongs to.
+              example: accountId
+            currency:
+              type: string
+              description: The currency of extra service definition.
+              example: EUR
+            unitPrice:
+              type: number
+              description: The unit price of extra service definition
+              example: 69
+            earliestOrderRule:
+              type: string
+              description:
+                The earliest time when extra definition can be ordered
+              example: AT_THE_TIME_BOOKING
+              enum:
+                - AT_THE_TIME_BOOKING
+                - 48H_BEFORE_CHECK_IN
+                - 24H_BEFORE_CHECK_IN
+                - 48H_BEFORE_CHECK_OUt
+                - 24H_BEFORE_CHECK_OUt
+            latestOrderRule:
+              type: string
+              description: The latest time when extra definition can be ordered
+              example: NO_RESTRICTION
+              enum:
+                - 48H_BEFORE_CHECK_IN
+                - 24H_BEFORE_CHECK_IN
+                - 48H_BEFORE_CHECK_OUt
+                - 24H_BEFORE_CHECK_OUt
+                - NO_RESTRICTION
+            cancellationOrderRule:
+              type: string
+              description:
+                The time rule when extra definition order can be cancelled
+              example: NONE_REFUNDABLE
+              enum:
+                - NONE_REFUNDABLE
+                - ONE_DAY_BEFORE_CHECK_IN
+                - ANY_TIME_BEFORE_CHECK_OUT
+            feeBasis:
+              type: string
+              description: The fee basis of extra definition
+              example: PER_UNIT
+              enum:
+                - FREE
+                - PER_UNIT
+                - PER_UNIT_PER_DAY
+                - PER_DAY
+                - PER_PERSON_PER_WEEK
+                - PER_PERSON_PER_DAY
+                - PER_WEEK
+                - PER_PERSON
+            descriptions:
+              type: array
+              description:
+                The list of translated descriptions of extra definition
+              example:
+                - name: Free Coke
+                  languageCode: EN
+                  descriptions: Descriptions
+                - name: Free Coke ES
+                  languageCode: ES
+                  descriptions: Descriptions
+        unitPriceInPmCurrency:
+          type: number
+          description: Unit price of extra service definition in Pm currency
+          example: 100
+        unitPriceInGuestCurrency:
+          type: number
+          description: Unit price of extra service definition in Guest currency
+          example: 100
+        unitPriceInBaseCurrency:
+          type: number
+          description:
+            Unit price of extra service definition in Base currency (YR
+            currency)
+          example: 100
+    create-extra-order-payload:
+      type: object
+      required:
+        - bookingId
+        - currency
+        - items
+      properties:
+        bookingId:
+          type: string
+          description: Booking id of the extra service order
+          example: ABCD
+        currency:
+          type: string
+          description:
+            The currency of the guest used to create the extra service order
+          example: GBP
+        items:
+          type: array
+          items:
+            type: object
+            required:
+              - definitionId
+              - quantity
+            properties:
+              definitionId:
+                type: string
+                description: The extra service definition ID
+                example: extraDefinitionId
+              quantity:
+                type: number
+                description:
+                  The total order quantity of the extra service definition
+                example: 9
+              metadata:
+                type: object
+                properties:
+                  unitQuantity:
+                    type: number
+                    description: The unit ordered quantity of extra definition
+                    example: 3
+                  durationQuantity:
+                    type: number
+                    description:
+                      The duration ordered quantity of extra definition
+                    example: 3
+    create-extra-order-payment-session-payload:
+      type: object
+      required:
+        - bookingId
+        - gatewayId
+      properties:
+        bookingId:
+          type: string
+          description: Booking id of the extra service order
+          example: ABCD
+        gatewayId:
+          type: string
+          description:
+            The payment service that the Guest used to process payment for the
+            order
+          example: stripe
+    automatic-booking-updated-event.v1:
+      title: automatic-booking-updated-event.v1
+      x-stoplight:
+        id: lz03sl8yvml66
+      type: object
+      properties:
+        id:
+          type: string
+          description: Booking ID
+        changes:
+          type: object
+          description: Booking changes data
+          minProperties: 1
+          properties:
+            from:
+              type: string
+              description: Booking check-in date
+              format: date
+              pattern: YYYY-MM-DD
+            to:
+              type: string
+              description: Booking check-out date
+              format: date
+              pattern: YYYY-MM-DD
+            numberOfAdults:
+              type: integer
+              description: Number of adults
+              minimum: 1
+            numberOfChildren:
+              type: integer
+              description: Number of children
+              minimum: 0
+            numberOfInfants:
+              type: integer
+              description: Number of infants
+              minimum: 0
+            numberOfPets:
+              type: integer
+              description: Number of pets
+              minimum: 0
+      required:
+        - id
+        - changes
+    booking-cancelled-event.v1:
+      title: booking-cancelled-event.v1
+      x-stoplight:
+        id: qe0tmnufrg9ef
+      type: object
+      properties:
+        id:
+          type: string
+          description: Booking ID
+          example: KISYLG
+      required:
+        - id
+    account-currency-changed-event.v1:
+      title: account-currency-changed-event.v1
+      x-stoplight:
+        id: xkl7levpyhthi
+      type: object
+      properties:
+        accountId:
+          type: string
+          format: uuid
+          description: Account ID
+        currency:
+          type: string
+          example: EUR
+          description: Currency
+      required:
+        - accountId
+        - currency
+    listing-cloned-event.v1:
+      title: listing-cloned-event.v1
+      x-stoplight:
+        id: c8nx6c1xqc1y5
+      type: object
+      properties:
+        sourceListingId:
+          type: integer
+          description: Source Listing ID
+          minimum: 1
+          example: 344519
+        targetListingId:
+          type: integer
+          description: Target Listing ID. Must not be same as sourceListingId
+          minimum: 1
+          example: 344520
+      required:
+        - sourceListingId
+        - targetListingId
+    booking-moved-event.v1:
+      type: object
+      properties:
+        targetListingId:
+          type: integer
+          description:
+            Target Listing ID. Must not be same as current listingId of the
+            orders
+          minimum: 1
+          example: 344520
+        targetAccountId:
+          type: string
+          description:
+            Target Account ID. Must not be same as current accountId of the
+            orders
+          example: a1dc5ff7-acba-454b-8728-1589dcc94925
+        bookingId:
+          type: string
+          description: The booking ID which was requested to move
+          example: NS9R70
+      required:
+        - targetListingId
+        - targetAccountId
+        - bookingId
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+x-tagGroups: null
+tags:
+  - name: Extra Service Definitions
+  - name: Extra Service Orders
+  - name: Fee Basis
+  - name: V1 Event Handlers

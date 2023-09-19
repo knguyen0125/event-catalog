@@ -58,7 +58,7 @@ const ServiceList: React.FC<ServiceListProps> = ({ services }) => {
                   ? {
                       icon: DocumentIcon,
                       iconClassName: 'text-stone-500',
-                      text: `Docs (${service.consumesEvents?.length})`,
+                      text: `Docs (${service.docs?.length})`,
                     }
                   : null,
               ]}

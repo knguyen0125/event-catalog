@@ -1,0 +1,170 @@
+openapi: 3.0.3
+info:
+  title: Notification Service
+  description: Notification Service
+  version: 0.1.0
+servers:
+  - url: 'https://notification-service.local.svc.cluster.local'
+    description: Local
+  - url: 'https://notification-service.dev.svc.cluster.local'
+    description: Development
+  - url: 'https://notification-service.prod.svc.cluster.local'
+    description: Production
+paths:
+  '/users/{userId}/push-notification-channels':
+    post:
+      operationId: addPushNotificationDeviceRegistrationToken
+      summary: Add or update a push notification channel
+      description: |
+        Register a device registration token for a user device
+
+        If the device registration token already exists, its expiration date will be updated (to prevent stale tokens).
+
+        It is recommended to call this endpoint every time the app is opened to ensure the device registration token is up to date.
+      parameters:
+        - in: path
+          name: userId
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/push_notification_channel.v1.partial'
+      responses:
+        '201':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/push_notification_channel.v1.full'
+  '/users/{userId}/push-notification-channels/publish':
+    post:
+      summary: Publish a test notification
+      parameters:
+        - in: path
+          name: userId
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                deviceRegistrationToken:
+                  type: string
+                  description:
+                    The registration token of user's device. If empty then the
+                    API will send to all user'devices
+                notification:
+                  type: object
+                  description:
+                    Basic notification object to use across all platform
+                  properties:
+                    title:
+                      type: string
+                      description: The notification title
+                    body:
+                      type: string
+                      description: The notification body
+                    imageUrl:
+                      type: string
+                      description:
+                        Contains the URL of the image to be displayed in the
+                        notification.
+                data:
+                  type: object
+                  additionalProperties: true
+                  description:
+                    An object containing arbitrary data to be sent to the client
+                android:
+                  type: object
+                  description:
+                    Android-specific notification options. Refers to
+                    `AndroidConfig` in [FCM
+                    API](https://firebase.google.com/docs/reference/fcm/rest/v1/projects.messages#androidconfig).
+                  additionalProperties: true
+                apns:
+                  type: object
+                  description:
+                    Apple Push Notification Service-specific options. Refers to
+                    `ApnsConfig` in [FCM
+                    API](https://firebase.google.com/docs/reference/fcm/rest/v1/projects.messages#apnsconfig).
+                  additionalProperties: true
+                webpush:
+                  type: object
+                  description:
+                    Webpush protocol options. Refers to `WebpushConfig` in [FCM
+                    API](https://firebase.google.com/docs/reference/fcm/rest/v1/projects.messages#webpushconfig).
+                  additionalProperties: true
+      responses:
+        '201':
+          description: OK
+        '400':
+          description: Bad Request
+        '403':
+          description:
+            Sender ID Mismatch. The sender ID is different from the sender ID
+            for the registration token.
+        '404':
+          description:
+            Not Found. Either the user or the device registration token does not
+            exist.
+security:
+  - bearerAuth: []
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+  schemas:
+    push_notification_channel.v1.partial:
+      type: object
+      required:
+        - deviceRegistrationToken
+        - userId
+      properties:
+        deviceRegistrationToken:
+          type: string
+          description: Firebase device registration token
+    push_notification_channel.v1.full:
+      type: object
+      allOf:
+        - $ref: '#/components/schemas/push_notification_channel.v1.partial'
+        - type: object
+          required:
+            - expiresAt
+            - pushNotificationProvider
+            - status
+          properties:
+            userId:
+              type: string
+              description: User ID
+              format: uuid
+            pushNotificationProvider:
+              type: string
+              description: Push notification provider.
+              enum:
+                - FCM
+              default: FCM
+              readOnly: true
+            expiresAt:
+              type: string
+              description:
+                Expiration date of the device registration token. This is
+                current date + 30 days.
+              format: date-time
+              readOnly: true
+            status:
+              type: string
+              description: Status of the device registration token.
+              enum:
+                - ACTIVE
+                - INACTIVE
+              readOnly: true

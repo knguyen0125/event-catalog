@@ -1,0 +1,138 @@
+openapi: 3.0.3
+info:
+  title: Booking Service
+  description: |
+    Booking Service is a service that manage booking. <!-- ReDoc-Inject: <security-definitions> -->
+  version: 0.1.0
+  contact:
+    email: cong.nguyen@your.rentals
+    name: Cong Nguyen
+servers:
+  - url: 'https://api-internal-local.your.rentals/booking'
+    description: Local
+  - url: 'https://api-internal-dev.your.rentals/booking'
+    description: Development
+  - url: 'https://api-internal.your.rentals/booking'
+    description: Production
+security:
+  - bearerAuth: []
+tags:
+  - name: Manual Booking
+paths:
+  /manual-bookings/batch-create:
+    post:
+      summary: Batch create manual bookings
+      operationId: batchCreateManualBookings
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: string
+                  example: GDBWI6
+        '400':
+          description: Bad Request
+        '401':
+          description: Unauthorized
+      description: Batch create manual bookings
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: array
+              maxItems: 25
+              items:
+                allOf:
+                  - type: object
+                    properties:
+                      listingId:
+                        type: integer
+                        minimum: 0
+                        exclusiveMinimum: true
+                        example: 344519
+                        description: Listing ID
+                      from:
+                        type: string
+                        format: date
+                        description: 'Check-in date'
+                        example: '2023-01-01'
+                      to:
+                        type: string
+                        format: date
+                        description: 'Check-out date'
+                        example: '2023-01-02'
+                      guest:
+                        type: object
+                        description: The primary guest's details
+                        properties:
+                          firstName:
+                            type: string
+                            description: Guest first name
+                            example: John
+                          lastName:
+                            type: string
+                            description: Guest last name
+                            example: Smith
+                          email:
+                            type: string
+                            description: Guest email
+                            example: guest@example.com
+                          phone:
+                            type: string
+                            description: Guest phone number
+                            example: +1 123 456 7890
+                        required:
+                          - firstName
+                    anyOf:
+                      - $ref: '#/components/schemas/reason.default.v1'
+                      - $ref: '#/components/schemas/reason.other.v1'
+                    required:
+                      - listingId
+                      - from
+                      - to
+                      - reason
+                      - guest
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+  schemas:
+    reason.default.v1:
+      title: Reason Default Values
+      type: object
+      properties:
+        reason:
+          type: string
+          enum:
+            - manual_booking
+            - maintenance
+            - private_use
+            - closed
+          description: Reason for blocking the calendar
+          example: 'manual_booking'
+        notes:
+          type: string
+          maxLength: 1000
+          description: Private note
+          example: 'Not available'
+    reason.other.v1:
+      title: Reason Other Value
+      type: object
+      properties:
+        reason:
+          type: string
+          enum:
+            - other
+          description: Reason for blocking the calendar
+          example: 'other'
+        notes:
+          type: string
+          maxLength: 1000
+          description: Private note
+          example: 'Not available'
+      required:
+        - notes

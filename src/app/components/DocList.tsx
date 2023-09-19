@@ -2,7 +2,11 @@ import React from 'react';
 import { ModelObject } from 'objection';
 import slugify from 'slugify';
 import { Link } from '@remix-run/react';
-import { CubeIcon, RectangleStackIcon } from '@heroicons/react/24/outline';
+import {
+  CubeIcon,
+  RectangleStackIcon,
+  ClockIcon,
+} from '@heroicons/react/24/outline';
 import CardV2 from '~/components/CardV2';
 import { Doc } from '~/database/models.server';
 
@@ -46,6 +50,11 @@ const DocList: React.FC<DocListProps> = ({ docs }) => {
                       text: doc.service_name,
                     }
                   : null,
+                {
+                  icon: ClockIcon,
+                  iconClassName: 'text-gray-500',
+                  text: `Last Updated: ${doc.last_updated_at}`,
+                },
               ]}
             />
           </Link>

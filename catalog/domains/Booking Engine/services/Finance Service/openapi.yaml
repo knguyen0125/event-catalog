@@ -1,0 +1,112 @@
+openapi: 3.0.3
+info:
+  title: Finance Service
+  description: >
+    Finance Service is a service that manage finance. # Authentication <!--
+    ReDoc-Inject: <security-definitions> -->
+  version: 0.1.0
+  contact:
+    email: kien.nguyen@your.rentals
+    name: Kien Nguyen
+servers:
+  - url: http://localhost:8080/finance
+    description: Local
+  - url: https://api-internal-dev.your.rentals/finance
+    description: Development
+  - url: https://api-internal.your.rentals/finance
+    description: Production
+security:
+  - bearerAuth: []
+tags:
+  - name: Wallet
+paths:
+  '/scripts/debt-collect':
+    post:
+      tags:
+        - Wallet
+      summary: Script debt collect from organization
+      description:
+        Script that runs everyday to create a payout adjustment so that we can
+        deduct it from PM's booking payout from all accounts in the
+        organization.
+      operationId: scriptDebtCollect
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                organizationId:
+                  type: string
+                  format: uuid
+                  description: The organizationId
+                totalLoanAmount:
+                  type: number
+                  format: float
+                  minimum: 0
+                  exclusiveMinimum: true
+                  description: Total loan amount we need to debit
+                  example: 100
+                currency:
+                  type: string
+                  description: Loan currency code in uppercase format
+                  minLength: 3
+                  maxLength: 3
+                  example: DKK
+                loanStart:
+                  type: string
+                  format: date
+                  description:
+                    The date of the loan begins to debit. If this date has not
+                    been reached, the job will not be allowed to deduct the loan
+                    from PM's booking payout.
+                loanEnd:
+                  type: string
+                  format: date
+                  description:
+                    The last day to be able to debit. If this date is exceeded,
+                    even if the loan still exists, PM's booking payout will not
+                    be deducted. If this date is `null`, we will try to debit
+                    until `total debit` = `total loan amount`.
+                repaymentPercentage:
+                  type: number
+                  minimum: 0
+                  maximum: 1
+                  description:
+                    Repayment percentage that we will debit on each booking
+                    payout.
+                  example: 0.015
+                  exclusiveMinimum: true
+                  exclusiveMaximum: true
+              required:
+                - organizationId
+                - totalLoanAmount
+                - currency
+                - loanStart
+                - repaymentPercentage
+      responses:
+        '200':
+          description: OK
+        '401':
+          $ref: '#/components/responses/401.error.v1'
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+  responses:
+    401.error.v1:
+      description: Access token is invalid or expired
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              statusCode:
+                type: integer
+                description: The HTTP status code
+                example: 401
+              message:
+                type: string
+                description: The error message
+                example: Access token is invalid or expired

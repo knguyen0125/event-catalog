@@ -27,6 +27,7 @@ export async function loader({ params }: LoaderArgs) {
           'domain_name',
           'service_name',
           'file_name',
+          'last_updated_at',
         );
       },
     });

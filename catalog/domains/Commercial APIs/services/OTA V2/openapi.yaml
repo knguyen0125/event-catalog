@@ -1,0 +1,706 @@
+openapi: 3.0.3
+info:
+  title: OTA V2 Commercial API
+  version: 0.1.0
+  contact:
+    email: kien.nguyen@your.rentals
+    name: Kien Nguyen
+  description: ''
+servers:
+  - url: 'https://localhost:8080'
+    description: Local
+security:
+  - bearerAuth: []
+tags:
+  - name: Authentication
+  - name: Listing
+  - name: Booking
+  - name: Organization
+  - name: Account
+  - name: User
+paths:
+  '/bookings/:bookingId':
+    get:
+      summary: Public APIv2 - Get Booking Details
+      tags:
+        - Booking
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/booking.full.v2'
+      operationId: getBookingByBookingId
+      description: 'Public APIv2 - Get Booking Details '
+    parameters: []
+  '/listings/:listingId/rate-plans/default/quote':
+    post:
+      summary: ''
+      operationId: getDefaultQuoteByListingId
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/quote.v2'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                from:
+                  type: string
+                  example: '2022-02-02'
+                  format: date
+                  description: Checkin date (format `YYYY-MM-DD`)
+                to:
+                  type: string
+                  format: date
+                  example: '2022-02-05'
+                  description: Checkout date (format `YYYY-MM-DD`)
+                numberOfAdults:
+                  type: integer
+                  example: 1
+                  minimum: 1
+                  description: Number of adults
+                numberOfChildren:
+                  type: integer
+                  example: 1
+                  minimum: 0
+                  maximum: 20
+                  description: 'Number of children, from age 2 to age 12'
+                numberOfInfants:
+                  type: integer
+                  example: 1
+                  minimum: 0
+                  maximum: 20
+                  description: 'Number of babies, from age 0 to age 2'
+                childrenAges:
+                  type: array
+                  description:
+                    'Ages of children, from age 0 to age 12. Number of items
+                    must be the same as `numberOfChildren`'
+                  items:
+                    type: integer
+                    minimum: 0
+                    maximum: 12
+              required:
+                - from
+                - to
+                - numberOfAdults
+        description: ''
+      description: Public APIv2 - Get Quote
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+  schemas:
+    booking.full.v2:
+      title: get-booking-details-response
+      x-stoplight:
+        id: e5de2441add3d
+      type: object
+      properties:
+        id:
+          type: string
+          x-stoplight:
+            id: a13c73wbt33kq
+          description: Booking ID
+          example: ABCDEF
+        listingId:
+          type: string
+          x-stoplight:
+            id: dj2t95upncn0v
+          description: Listing ID
+          example: '12345'
+        status:
+          type: string
+          x-stoplight:
+            id: wakd46rvmcj9h
+          description: Booking Status
+          enum:
+            - EXPIRED
+            - DECLINED
+            - PENDING_PAYMENT
+            - PENDING_CONFIRM
+            - CONFIRMED
+            - IN_PROGRESS
+            - COOL_OFF
+            - COMPLETED
+            - DISPUTE_BY_PM
+            - DISPUTE_BY_GUEST
+            - CANCELLED
+            - CANCELLED_BY_GUEST
+            - CANCELLED_BY_PM
+            - CANCELLED_BY_YR
+            - PENDING_CANCELLATION
+            - PENDING_CANCELLATION_GUEST
+          example: EXPIRED
+        from:
+          type: string
+          x-stoplight:
+            id: ahwbvhnbnk2ri
+          description: 'Check-in date, in local time'
+          format: date
+          example: '2022-02-12'
+        fromTime:
+          type: string
+          x-stoplight:
+            id: phpsvm19dvyxz
+          description: 'Check-in time, in local time'
+          example: '12:00'
+        to:
+          type: string
+          x-stoplight:
+            id: bfmwz1hqe2h4t
+          description: Check-out date - in local time
+          format: date
+          example: '2022-02-12'
+        toTime:
+          type: string
+          x-stoplight:
+            id: u9kwwrlubnciu
+          description: 'Check-out time, in local time'
+          example: '14:00'
+        paymentStatus:
+          type: string
+          x-stoplight:
+            id: l69k7t0v608bu
+          description: Payment status of booking
+          enum:
+            - SUCCESS
+            - FAILURE
+            - PARTIAL_PAID
+            - PENDING
+            - CANCELLED
+            - PAID
+            - REFUNDED
+          example: SUCCESS
+        guest:
+          type: object
+          x-stoplight:
+            id: dcshdbab0bzrc
+          description: Guest information
+          properties:
+            firstName:
+              type: string
+              x-stoplight:
+                id: 5y47ubkatw52o
+              description: Guest's first name
+              example: Jona
+            lastName:
+              type: string
+              x-stoplight:
+                id: ks28er3ns3qbb
+              description: Guest's last name
+              example: Than
+            email:
+              type: string
+              x-stoplight:
+                id: utiowj5w57g7p
+              description: Guest's email
+            phone:
+              type: string
+              x-stoplight:
+                id: 4tt0ndrg7k55w
+              description: Guest's phone number
+            language:
+              type: string
+              x-stoplight:
+                id: m5nump27nmuwx
+              description: Guest's language
+              example: EN
+            address:
+              type: string
+              x-stoplight:
+                id: vsya26og69o1b
+              description: Guest's address
+            country:
+              type: string
+              x-stoplight:
+                id: 1xzm8sw68cohk
+              description: Guest's country
+        createdAt:
+          type: string
+          x-stoplight:
+            id: 9gh4oib53fjj8
+          format: date-time
+          description: Time when booking has created
+        updatedAt:
+          type: string
+          x-stoplight:
+            id: ay0j3ycidenbb
+          description: Time when booking has updated
+          format: date-time
+        instalments:
+          type: array
+          x-stoplight:
+            id: abh8xeq5lchdk
+          description: Guest payment installments
+          items:
+            type: object
+            properties:
+              name:
+                type: string
+                description: Installment name
+                example: deposit
+              amount:
+                type: number
+                description: Installment amount
+                example: 1
+              dueDate:
+                type: string
+                format: date
+                description: 'Installment due '
+                example: '2022-02-12'
+              status:
+                type: string
+                description: Installment Status
+                enum:
+                  - init
+                  - authorized
+                  - paid
+                example: paid
+        propertyManagerId:
+          type: string
+          x-stoplight:
+            id: wmj8k5md1h3hs
+          description: Property Manager Id
+        links:
+          type: object
+          x-stoplight:
+            id: d03p0kmvjocya
+          description: Booking links
+          properties:
+            type:
+              type: string
+              x-stoplight:
+                id: c0ej0ojq4xjdc
+              description: Link type
+            url:
+              type: string
+              x-stoplight:
+                id: 0e6guqb3lkm2m
+              description: Link url
+        salesChannelBookingId:
+          type: string
+          x-stoplight:
+            id: yo0a8veqnhi6u
+          description: Sales Channel Booking Id
+        salesChannelId:
+          type: string
+          x-stoplight:
+            id: i0ul3u405gb03
+          description: Sales Channel ID
+        salesBrandId:
+          type: string
+          x-stoplight:
+            id: 0y4cm7e2gsqne
+          description: Sales Branch ID
+        numberOfAdults:
+          type: number
+          x-stoplight:
+            id: 38ywfyfyo9ksz
+          description: Number of Adults
+          minimum: 1
+        numberOfChildren:
+          type: number
+          x-stoplight:
+            id: 02mocjvoeuv8t
+          description: Number of Children
+        numberOfInfants:
+          type: number
+          x-stoplight:
+            id: gbhd3svb2vqqv
+          description: Number of Infants
+        childrenAges:
+          type: array
+          x-stoplight:
+            id: 7dhwdv8lh44fh
+          description:
+            Ages of children of the booking. Number of items must be the same as
+            `numberOfChildren`
+          items:
+            type: number
+        pricing:
+          type: object
+          x-stoplight:
+            id: 86c5evtvm3brp
+          description: Booking pricing
+          properties:
+            currency:
+              type: string
+              x-stoplight:
+                id: t2yf8pfpkcprx
+              description:
+                Currency of the booking. Guest will pay in this currency
+              example: EUR
+            rental:
+              type: number
+              x-stoplight:
+                id: 7ilskv1zkieeq
+              description: 'Total Daily Rate, minus Discount'
+              example: 4
+            cleaning:
+              type: number
+              x-stoplight:
+                id: 5u2ymsk46lnzt
+              description: Mandatory cleaning fee. Guest will pay upon booking.
+              example: 1
+            discount:
+              type: number
+              x-stoplight:
+                id: fnmk709qyv82o
+              description: Amount that has been discounted from rental price.
+              example: 1
+            totalAmount:
+              type: number
+              x-stoplight:
+                id: zu2d86rp9bw5h
+              description: Total amount of booking
+              example: 6
+        cancellationPolicy:
+          type: string
+          x-stoplight:
+            id: 4v6sjhc33wg9q
+          description: |-
+            | Cancellation Policy | Description |
+            | - | - |
+            | SUPER_FLEXIBLE | 50% refund prior to check-in, except fees |
+            | FLEXIBLE | 50% refund up to 7 days prior to check-in, except fees |
+            | MODERATE | 50% refund up to 14 days prior to check-in, except fees |
+            | STRICT | 50% refund up to 30 days prior to check-in, except fees |
+            | SUPER_STRICT | 50% refund up to 60 days prior to check-in, except fees |
+            | NON_REFUNDABLE | No refund prior to check-in |
+            | HALF | 50% refund up to 1 days prior to check-in |
+            | FREE_1 | 100% refund up to 1 days prior to check-in |
+            | FREE_2 | 100% refund up to 2 days prior to check-in |
+            | FREE_5 | 100% refund up to 5 days prior to check-in |
+            | FREE_7 | 100% refund up to 7 days prior to check-in |
+            | FREE_14 | 100% refund up to 14 days prior to check-in |
+            | FREE_30 | 100% refund up to 30 days prior to check-in |
+            | FREE_60 | 100% refund up to 60 days prior to check-in |
+          enum:
+            - SUPER_FLEXIBLE
+            - FLEXIBLE
+            - MODERATE
+            - STRICT
+            - SUPER_STRICT
+            - NON_REFUNDABLE
+            - HALF
+            - FREE_1
+            - FREE_2
+            - FREE_5
+            - FREE_7
+            - FREE_14
+            - FREE_30
+            - FREE_60
+          example: SUPER_FLEXIBLE
+        taxes:
+          type: array
+          x-stoplight:
+            id: dunm3cr7riv3g
+          description: Booking taxes
+          items:
+            x-stoplight:
+              id: l8ixa9zefsw2j
+            type: object
+            properties:
+              name:
+                type: string
+                x-stoplight:
+                  id: r0b9f0felyk16
+                description: |
+                  Taxe name
+              feeBasis:
+                type: string
+                x-stoplight:
+                  id: 7sznhaps9wtva
+                description: Tax fee basis
+                enum:
+                  - FREE
+                  - PER_DAY
+                  - PER_NIGHT
+                  - PER_PERSON
+                  - PER_ADULT_PER_DAY
+                  - PER_ADULT_PER_STAY
+                  - PER_ADULT_PER_WEEK
+                  - PER_PERSON_PER_NIGHT
+                  - PER_PERSON_PER_DAY
+                  - PER_PERSON_PER_STAY
+                  - PER_PERSON_PER_WEEK
+                  - PER_PET_PER_DAY
+                  - PER_PET_PER_STAY
+                  - PER_PET_PER_WEEK
+                  - PER_STAY
+                  - PER_USAGE
+                  - PER_UNIT
+                  - PER_WEEK
+                  - PERCENT_OF_RENTAL_AMOUNT
+              fee:
+                type: string
+                x-stoplight:
+                  id: jk3lh4ixgkz8e
+                description: Tax fee
+      required:
+        - id
+        - listingId
+        - status
+        - from
+        - to
+        - createdAt
+        - updatedAt
+        - salesChannelId
+        - numberOfAdults
+    quote.v2:
+      title: quote.v2
+      x-stoplight:
+        id: iii5pvm6p718c
+      type: object
+      properties:
+        cancellationPolicy:
+          type: string
+          example: FLEXIBLE
+          description: Cancellation policy
+          enum:
+            - SUPER_FLEXIBLE
+            - FLEXIBLE
+            - MODERATE
+            - STRICT
+            - SUPER_STRICT
+            - NON_REFUNDABLE
+            - HALF
+            - FREE_1
+            - FREE_2
+            - FREE_5
+            - FREE_7
+            - FREE_14
+            - FREE_30
+            - FREE_60
+        rentals:
+          type: number
+          description: Rental rate (discount is included)
+        cleaning:
+          type: number
+          description: Cleaning fee
+        cleaningFeeBasis:
+          type: string
+          description: Cleaning fee basis
+          example: MANDATORY
+          enum:
+            - INCLUDED
+            - OPTIONAL
+            - MANDATORY
+        discount:
+          type: number
+          description: 'Discount amount, in currency'
+        discountDetails:
+          type: array
+          description: Discount details
+          items:
+            type: object
+            properties:
+              type:
+                type: string
+                enum:
+                  - MOBILE
+                  - EARLY_BIRD
+                  - LONGER_STAYS
+                  - LAST_MINUTE
+                  - CAMPAIGN
+                example: EARLY_BIRD
+                description: Discount type
+              discount:
+                type: object
+                description: Discount amount
+                properties:
+                  setup:
+                    type: string
+                    enum:
+                      - INCLUDED
+                      - OPTIONAL
+                      - MANDATORY
+                      - DISCOUNT
+                    example: OPTIONAL
+                    description: Discount setup
+                  basis:
+                    type: string
+                    description: Discount basis
+                    enum:
+                      - PER_DAY
+                      - PER_NIGHT
+                      - PER_PERSON
+                      - PER_ADULT_PER_DAY
+                      - PER_ADULT_PER_STAY
+                      - PER_ADULT_PER_WEEK
+                      - PER_PERSON_PER_NIGHT
+                      - PER_PERSON_PER_DAY
+                      - PER_PERSON_PER_STAY
+                      - PER_PERSON_PER_WEEK
+                      - PER_PET_PER_DAY
+                      - PER_PET_PER_STAY
+                      - PER_PET_PER_WEEK
+                      - PER_STAY
+                      - PER_USAGE
+                      - PER_UNIT
+                      - PER_WEEK
+                      - PERCENT_OF_RENTAL_AMOUNT
+                    example: PER_DAY
+                  localCurrency:
+                    type: string
+                    description: Listing local currency
+                  localCurrencyAmount:
+                    type: number
+                    description: Discount amount in local currency
+                  currency:
+                    type: string
+                    description: Currency
+                  amount:
+                    type: number
+                    description: Amount of money in currency
+                  percent:
+                    type: number
+                    description: 'Percentage. Range: 0 to 1'
+              metadata:
+                anyOf:
+                  - properties:
+                      minNumberOfMonthsFromCheckin:
+                        type: integer
+                        description: Minimum number of months from checkin
+                  - properties:
+                      minNumberOfDaysFromCheckin:
+                        type: integer
+                        description: Minimum number of days from checkin
+                  - properties:
+                      minDurationOfStay:
+                        type: integer
+                        description: Minimum duration of stay
+                type: object
+        securityDeposit:
+          type: number
+          example: 1
+          description: Security deposit
+        bookingModel:
+          type: string
+          description:
+            'Booking model. INSTANT: guest is automatically confirmed.
+            ON_REQUEST: PM will need to confirm guest.'
+          enum:
+            - INSTANT
+            - ON_REQUEST
+          example: INSTANT
+        guestPaymentInstallments:
+          type: array
+          description: Guest payment installments
+          items:
+            type: object
+            properties:
+              name:
+                type: string
+                description: Installment name
+              amount:
+                type: string
+                description: Installment amount
+              dueDate:
+                type: string
+                description: Installment due date
+        currency:
+          type: string
+          description: Currency
+          example: EUR
+        taxes:
+          type: array
+          description: Listing taxes
+          items:
+            type: object
+            properties:
+              code:
+                type: string
+                example: CITY_TAX
+                description: Listing tax code
+                enum:
+                  - CITY_TAX
+                  - DESTINATION_FEE
+                  - GOODS_AND_SERVICES_TAX
+                  - GOVERNMENT_TAX
+                  - LOCAL_TAX
+                  - RESORT_FEE
+                  - TAX
+                  - TOURISM_FEE
+                  - VAT_VALUE_ADDED_TAX
+              fee:
+                type: object
+                description: Fee structure
+                properties:
+                  setup:
+                    type: string
+                    enum:
+                      - INCLUDED
+                      - OPTIONAL
+                      - MANDATORY
+                      - DISCOUNT
+                    example: MANDATORY
+                    description: Fee setup
+                  basis:
+                    type: string
+                    enum:
+                      - PER_DAY
+                      - PER_NIGHT
+                      - PER_PERSON
+                      - PER_ADULT_PER_DAY
+                      - PER_ADULT_PER_STAY
+                      - PER_ADULT_PER_WEEK
+                      - PER_PERSON_PER_NIGHT
+                      - PER_PERSON_PER_DAY
+                      - PER_PERSON_PER_STAY
+                      - PER_PERSON_PER_WEEK
+                      - PER_PET_PER_DAY
+                      - PER_PET_PER_STAY
+                      - PER_PET_PER_WEEK
+                      - PER_STAY
+                      - PER_USAGE
+                      - PER_UNIT
+                      - PER_WEEK
+                      - PERCENT_OF_RENTAL_AMOUNT
+                    example: PER_DAY
+                    description: Fee basis
+                  localCurrency:
+                    type: string
+                    description: Listing local currency
+                  localCurrencyAmount:
+                    type: number
+                    description: Fee amount in local currency
+                  currency:
+                    type: string
+                    description: Currency
+                  amount:
+                    type: number
+                    description: Amount of money in currency
+                  percent:
+                    type: number
+                    description: 'Percentage. Range: 0 to 1'
+        totalAmount:
+          type: number
+          example: 10
+          description:
+            Total amount will be rentals + cleaning only if cleaningFeeBasis is
+            mandatory
+      required:
+        - cancellationPolicy
+        - rentals
+        - discount
+        - discountDetails
+        - bookingModel
+        - currency
+        - taxes
+x-tagGroups:
+  - name: Authentication
+    tags:
+      - Authentication
+  - name: Booking Management
+    tags:
+      - Booking

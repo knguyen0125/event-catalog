@@ -1,0 +1,29 @@
+openapi: 3.0.3
+info:
+  title: OTA V1 Commercial API
+  version: 0.1.0
+  contact:
+    email: kien.nguyen@your.rentals
+    name: Kien Nguyen
+servers:
+  - url: https://localhost:8080
+    description: Local
+security:
+  - bearerAuth: []
+tags:
+  - name: Authentication
+  - name: Listing
+  - name: Booking
+  - name: Organization
+  - name: Account
+  - name: User
+paths: {}
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+x-tagGroups:
+  - name: Authentication
+    tags:
+      - Authentication

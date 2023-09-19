@@ -1,0 +1,1264 @@
+openapi: 3.0.3
+x-stoplight:
+  id: vl24j659e1ik3
+info:
+  title: guest-registration
+  version: '1.0'
+  contact:
+    name: Hoan Le
+    email: hoan.le01@your.rentals
+  description: Guest Registration APIs
+servers:
+  - url: 'http://localhost:3000'
+    description: local
+  - url: 'https://api-internal-v2-dev.your.rentals/guest-registration-management'
+    description: development
+  - url: 'https://api-internal-v2.your.rentals/guest-registration-management'
+    description: production
+paths:
+  '/bookings/{bookingId}/guests':
+    parameters:
+      - schema:
+          type: string
+        name: bookingId
+        in: path
+        required: true
+        description: Booking ID
+    post:
+      summary: Add guests to booking
+      operationId: addBookingGuests
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/db-entity.partial.v1'
+                  - $ref: '#/components/schemas/guest.partial.v1'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    description: Description of failure
+                required:
+                  - message
+              examples:
+                Example 1:
+                  value:
+                    message: There was existing guest with given email
+        '401':
+          description: Unauthorized
+      description: Add guest data to booking
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/guest.partial.v1'
+      tags:
+        - Guest Registration Data
+  '/bookings/{bookingId}/guests/search':
+    post:
+      summary: Search Booking Guest
+      operationId: searchBookingGuests
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/paginate-response.v1'
+                  - type: object
+                    properties:
+                      results:
+                        type: array
+                        description:
+                          'Search Results: return list of guests for the given
+                          booking'
+                        items:
+                          allOf:
+                            - $ref: '#/components/schemas/db-entity.partial.v1'
+                            - $ref: '#/components/schemas/guest.partial.v1'
+                    required:
+                      - results
+      parameters:
+        - $ref: '#/components/parameters/pagination.cursor.v1'
+        - $ref: '#/components/parameters/pagination.limit.v1'
+        - $ref: '#/components/parameters/pagination.sort.v1'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                bookingIds:
+                  type: array
+                  description: Booking IDs
+                  nullable: true
+                  items:
+                    type: string
+                guestTypes:
+                  type: array
+                  description: Guest types
+                  nullable: true
+                  items:
+                    type: string
+                    enum:
+                      - ADULT
+                      - CHILD
+                guestStatuses:
+                  type: array
+                  description: Guest statuses to filter on
+                  nullable: true
+                  items:
+                    type: string
+                    enum:
+                      - INVITED
+                      - EDITING
+                      - READY_TO_SUBMIT
+                listingIds:
+                  type: array
+                  description: Listing Ids
+                  nullable: true
+                  items:
+                    type: integer
+                    minimum: 1
+      description: |-
+        Search for guest within scope of bookings:
+        - PM's bookings within their owned listings
+        - Guests to see guest book of their current booking which contains all guests who participate
+        - Admin management
+      tags:
+        - Guest Registration Data
+    parameters:
+      - schema:
+          type: string
+        name: bookingId
+        in: path
+        required: true
+        description: Booking ID
+  '/bookings/{bookingId}/guests/{guestId}':
+    parameters:
+      - schema:
+          type: string
+        name: bookingId
+        in: path
+        required: true
+        description: Booking ID
+      - schema:
+          type: string
+        name: guestId
+        in: path
+        required: true
+        description: Guest ID
+    get:
+      summary: Get booking's guest by id
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/db-entity.partial.v1'
+                  - $ref: '#/components/schemas/guest.partial.v1'
+      operationId: getBookingGuestById
+      description: Return guest data for given booking id and guest id
+      tags:
+        - Guest Registration Data
+    put:
+      summary: Update guest data
+      operationId: updateBookingGuest
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/db-entity.partial.v1'
+                  - $ref: '#/components/schemas/guest.partial.v1'
+        '400':
+          description: Bad Request
+        '401':
+          description: Unauthorized
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/guest-update.dto.v1'
+      description: Update a guest's data
+      tags:
+        - Guest Registration Data
+    delete:
+      summary: Remove guest from booking's guest book
+      operationId: deleteBookingGuestById
+      responses:
+        '200':
+          description: OK
+        '400':
+          description: Bad Request
+        '401':
+          description: Unauthorized
+      description: Remove guest data from booking's guest book
+      tags:
+        - Guest Registration Data
+  '/bookings/{bookingId}/guest-registration-submissions':
+    parameters:
+      - schema:
+          type: string
+        name: bookingId
+        in: path
+        required: true
+        description: Booking ID
+    post:
+      summary: Send booking's guest registration submission
+      operationId: sendBookingGuestRegistrationSubmission
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: string
+                    format: uuid
+                    description: Submitted Submission ID
+                    readOnly: true
+                required:
+                  - id
+        '401':
+          description: Unauthorized
+      description:
+        Send updated guest registration submission of current booking to local
+        authority portal
+      tags:
+        - Guest Registration Submission
+  '/bookings/{bookingId}/guest-registration-submissions/{submissionId}':
+    parameters:
+      - schema:
+          type: string
+        name: bookingId
+        in: path
+        required: true
+        description: Booking ID
+      - schema:
+          type: string
+        name: submissionId
+        in: path
+        required: true
+        description: Submission ID
+    get:
+      summary: Get Guest Registration Submission By ID
+      tags:
+        - Guest Registration Submission
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/db-entity.partial.v1'
+                  - $ref: '#/components/schemas/guest-registration-submission.partial.v1'
+      operationId: getSubmissionById
+      description: Get specific booking submission by submission id
+  '/bookings/{bookingId}/guest-registration-submissions/search':
+    parameters:
+      - schema:
+          type: string
+        name: bookingId
+        in: path
+        required: true
+        description: Booking ID
+    post:
+      summary: Search guest registration submissions
+      operationId: searchBookingGuestRegistrationSubmissions
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/paginate-response.v1'
+                  - type: object
+                    properties:
+                      results:
+                        type: array
+                        description:
+                          'Search results: return list of guest registration
+                          submissions'
+                        items:
+                          allOf:
+                            - $ref: '#/components/schemas/db-entity.partial.v1'
+                            - $ref: '#/components/schemas/guest-registration-submission.partial.v1'
+                    required:
+                      - results
+        '401':
+          description: Unauthorized
+      description: Search for booking guest registrations
+      tags:
+        - Guest Registration Submission
+      parameters:
+        - $ref: '#/components/parameters/pagination.cursor.v1'
+        - $ref: '#/components/parameters/pagination.limit.v1'
+        - $ref: '#/components/parameters/pagination.sort.v1'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                status:
+                  type: string
+                  enum:
+                    - SUBMITTED
+                    - ACCEPTED
+                    - REJECTED
+                  description: |-
+                    - SUBMITTED: Submission was submitted and waiting for approval
+                    - ACCEPTED: Submission was approved by local authority
+                    - REJECTED: Submission was rejected by local authority
+                  nullable: true
+  /local-authority-connections:
+    post:
+      summary: Add new local authority connection
+      operationId: addLocalAuthorityConnection
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/db-entity.partial.v1'
+                  - $ref: '#/components/schemas/local-authority-connection.partial.v1'
+        '401':
+          description: Unauthorized
+      tags:
+        - Local Authority Connection
+      description: Add new local authority connection
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/local-authority-connection.partial.v1'
+  '/local-authority-connections/{connectionId}':
+    parameters:
+      - schema:
+          type: string
+        name: connectionId
+        in: path
+        required: true
+        description: Connection ID
+    get:
+      summary: Get local authority connection by id
+      tags:
+        - Local Authority Connection
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/db-entity.partial.v1'
+                  - $ref: '#/components/schemas/local-authority-connection.partial.v1'
+        '401':
+          description: Unauthorized
+        '404':
+          description: Not Found
+      operationId: getLocalAuthoritityConnectionById
+      description: Return corresponding local authority connection with given id
+    delete:
+      summary: Delete local authority connection
+      operationId: removeLocalAuthorityConnection
+      responses:
+        '200':
+          description: OK
+        '400':
+          description: Bad Request
+        '401':
+          description: Unauthorized
+      tags:
+        - Local Authority Connection
+      description: Remove local authority connection by given id
+    put:
+      summary: Update local authority connection
+      operationId: updateLocalAuthorityConnection
+      responses:
+        '200':
+          description: OK
+        '400':
+          description: Bad Request
+      tags:
+        - Local Authority Connection
+      description: Update local authority connection configuration
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/local-authority-connection-update.dto.v1'
+  '/local-authority-connections/{connectionId}/deactivate':
+    parameters:
+      - schema:
+          type: string
+        name: connectionId
+        in: path
+        required: true
+        description: Connection ID
+    post:
+      summary: Deactivate local authority connection
+      operationId: deactivateLocalAuthorityConnection
+      responses:
+        '200':
+          description: OK
+        '400':
+          description: Bad Request
+        '401':
+          description: Unauthorized
+      tags:
+        - Local Authority Connection
+      description: Deactivate a local authority connection
+  '/local-authority-connections/{connectionId}/activate':
+    parameters:
+      - schema:
+          type: string
+        name: connectionId
+        in: path
+        required: true
+        description: Connection ID
+    post:
+      summary: Activate local authority connection
+      operationId: activateLocalAuthorityConnection
+      responses:
+        '200':
+          description: OK
+        '400':
+          description: Bad Request
+        '401':
+          description: Unauthorized
+      tags:
+        - Local Authority Connection
+      description: Activate a local authority connection
+  /local-authority-connections/search:
+    post:
+      summary: Search local authority connections
+      operationId: searchLocalAuthorityConnections
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/paginate-response.v1'
+                  - type: object
+                    properties:
+                      results:
+                        type: array
+                        description:
+                          'Search Results: a list of local authority connections'
+                        items:
+                          allOf:
+                            - $ref: '#/components/schemas/db-entity.partial.v1'
+                            - $ref: '#/components/schemas/local-authority-connection.partial.v1'
+                    required:
+                      - results
+        '401':
+          description: Unauthorized
+      description: Search for local authority connections
+      tags:
+        - Local Authority Connection
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                accountIds:
+                  type: array
+                  description:
+                    Account IDs whose own the local authority connections
+                  nullable: true
+                  items:
+                    type: string
+                    format: uuid
+                types:
+                  type: array
+                  description: Types of the local authority connections
+                  nullable: true
+                  items:
+                    type: string
+                isEnabled:
+                  type: boolean
+                  description:
+                    Filter whether if the connections are enabled or not
+                  nullable: true
+      parameters:
+        - $ref: '#/components/parameters/pagination.cursor.v1'
+        - $ref: '#/components/parameters/pagination.limit.v1'
+        - $ref: '#/components/parameters/pagination.sort.v1'
+    parameters: []
+  /local-authority-connection-associations:
+    parameters: []
+    post:
+      summary: Create Local Authority Connection Association
+      operationId: createLocalAuthorityConnectionAssociation
+      responses:
+        '200':
+          description: OK
+        '400':
+          description: Bad Request
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+      description: |-
+        Associate a listing to local authority connection. Will throw error if any below condition is not satisfied:
+        - Connection and listing must exist
+        - Connection and listing must belong to same account
+      tags:
+        - Local Authority Connection Listing Association
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                listingIds:
+                  type: array
+                  description:
+                    Array of listing ids to associate with the connection
+                  minItems: 1
+                  uniqueItems: true
+                  items:
+                    type: integer
+                connectionId:
+                  type: string
+                  description: ID of local authority connection
+                configuration:
+                  oneOf:
+                    - $ref: '#/components/schemas/local-authority-connection-association-config.spanish.v1'
+              required:
+                - listingIds
+                - connectionId
+  /local-authority-connection-associations/batch-disassociate:
+    parameters: []
+    post:
+      summary: Batch disassociate listings from local authority connection
+      operationId: localAuthorityConnectionBatchDisassociateListings
+      responses:
+        '200':
+          description: OK
+        '400':
+          description: Bad Request
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+      description: |-
+        Disassociate a list of listings from using this given local authority connection. Will throw error if any below condition is not satisfied:
+        - Listings must exist
+        - There is one existing connection association for each listing
+      tags:
+        - Local Authority Connection Listing Association
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                listingIds:
+                  type: array
+                  description:
+                    Array of listing ids to disassociate from the connection
+                  minItems: 1
+                  uniqueItems: true
+                  items:
+                    type: integer
+              required:
+                - listingIds
+  /local-authority-connection-associations/search:
+    post:
+      summary: Search local authority connection associations
+      operationId: searchLocalAuthorityConnectionAssociations
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/paginate-response.v1'
+                  - type: object
+                    properties:
+                      results:
+                        type: array
+                        description: Search Results
+                        items:
+                          $ref: '#/components/schemas/listing-association-data.v1'
+                    required:
+                      - results
+        '401':
+          description: Unauthorized
+      description: Search for local authority connection associations
+      tags:
+        - Local Authority Connection Listing Association
+      parameters:
+        - $ref: '#/components/parameters/pagination.cursor.v1'
+        - $ref: '#/components/parameters/pagination.limit.v1'
+        - $ref: '#/components/parameters/pagination.sort.v1'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                accountIds:
+                  type: array
+                  description: Account IDs whose own the connections
+                  nullable: true
+                  items:
+                    type: string
+                    format: uuid
+                listingIds:
+                  type: array
+                  description: Listing IDs
+                  nullable: true
+                  items:
+                    type: integer
+                    minimum: 1
+                connectionIds:
+                  type: array
+                  minItems: 1
+                  description: Connection IDs
+                  nullable: true
+                  items:
+                    type: string
+                connectionTypes:
+                  type: array
+                  description: Connection Types
+                  nullable: true
+                  items:
+                    type: string
+    parameters: []
+components:
+  schemas:
+    guest-identity-document.v1:
+      allOf:
+        - properties:
+            type:
+              type: string
+              description: |-
+                Document Type:
+                - SPANISH_TAX_IDENTIFICATION_NUMBER: Tax Identification Number
+                - SPANISH_FOREIGNER_IDENTITY_NUMBER: Foreiger Identity Number
+                - PASSPORT_NUMBER: Passport Number
+                - OTHER: Other document type
+              enum:
+                - SPANISH_TAX_IDENTIFICATION_NUMBER
+                - SPANISH_FOREIGNER_IDENTITY_NUMBER
+                - PASSPORT
+                - OTHER
+            document:
+              oneOf:
+                - $ref: '#/components/schemas/guest-tax-identification-number.v1'
+                - $ref: '#/components/schemas/guest-passport.v1'
+                - $ref: '#/components/schemas/guest-foreigner-identity-number'
+            country:
+              type: string
+              description: Country Code as ISO format
+              minLength: 3
+              maxLength: 3
+          required:
+            - type
+            - document
+            - country
+      type: object
+    guest.partial.v1:
+      title: guest.partial.v1
+      x-stoplight:
+        id: aqewel3nhfbri
+      type: object
+      description: Guest data
+      properties:
+        email:
+          type: string
+          format: email
+          description: Guest's email
+        type:
+          type: string
+          description: Guest Type
+          enum:
+            - ADULT
+            - CHILD
+        completedBy:
+          type: string
+          description:
+            The guest who filled this data. Empty if the guest filled himself
+        relationship:
+          type: string
+          description:
+            'Relationship of this guest with the one who filled this data. EG:
+            Mother/Father/etc...'
+          nullable: true
+        firstName:
+          type: string
+          description: Guest's first name
+        isLeadGuest:
+          type: string
+          description: Whether if this guest is the lead guest
+        status:
+          type: string
+          description: Guest status
+          enum:
+            - INVITED
+            - EDITING
+            - READY_TO_SUBMIT
+        middleName:
+          type: string
+          description: Guest's middle name. Required for READY_TO_SUBMIT status
+        lastName:
+          type: string
+          description: Guest's last name. Required for READY_TO_SUBMIT status
+        gender:
+          type: string
+          description: Guest's gender. Required for READY_TO_SUBMIT status
+        citizenship:
+          type: string
+          description: Guest's citizenship
+        dateOfBirth:
+          type: string
+          description:
+            Guest's date of birth. Required for READY_TO_SUBMIT status
+          format: date
+        identityDocument:
+          $ref: '#/components/schemas/guest-identity-document.v1'
+        residenceAddress:
+          $ref: '#/components/schemas/guest-registration-location-data.v1'
+        phone:
+          type: string
+          description: Guest's phone number. Required for READY_TO_SUBMIT status
+      required:
+        - email
+        - type
+        - firstName
+        - isLeadGuest
+        - status
+    guest-update.dto.v1:
+      title: guest-update.dto.v1
+      type: object
+      description: Guest data
+      x-stoplight:
+        id: d13d0febe7002
+      properties:
+        email:
+          type: string
+          format: email
+          description: Guest's email
+        type:
+          type: string
+          description: Guest Type
+          enum:
+            - ADULT
+            - CHILD
+        completedBy:
+          type: string
+          description:
+            The guest who filled this data. Empty if the guest filled himself
+        relationship:
+          type: string
+          description:
+            'Relationship of this guest with the one who filled this data. EG:
+            Mother/Father/etc...'
+          nullable: true
+        firstName:
+          type: string
+          description: Guest's first name
+        isLeadGuest:
+          type: string
+          description: Whether if this guest is the lead guest
+        status:
+          type: string
+          description: Guest status
+          enum:
+            - INVITED
+            - EDITING
+            - READY_TO_SUBMIT
+        middleName:
+          type: string
+          description: Guest's middle name. Required for READY_TO_SUBMIT status
+        lastName:
+          type: string
+          description: Guest's last name. Required for READY_TO_SUBMIT status
+        gender:
+          type: string
+          description: Guest's gender. Required for READY_TO_SUBMIT status
+        citizenship:
+          type: string
+          description: Guest's citizenship
+        dateOfBirth:
+          type: string
+          description:
+            Guest's date of birth. Required for READY_TO_SUBMIT status
+          format: date
+        identityDocument:
+          $ref: '#/components/schemas/guest-identity-document.v1'
+        residenceAddress:
+          $ref: '#/components/schemas/guest-registration-location-data.v1'
+        phone:
+          type: string
+          description: Guest's phone number. Required for READY_TO_SUBMIT status
+    db-entity.partial.v1:
+      title: db-entity.partial.v1
+      x-stoplight:
+        id: 3mru4co5dmjwa
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: ID of current entity
+        createdAt:
+          type: string
+          format: date-time
+          description: Created timestamp
+          readOnly: true
+        updatedAt:
+          type: string
+          format: date-time
+          description: Updated timestamp
+          readOnly: true
+      required:
+        - id
+      description: Common fields of database entities
+    local-authority-connection.configuration.spanish.v1:
+      title: local-authority-connection.configuration.spanish.v1
+      x-stoplight:
+        id: 7oo0rad98hte7
+      type: object
+      description:
+        Local authority connection configuration for Spanish Police integration
+      properties:
+        username:
+          type: string
+          description: Username to authenticate the connection
+        password:
+          type: string
+          description: Password to authenticate the connection
+        landlordCode:
+          type: string
+          description: A specific code for data manipulation
+        establishmentCode:
+          type: string
+          description: A specific code for data manipulation
+      x-examples:
+        Example 1:
+          username: '559212'
+          password: Temporal1
+          landlordCode: '0000000160'
+          establishmentCode: '0000000229'
+    local-authority-connection.partial.v1:
+      title: local-authority-connection.partial.v1
+      x-stoplight:
+        id: nvmtn27z49upk
+      type: object
+      description: 'Local authority connection '
+      properties:
+        name:
+          type: string
+          description: Connection name
+        type:
+          type: string
+          description: Connection type
+          enum:
+            - SPANISH_POLICE
+        configuration:
+          oneOf:
+            - $ref: '#/components/schemas/local-authority-connection.configuration.spanish.v1'
+        isEnabled:
+          type: boolean
+          description: Connection enabled
+        accountId:
+          type: string
+          description: User account who own this integration
+          format: uuid
+      required:
+        - name
+        - type
+        - configuration
+        - isEnabled
+        - accountId
+    local-authority-connection-update.dto.v1:
+      title: local-authority-connection-update.dto.v1
+      x-stoplight:
+        id: 5z2xjq6s9jq0e
+      type: object
+      description: Local Authority Connection update dto
+      properties:
+        name:
+          type: string
+          description: Name of the connection
+        configuration:
+          oneOf:
+            - $ref: '#/components/schemas/local-authority-connection.configuration.spanish.v1'
+        isEnabled:
+          type: boolean
+          description: Connection enabled
+    local-authority-connection-association-config.spanish.v1:
+      title: local-authority-connection-association-config.spanish.v1
+      x-stoplight:
+        id: 9q64wkczwarn2
+      type: object
+      properties:
+        establishmentCode:
+          type: string
+          description:
+            Establishment Code if already assigned by the local authority
+    listing-association-data.v1:
+      title: listing-association-data.v1
+      x-stoplight:
+        id: 13c9a679ab8b5
+      type: object
+      description: Listing association data
+      properties:
+        listingId:
+          type: number
+          description: Listing ID
+          readOnly: true
+        connectionId:
+          type: string
+          format: uuid
+          description: Connection ID associated with the listing
+          readOnly: true
+        associationToken:
+          type: string
+          description:
+            Association token of this listing assigned by the local authority
+            connection
+      required:
+        - listingId
+        - connectionId
+    guest-registration-booking-snapshot.v1:
+      title: guest-registration-booking-snapshot.v1
+      x-stoplight:
+        id: 562d1631bcbf8
+      type: object
+      description:
+        Our booking snapshot data within a guest registration submission
+      properties:
+        bookingId:
+          type: string
+          maxLength: 50
+          description: Booking ID (Contract ID)
+          readOnly: true
+        bookingDate:
+          type: string
+          format: date
+          pattern: YYYY-MM-DD
+          description: Contract date (Booking created date)
+          readOnly: true
+        checkInDate:
+          type: string
+          format: date-time
+          pattern: 'YYYY-MM-DDThh:mm:ss'
+          description: Contract entry date (Check-in date)
+          readOnly: true
+        checkOutDate:
+          type: string
+          description: Contract departure date (Check-out date)
+          pattern: 'YYYY-MM-DDThh:mm:ss'
+          format: date-time
+          readOnly: true
+        numberOfGuests:
+          type: integer
+          minimum: 1
+          description: Number of guests
+          readOnly: true
+        numberOfRooms:
+          type: integer
+          description: Number of rooms
+          minimum: 1
+          readOnly: true
+        internet:
+          type: boolean
+          description: Whether if this property has internet connection
+          readOnly: true
+      required:
+        - bookingId
+        - bookingDate
+        - checkInDate
+        - checkOutDate
+        - numberOfGuests
+        - numberOfRooms
+        - internet
+    guest-registration-location-data.v1:
+      title: guest-registration-location-data.v1
+      x-stoplight:
+        id: 336550d7eb268
+      type: object
+      description: Location data object for guest registration related fields
+      properties:
+        address1:
+          type: string
+          maxLength: 100
+          description: |-
+            Primary address: Street address, door/apartment...
+            and other fields that indicate the
+            address.
+        address2:
+          type: string
+          maxLength: 100
+          description: Secondary address
+        city:
+          type: string
+          maxLength: 100
+          description: City name or city code (for Spain)
+        zipCode:
+          type: string
+          maxLength: 20
+          description: Zip Code
+        countryCode:
+          type: string
+          maxLength: 3
+          description: |-
+            Country Code.
+            This field is coded according to the
+            ISO 3166-1 Alpha-3 standard.
+      required:
+        - address1
+        - zipCode
+        - countryCode
+    guest-registration-payment-snapshot.v1:
+      title: guest-registration-payment-snapshot.v1
+      x-stoplight:
+        id: ba7891ac696ec
+      type: object
+      description: Guest Registration Payment snapshot
+      properties:
+        paymentType:
+          type: string
+          maxLength: 5
+          description: |-
+            Type of Payment:
+            - EFECT: Cash
+            - TARJT: Credit Card
+            - PLATF: Payment Platform
+            - TRANS: Transfer
+            - MOVIL: Mobile Payment
+            - TREG: Gift Card
+            - DESTI: Pay at arrival
+            - OTRO: Other
+          enum:
+            - EFECT
+            - TARJT
+            - PLATF
+            - TRANS
+            - MOVIL
+            - TREG
+            - DESTI
+            - OTRO
+          readOnly: true
+        paymentDate:
+          type: string
+          description: |-
+            Date the payment was made.
+            Format YYYY-MM-DD.
+          format: date
+          readOnly: true
+        paymentSource:
+          type: string
+          description: |-
+            Identification of the means of payment: type
+            card and number, IBAN account
+            bank, mobile number, etc.
+          readOnly: true
+        payerName:
+          type: string
+          description: Fullname of this payment owner
+          readOnly: true
+        cardExpiryDate:
+          type: string
+          description: |-
+            Card expiration date for card payment case.
+            Format YYYY-MM-DD.
+          format: date
+          readOnly: true
+      required:
+        - paymentType
+    guest-registration-submission.partial.v1:
+      title: guest-registration-submission.partial.v1
+      x-stoplight:
+        id: noxwmghnrzwru
+      type: object
+      description:
+        Guest registration submission snapshot data. All fields are readonly.
+        Users need to submit another one instead of editing the submission
+      properties:
+        bookingSnapshot:
+          $ref: '#/components/schemas/guest-registration-booking-snapshot.v1'
+        listingSnapshot:
+          $ref: '#/components/schemas/guest-registration-listing-snapshot.v1'
+        paymentSnapshot:
+          $ref: '#/components/schemas/guest-registration-payment-snapshot.v1'
+        guests:
+          type: array
+          description: 'Guests of the submission, read-only'
+          items:
+            allOf:
+              - $ref: '#/components/schemas/db-entity.partial.v1'
+              - $ref: '#/components/schemas/guest.partial.v1'
+        status:
+          type: string
+          description: |-
+            - SUBMITTED: Submission was submitted and waiting for approval
+            - ACCEPTED: Submission was approved by local authority
+            - REJECTED: Submission was rejected by local authority
+          enum:
+            - SUBMITTED
+            - ACCEPTED
+            - REJECTED
+          readOnly: true
+        description:
+          type: string
+          description:
+            Description for current submission status. May include rejected
+            reason provided by local authority
+          readOnly: true
+      required:
+        - bookingSnapshot
+        - listingSnapshot
+        - paymentSnapshot
+        - guests
+        - status
+    guest-registration-listing-snapshot.v1:
+      title: guest-registration-listing-snapshot.v1
+      x-stoplight:
+        id: mb6iuft5cw2d4
+      type: object
+      description: Listing snapshot at the time the registration was sent
+      properties:
+        id:
+          type: number
+          description: Listing ID
+        name:
+          type: string
+          description: Listing title
+        location:
+          $ref: '#/components/schemas/guest-registration-location-data.v1'
+      required:
+        - id
+        - name
+        - location
+    paginate-response.v1:
+      title: paginate-response.v1
+      x-stoplight:
+        id: wvgmmri539dci
+      type: object
+      properties:
+        pagination:
+          type: object
+          description: Pagination information
+          properties:
+            nextCursor:
+              type: string
+              description: |
+                The cursor to use to get the next page. If this is `null`, empty, or `''`, there are no more pages.
+    guest-tax-identification-number.v1:
+      title: guest-tax-identification-number.v1
+      x-stoplight:
+        id: nvqxljzbp5tqz
+      type: object
+      properties:
+        idNumber:
+          type: string
+          description: Identification Number of the document
+        supportNumber:
+          type: string
+          description:
+            Support Number of the document. May be required for some cases like
+            Spanish given NIF
+      required:
+        - idNumber
+    guest-passport.v1:
+      title: guest-passport.v1
+      x-stoplight:
+        id: lgjpvc8ylepma
+      type: object
+      properties:
+        idNumber:
+          type: string
+          description: ID of the Passport
+        expirationDate:
+          type: string
+          format: date
+          pattern: YYYY-MM-DD
+          description: Passport expire date
+      required:
+        - idNumber
+        - expirationDate
+    guest-foreigner-identity-number:
+      title: guest-foreigner-identity-number
+      x-stoplight:
+        id: 319j1syonvjgh
+      type: object
+      description: Guest Foreigner Identity Document
+      properties:
+        idNumber:
+          type: string
+          description: Id number of the document
+        supportNumber:
+          type: string
+          description:
+            Support Number of the document. May be required for some cases like
+            Spanish given NIE
+      required:
+        - idNumber
+  securitySchemes:
+    bearer:
+      type: http
+      scheme: bearer
+  parameters:
+    pagination.cursor.v1:
+      name: _cursor
+      in: query
+      required: false
+      schema:
+        type: string
+      description:
+        'The cursor to use to get the next page. If omitted, the first page will
+        be returned'
+    pagination.limit.v1:
+      name: _limit
+      in: query
+      required: false
+      schema:
+        type: integer
+      description:
+        'The number of records to return per page. If omitted, the default limit
+        will be used'
+    pagination.sort.v1:
+      name: _sort
+      in: query
+      required: false
+      schema:
+        type: string
+      description:
+        'The field to sort by. If omitted, the default sort will be used'
+security:
+  - bearer: []
+tags:
+  - name: Guest Registration Data
+  - name: Guest Registration Submission
+  - name: Local Authority Connection
+  - name: Local Authority Connection Listing Association

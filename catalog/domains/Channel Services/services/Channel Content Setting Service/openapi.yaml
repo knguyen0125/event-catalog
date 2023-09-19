@@ -1,0 +1,1321 @@
+openapi: 3.0.3
+info:
+  title: Channel Content Setting Service
+  description:
+    'Internal APIs for channel content definitions and channel content settings '
+  version: 0.1.0
+  contact:
+    email: dien.pham@your.rentals
+    name: Dien Pham
+servers:
+  - url: 'http://api-internal-v2-local.your.rentals/listing-channel-content-management'
+    description: Local
+  - url: 'https://api-internal-v2-dev.your.rentals/listing-channel-content-management'
+    description: Development
+  - url: 'https://api-internal-v2.your.rentals/listing-channel-content-management'
+    description: Production
+security:
+  - bearerAuth: []
+tags:
+  - name: Category
+  - name: Channel Content Definition
+  - name: Channel Content Setting
+paths:
+  /categories/search:
+    post:
+      summary: Search category by sale channel id
+      tags:
+        - Category
+      operationId: postCategoriesSearch
+      responses:
+        '201':
+          description: OK
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/response.pagination.v1'
+                  - type: object
+                    properties:
+                      results:
+                        items:
+                          allOf:
+                            - $ref: '#/components/schemas/category.v1'
+        '400':
+          $ref: '#/components/responses/400.error.v1'
+        '401':
+          $ref: '#/components/responses/401.error.v1'
+      description:
+        Return paginated of categories. Can be search and filter by sale channel
+        ids.
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                saleChannelIds:
+                  type: array
+                  description: Filter by sale channel ids
+                  items:
+                    type: string
+                    minLength: 4
+                    maxLength: 4
+                    example: BOCM
+                parentKey:
+                  type: string
+                  nullable: true
+                  description: Search category by parent key
+                  example: 'FACILITIES_SERVICES'
+      parameters:
+        - schema:
+            type: number
+          in: query
+          name: _limit
+        - schema:
+            type: string
+          in: query
+          name: _cursor
+        - schema:
+            type: string
+            enum:
+              - 'order:asc'
+              - 'order:desc'
+            default: 'order:asc'
+          in: query
+          name: _sort
+        - schema:
+            type: array
+          in: query
+          name: _fields
+  /channel-content-definitions:
+    post:
+      summary: Create channel content definition
+      tags:
+        - Channel Content Definition
+      operationId: postChannelContentDefinitions
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/common.uuid.v1'
+                  - $ref: '#/components/schemas/content.definition.v1'
+                  - $ref: '#/components/schemas/common.timestamp.v1'
+        '400':
+          $ref: '#/components/responses/400.error.v1'
+        '401':
+          $ref: '#/components/responses/401.error.v1'
+      description: Create channel content definition
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/content.definition.v1'
+  /channel-content-definitions/search:
+    post:
+      summary: Search channel content definitions
+      tags:
+        - Channel Content Definition
+      operationId: postChannelContentDefinitionsSearch
+      responses:
+        '201':
+          description: OK
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/response.pagination.v1'
+                  - type: object
+                    properties:
+                      results:
+                        type: array
+                        items:
+                          allOf:
+                            - $ref: '#/components/schemas/common.uuid.v1'
+                            - $ref: '#/components/schemas/content.definition.v1'
+                            - $ref: '#/components/schemas/common.timestamp.v1'
+                            - type: object
+                              properties:
+                                category:
+                                  $ref: '#/components/schemas/category.v1'
+        '400':
+          $ref: '#/components/responses/400.error.v1'
+        '401':
+          $ref: '#/components/responses/401.error.v1'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                rootCategoryKeys:
+                  type: array
+                  description:
+                    Root category keys are all category have parent key is null.
+                  items:
+                    type: string
+                    example: BREAKFAST
+                saleChannelIds:
+                  type: array
+                  description: Filter by sale channel ids
+                  items:
+                    type: string
+                    example: BOCM
+                contentDefinitionKeys:
+                  type: array
+                  description: Filter content definition keys
+                  items:
+                    type: string
+                    example: PRICE_FOR_MEALS
+                isEnabled:
+                  type: boolean
+                  description:
+                    If true, filter all active definition (show on PM page)
+            examples:
+              RequestBody:
+                value:
+                  contentDefinitionKeys: ['PARKING']
+                  saleChannelIds: ['BOCM']
+                  rootCategoryKeys: ['FACILITIES_SERVICES']
+                  isEnabled: true
+        description: 'Filter condition for search api'
+      parameters:
+        - schema:
+            type: number
+            format: integer
+            minimum: 1
+            maximum: 100
+            default: 20
+          in: query
+          name: _limit
+          allowEmptyValue: true
+        - schema:
+            type: string
+          in: query
+          name: _cursor
+        - schema:
+            type: string
+            enum:
+              - 'order:asc'
+              - 'order:desc'
+            default: 'order:asc'
+          in: query
+          name: _sort
+        - schema:
+            type: array
+          in: query
+          name: _fields
+      description: Search channel content definitions
+  '/channel-content-definitions/{contentDefinitionId}':
+    parameters:
+      - $ref: '#/components/parameters/content-definition-id.v1'
+    put:
+      summary: Update channel content definition
+      tags:
+        - Channel Content Definition
+      operationId: putChannelContentDefinitionsByContentDefinitionId
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+        '400':
+          $ref: '#/components/responses/400.error.v1'
+        '401':
+          $ref: '#/components/responses/401.error.v1'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/content.definition.v1'
+      description: Update channel content definition by definition id
+    delete:
+      summary: Delete channel content definition
+      tags:
+        - Channel Content Definition
+      operationId: deleteChannelContentDefinitionsByContentDefinitionId
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+        '401':
+          $ref: '#/components/responses/401.error.v1'
+      description: Delete channel content definition by definition id
+  '/listings/{listingId}/channel-content-settings/batch-update':
+    post:
+      summary: Batch update channel content setting
+      tags:
+        - Channel Content Setting
+      operationId: postChannelContentSettingsBatchUpdate
+      responses:
+        '201':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  allOf:
+                    - $ref: '#/components/schemas/common.uuid.v1'
+                    - $ref: '#/components/schemas/form.setting-value.v1'
+                    - $ref: '#/components/schemas/common.timestamp.v1'
+                    - type: object
+                      properties:
+                        listingId:
+                          type: number
+                          format: integer
+                          example: 1234
+                          minimum: 1
+                        accountId:
+                          type: string
+                          format: uuid
+              examples:
+                Example:
+                  value:
+                    - id: 497f6eca-6276-4993-bfeb-53cbbbba6f08
+                      contentDefinitionId: ff7bf553-e2e4-4dfd-b9f0-e188d4620a10
+                      listingId: 1234
+                      accountId: 3d07c219-0a88-45be-9cfc-91e9d095a1e9
+                      isEnabled: true
+                      formValue:
+                        PARKING_NAME: Parking 1
+                        PARKING_TYPE: INDOOR_PARKING
+                        PAID_PARKING: 'YES'
+                        PARKING_RATE:
+                          CURRENCY: SEK
+                          AMOUNT: 300
+                          TYPE: PER_DAY
+                        VALET_SERVICE_AVAILABLE: 'YES'
+                      order: 1
+                      createdAt: '2019-08-24T14:15:22Z'
+                      updatedAt: '2019-08-24T14:15:22Z'
+        '400':
+          $ref: '#/components/responses/400.error.v1'
+        '401':
+          $ref: '#/components/responses/401.error.v1'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                $ref: '#/components/schemas/form.setting-value.v1'
+            examples:
+              Example:
+                value:
+                  - contentDefinitionId: ff7bf553-e2e4-4dfd-b9f0-e188d4620a10
+                    isEnabled: true
+                    formValue:
+                      PARKING_NAME: Parking 1
+                      PARKING_TYPE: INDOOR_PARKING
+                      PAID_PARKING: 'YES'
+                      PARKING_RATE:
+                        CURRENCY: SEK
+                        AMOUNT: 300
+                        TYPE: PER_DAY
+                      VALET_SERVICE_AVAILABLE: 'YES'
+                    order: 1
+      description: Batch update channel content setting
+    parameters:
+      - $ref: '#/components/parameters/listing-id.v1'
+  '/listings/{listingId}/channel-content-settings/search':
+    post:
+      summary: Search content settings
+      tags:
+        - Channel Content Setting
+      operationId: postChannelContentSettingsSearch
+      responses:
+        '201':
+          description: OK
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/response.pagination.v1'
+                  - type: object
+                    properties:
+                      results:
+                        type: array
+                        items:
+                          allOf:
+                            - $ref: '#/components/schemas/common.uuid.v1'
+                            - $ref: '#/components/schemas/form.setting-value.v1'
+                            - $ref: '#/components/schemas/common.timestamp.v1'
+                            - type: object
+                              properties:
+                                listingId:
+                                  type: number
+                                  minimum: 1
+                                  example: 1234
+                                  format: integer
+                                accountId:
+                                  type: string
+                                  format: uuid
+                                contentDefinitionKey:
+                                  type: string
+                                saleChannelId:
+                                  type: string
+                              required:
+                                - listingId
+                                - accountId
+                                - contentDefinitionKey
+                                - saleChannelId
+              examples:
+                Example:
+                  value:
+                    pagination:
+                      nextCursor: string
+                    results:
+                      - id: 497f6eca-6276-4993-bfeb-53cbbbba6f08
+                        contentDefinitionId: ff7bf553-e2e4-4dfd-b9f0-e188d4620a10
+                        contentDefinitionKey: PARKING
+                        saleChannelId: BOCM
+                        isEnabled: true
+                        formValue:
+                          PARKING_NAME: Parking 1
+                          PARKING_TYPE: INDOOR_PARKING
+                          PAID_PARKING: 'YES'
+                          PARKING_RATE:
+                            CURRENCY: SEK
+                            AMOUNT: 300
+                            TYPE: PER_DAY
+                          VALET_SERVICE_AVAILABLE: 'YES'
+                        order: 1
+                        createdAt: '2019-08-24T14:15:22Z'
+                        updatedAt: '2019-08-24T14:15:22Z'
+                        listingId: 1234
+                        accountId: 3d07c219-0a88-45be-9cfc-91e9d095a1e9
+        '400':
+          $ref: '#/components/responses/400.error.v1'
+        '401':
+          $ref: '#/components/responses/401.error.v1'
+      description: 'Search content settings for listing id, filtered by payload'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                contentDefinitionKeys:
+                  type: array
+                  description: Filter by channel content definition keys
+                  items:
+                    type: string
+                saleChannelIds:
+                  type: array
+                  description: Filter by sale channel ids
+                  items:
+                    type: string
+                    example: BOCM
+                    minLength: 4
+                    maxLength: 4
+                rootCategoryKeys:
+                  type: array
+                  description:
+                    Root category keys are all category have parent key is null.
+                  items:
+                    type: string
+                isEnabled:
+                  type: boolean
+                  description:
+                    If true, filter all settings have answer value is YES.
+            examples:
+              RequestBody:
+                value:
+                  contentDefinitionKeys: ['PARKING']
+                  saleChannelIds: ['BOCM']
+                  rootCategoryKeys: ['FACILITIES_SERVICES']
+                  isEnabled: true
+      parameters:
+        - schema:
+            type: number
+            minimum: 1
+            maximum: 100
+            default: 20
+          in: query
+          name: _limit
+        - schema:
+            type: string
+          in: query
+          name: _cursor
+        - schema:
+            type: string
+            enum:
+              - 'order:asc'
+              - 'order:desc'
+            default: 'order:asc'
+          in: query
+          name: _sort
+        - schema:
+            type: array
+          in: query
+          name: _fields
+    parameters:
+      - $ref: '#/components/parameters/listing-id.v1'
+  /accounts/{accountId}/channel-content-settings/batch-change-currency:
+    post:
+      summary: Batch change currency content settings
+      tags:
+        - Channel Content Setting
+      operationId: postChannelContentSettingsBatchChangeCurrency
+      responses:
+        '201':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+        '400':
+          $ref: '#/components/responses/400.error.v1'
+        '401':
+          $ref: '#/components/responses/401.error.v1'
+      description:
+        'Batch change currency and amount by today exchange rates for channel
+        content setting when PM updates the account currency'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                currency:
+                  type: string
+                  description: Target ISO currency code
+                  minLength: 3
+                  maxLength: 3
+                  example: DKK
+              required:
+                - currency
+    parameters:
+      - $ref: '#/components/parameters/account-id.v1'
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+  schemas:
+    form.partial.v1:
+      type: object
+      properties:
+        key:
+          type: string
+          description: Form key for gateway mapping
+          example: PARKING_NAME
+        labelTranslationKey:
+          type: string
+          description: Form label for i18n translation
+          example: BOCM_PARKING_NAME
+        descriptionTranslationKey:
+          type: string
+          description: Form description for i18n translation
+          example: BOCM_PARKING_NAME_DESCRIPTION
+        showLabelInSummarySidebar:
+          type: boolean
+          nullable: true
+          description:
+            'If true, we show summary as `Label: Form value`. Else we show `Form
+            value` only in the summary sidebar'
+        order:
+          type: number
+          description: UI display form item order
+          format: integer
+          minimum: 1
+        isMultiple:
+          type: boolean
+          description: 'When true, display field as an array'
+          nullable: true
+        summaryTemplate:
+          type: string
+          description:
+            'This field will display representing for current form group. Accept
+            variable in the template. Variable getting from path of the form
+            value and define in the {{variable}}. Example:
+            {{formValue.PARKING_NAME}}, {{formValue.PARKING_RATE.AMOUNT}}. If
+            form value in an array, we also have some special template key
+            called “specialTemplateKey.INDEX_FROM_0” and
+            “specialTemplateKey.INDEX_FROM_1”'
+          example:
+            '{{formValue.PARKING_NAME}} - {{specialTemplateKey.INDEX_FROM_1}}'
+          nullable: true
+        addButtonTranslationKey:
+          type: string
+          description:
+            'When multiple is true, define add button key for i18n translation'
+          example: ADD_PARKING_TIME
+          nullable: true
+        removeButtonTranslationKey:
+          type: string
+          description:
+            'When multiple is true, define remove button key for i18n
+            translation'
+          example: REMOVE_PARKING_TIME
+          nullable: true
+        visibility:
+          type: object
+          nullable: true
+          properties:
+            schema:
+              type: object
+              description: Using JSON schema for check visibility
+            then:
+              type: string
+              enum:
+                - show
+                - hide
+                - enable
+                - disable
+            otherwise:
+              type: string
+              enum:
+                - hide
+                - show
+                - disable
+                - enable
+      required:
+        - key
+        - labelTranslationKey
+        - order
+    form.select.v1:
+      type: object
+      title: Select component
+      description:
+        Select component. Output must be a primitive value when multiple is
+        false
+      x-examples:
+        Example:
+          inputType: select
+          options:
+            items:
+              - value: INDOOR_PARKING
+                labelTranslationKey: BOCM_INDOOR_PARKING
+              - value: OUTDOOR_PARKING
+                labelTranslationKey: BOCM_OUTDOOR_PARKING
+            defaultValue: INDOOR_PARKING
+      properties:
+        inputType:
+          type: string
+          enum:
+            - select
+        options:
+          type: object
+          description: Options for component props
+          required:
+            - items
+          properties:
+            items:
+              type: array
+              description: Data for menu items
+              items:
+                type: object
+                minProperties: 1
+                properties:
+                  value:
+                    type: string
+                    description: Value for select item. For gateway mapping
+                    example: INDOOR_PARKING
+                  labelTranslationKey:
+                    type: string
+                    description: For i18n translation
+                    example: BOCM_INDOOR_PARKING
+                required:
+                  - value
+                  - labelTranslationKey
+            defaultValue:
+              oneOf:
+                - type: string
+                  example: INDOOR_PARKING
+                - type: array
+                  items:
+                    type: string
+      required:
+        - inputType
+        - options
+    form.chip.v1:
+      title: Chip component
+      type: object
+      description:
+        'Chip component. Output is a primitive value when options.multiple is
+        false, otherwise output must be an array'
+      x-examples:
+        Example:
+          inputType: chip
+          options:
+            items:
+              - value: INDOOR_PARKING
+                labelTranslationKey: BOCM_INDOOR_PARKING
+              - value: OUTDOOR_PARKING
+                labelTranslationKey: BOCM_OUTDOOR_PARKING
+            defaultValue: OUTDOOR_PARKING
+      properties:
+        inputType:
+          type: string
+          enum:
+            - chip
+        options:
+          type: object
+          description: Options for component props
+          required:
+            - items
+          properties:
+            items:
+              type: array
+              description: All chip items
+              items:
+                type: object
+                properties:
+                  value:
+                    type: string
+                    description: Value for chip item. For gateway mapping
+                  labelTranslationKey:
+                    type: string
+                    description: For i18n translation
+                required:
+                  - value
+                  - labelTranslationKey
+            defaultValue:
+              oneOf:
+                - type: string
+                - type: array
+                  items:
+                    type: string
+      required:
+        - inputType
+        - options
+    form.text-input.v1:
+      type: object
+      title: Text input component
+      description: Text input component. Output must be a string
+      properties:
+        inputType:
+          type: string
+          enum:
+            - text-input
+        options:
+          type: object
+          description: Options for component props
+          nullable: true
+          properties:
+            defaultValue:
+              type: string
+              example: BOCM_PARKING_NAME_DEFAULT_VALUE
+              nullable: true
+            placeholderTranslationKey:
+              type: string
+              example: PLACEHOLDER_PARKING_NAME
+              nullable: true
+      required:
+        - inputType
+    form.text-area.v1:
+      type: object
+      title: Text area component
+      description: Text area component. Output must be a string
+      properties:
+        inputType:
+          type: string
+          enum:
+            - text-area
+        options:
+          type: object
+          description: Options for component props
+          nullable: true
+          properties:
+            defaultValue:
+              type: string
+              example: BOCM_TEXT_AREA_DEFAULT_VALUE
+              nullable: true
+            placeholderTranslationKey:
+              type: string
+              example: PLACEHOLDER_TEXT_AREA
+              nullable: true
+            minRows:
+              type: number
+              example: 2
+              nullable: true
+            maxRows:
+              type: number
+              example: 4
+              nullable: true
+      required:
+        - inputType
+    form.radio.v1:
+      type: object
+      title: Radio component
+      description: Radio component. Output must be a string
+      properties:
+        inputType:
+          type: string
+          enum:
+            - radio
+        options:
+          type: object
+          description: Options for component props
+          nullable: true
+          properties:
+            items:
+              type: array
+              minItems: 1
+              items:
+                type: object
+                properties:
+                  value:
+                    type: string
+                    description:
+                      Value for radio option item. For gateway mapping
+                    example: RADIO_OPTION_1
+                  labelTranslationKey:
+                    type: string
+                    description: For i18n translation
+                    example: BOCM_RADIO_OPTION_1
+                required:
+                  - value
+                  - labelTranslationKey
+          required:
+            - items
+      required:
+        - inputType
+        - options
+    form.file-input.v1:
+      type: object
+      title: File input component
+      description: File input component. Output must be a file(s)
+      properties:
+        inputType:
+          type: string
+          enum:
+            - file-input
+        options:
+          type: object
+          description: Options for component props
+          nullable: true
+          properties:
+            multiple:
+              type: boolean
+              description:
+                Set `multiple = true` to allow user to pick more than one file
+              nullable: true
+            accept:
+              type: string
+              description:
+                Set accept prop to restrict files selection to specific mime
+                types
+              example: image/png,image/jpeg
+              nullable: true
+      required:
+        - inputType
+    form.number-input.v1:
+      type: object
+      title: Number input component
+      description: Number input component. Output must be a number
+      properties:
+        inputType:
+          type: string
+          enum:
+            - number-input
+        options:
+          type: object
+          description: Options for component props
+          nullable: true
+          properties:
+            defaultValue:
+              type: number
+              nullable: true
+            placeholderTranslationKey:
+              type: string
+              example: BOCM_PLACEHOLDER_PARKING_RATE_FEE
+              nullable: true
+      required:
+        - inputType
+    form.currency.v1:
+      type: object
+      title: Currency component
+      description:
+        Currency component. Display currency field attached to another input
+        field
+      properties:
+        inputType:
+          type: string
+          enum:
+            - currency
+          description: Base on input text readonly
+        options:
+          type: object
+          description: Options for component props
+          nullable: true
+          properties:
+            defaultValue:
+              type: string
+              example: EUR
+              description: Default currency when init component
+              nullable: true
+      required:
+        - inputType
+    form.button-group.v1:
+      type: object
+      title: Button group component
+      description:
+        Same as select component but display under button group. Output is a
+        primitive value or array
+      x-examples:
+        Example:
+          inputType: button-group
+          options:
+            items:
+              - value: INDOOR_PARKING
+                labelTranslationKey: BOCM_INDOOR_PARKING
+              - value: OUTDOOR_PARKING
+                labelTranslationKey: BOCM_OUTDOOR_PARKING
+            defaultValue: OUTDOOR_PARKING
+      properties:
+        inputType:
+          type: string
+          description: Base on mantine multi select component
+          enum:
+            - button-group
+        options:
+          type: object
+          description: Options for component props
+          required:
+            - items
+          properties:
+            items:
+              type: array
+              description: Items for the select tag
+              items:
+                type: object
+                properties:
+                  value:
+                    type: string
+                    description: Value for select item. For gateway mapping
+                  labelTranslationKey:
+                    type: string
+                    description: For i18n translation
+                required:
+                  - value
+                  - labelTranslationKey
+            defaultValue:
+              oneOf:
+                - type: string
+                - type: array
+                  items:
+                    type: string
+      required:
+        - inputType
+        - options
+    form.group.v1:
+      type: object
+      title: Group of components
+      description: Display group of components
+      properties:
+        inputType:
+          type: string
+          enum:
+            - component-group
+        options:
+          type: object
+          required:
+            - groupItems
+          properties:
+            groupItems:
+              type: array
+              items:
+                allOf:
+                  - $ref: '#/components/schemas/form.partial.v1'
+                  - anyOf:
+                      - $ref: '#/components/schemas/form.select.v1'
+                      - $ref: '#/components/schemas/form.chip.v1'
+                      - $ref: '#/components/schemas/form.text-input.v1'
+                      - $ref: '#/components/schemas/form.text-area.v1'
+                      - $ref: '#/components/schemas/form.file-input.v1'
+                      - $ref: '#/components/schemas/form.radio.v1'
+                      - $ref: '#/components/schemas/form.number-input.v1'
+                      - $ref: '#/components/schemas/form.currency.v1'
+                      - $ref: '#/components/schemas/form.button-group.v1'
+      required:
+        - inputType
+        - options
+      x-examples: {}
+    form.multiple.v1:
+      type: object
+      properties:
+        isMultiple:
+          type: boolean
+          description: Form display as a array when true
+          nullable: true
+        summaryTemplate:
+          type: string
+          description:
+            'This field will display representing for current group form items.
+            Accept variable in the template. Variable getting from path of the
+            form value and define in the {{variable}}. Example:
+            {{formValue.PARKING_NAME}}, {{formValue.PARKING_RATE.AMOUNT}}. If
+            form value in an array, we also have some special template key
+            called “specialTemplateKey.INDEX_FROM_0” and
+            “specialTemplateKey.INDEX_FROM_1”'
+          example:
+            '{{formValue.PARKING_NAME}} - {{specialTemplateKey.INDEX_FROM_1}}'
+          nullable: true
+        addButtonTranslationKey:
+          type: string
+          description:
+            'When multiple is true, define add button key for i18n translation'
+          example: BOCM_ADD_PARKING
+          nullable: true
+        removeButtonTranslationKey:
+          type: string
+          description:
+            'When multiple is true, define remove button key for i18n
+            translation'
+          example: BOCM_REMOVE_PARKING
+          nullable: true
+    form.complete.v1:
+      allOf:
+        - $ref: '#/components/schemas/form.multiple.v1'
+        - type: object
+          properties:
+            validationSchema:
+              type: object
+              nullable: true
+              description:
+                Using JSON schema for validate. Null if channel content
+                definition have no form.
+            formItems:
+              type: array
+              nullable: true
+              description:
+                Define all fields for this form. Null if channel content
+                definition have no form.
+              items:
+                allOf:
+                  - $ref: '#/components/schemas/common.uuid.v1'
+                  - $ref: '#/components/schemas/form.partial.v1'
+                  - anyOf:
+                      - $ref: '#/components/schemas/form.currency.v1'
+                      - $ref: '#/components/schemas/form.group.v1'
+                      - $ref: '#/components/schemas/form.select.v1'
+                      - $ref: '#/components/schemas/form.text-input.v1'
+                      - $ref: '#/components/schemas/form.text-area.v1'
+                      - $ref: '#/components/schemas/form.file-input.v1'
+                      - $ref: '#/components/schemas/form.radio.v1'
+                      - $ref: '#/components/schemas/form.number-input.v1'
+                      - $ref: '#/components/schemas/form.chip.v1'
+                      - $ref: '#/components/schemas/form.button-group.v1'
+                  - $ref: '#/components/schemas/common.timestamp.v1'
+    category.v1:
+      type: object
+      title: Category
+      properties:
+        key:
+          type: string
+          description: Category key for gateway mapping
+          example: TOP_FACILITIES
+        labelTranslationKey:
+          type: string
+          description: For i18n translation
+          example: BOCM_TOP_FACILITIES
+        saleChannelId:
+          type: string
+          example: BOCM
+          minLength: 4
+          maxLength: 4
+        parentKey:
+          type: string
+          description:
+            Root category has parent key is null. 2nd section has parent key is
+            root category key. Accept 2 level
+          example: FACILITIES_SERVICES
+          nullable: true
+        order:
+          type: number
+          description: UI display order
+          minimum: 1
+        summaryTranslationKey:
+          type: string
+          description:
+            Summary information in the overview page (for root category)
+          example: BOCM_LET_YOUR_GUESTS_ON_BOOKING_COM_KNOW_WHICH_FACILITIES_AND_SERVICES_YOU_OFFER_AT_YOUR_PROPERTY
+          nullable: true
+        descriptionTranslationKey:
+          type: string
+          description:
+            Description information in the setting page (for root category)
+          example: BOCM_FACILITIES_SERVICES_DESCRIPTION
+          nullable: true
+        showSearchBar:
+          type: boolean
+          description: Search bar is hidden when this field is false or null
+          nullable: true
+        searchBarPlaceholderTranslationKey:
+          type: string
+          description:
+            I18n placeholder key for search input. Valid when showSearchBar is
+            true
+          example: BOCM_SEARCH_FACILITIES_PLACEHOLDER
+          nullable: true
+        showAdditionalInformation:
+          type: boolean
+          description:
+            Additional information for each section. Display in the in the blue
+            information icon
+          nullable: true
+        additionalInformationLabelTranslationKey:
+          type: string
+          description:
+            For i18n translation. Valid when showAdditionalInformation is true
+          example: BOCM_WHY_IS_THIS_IMPORTANT
+          nullable: true
+        additionalInformationDescriptionTranslationKey:
+          type: string
+          description:
+            For i18n translation. Valid when showAdditionalInformation is true
+          example: BOCM_REDUCING_WASTE_IS_A_GREAT_WAY
+          nullable: true
+        showCaption:
+          type: boolean
+          description:
+            Show caption for a section before display group definition items
+          nullable: true
+        captionLabelTranslationKey:
+          type: string
+          description: For i18n translation. Valid when showCaption is true
+          example: BOCM_HAVE_YOU_IMPLEMENTED_ANY_OF_THESE_PRACTICES_TO_REDUCE_WASTE
+          nullable: true
+        showSummarySidebar:
+          type: boolean
+          description: The sidebar on the right hand side
+          nullable: true
+        summarySidebarTranslationKey:
+          type: string
+          description:
+            I18n sidebar translation key. Valid when showSummarySidebar is true
+          nullable: true
+        summarySidebarDescriptionTranslationKey:
+          type: string
+          description:
+            I18n sidebar description translation key. Valid when
+            showSummarySidebar is true
+          nullable: true
+      required:
+        - key
+        - labelTranslationKey
+        - saleChannelId
+        - parentKey
+        - order
+      x-examples:
+        Root Category:
+          key: FACILITIES_SERVICES
+          labelTranslationKey: BOCM_FACILITIES_SERVICES
+          saleChannelId: BOCM
+          parentKey: null
+          order: 1
+          summaryTranslationKey: BOCM_LET_YOUR_GUESTS_ON_BOOKING_COM_KNOW_WHICH_FACILITIES_AND_SERVICES_YOU_OFFER_AT_YOUR_PROPERTY
+          showSearchBar: true
+          searchBarPlaceholderTranslationKey: BOCM_SEARCH_FACILITIES_PLACEHOLDER
+        Top Facilities Section:
+          key: TOP_FACILITIES
+          labelTranslationKey: BOCM_TOP_FACILITIES
+          saleChannelId: BOCM
+          parentKey: FACILITIES_SERVICES
+          order: 1
+          showAdditionalInformation: true
+          additionalInformationLabelTranslationKey: BOCM_WHY_IS_THIS_IMPORTANT
+          additionalInformationDescriptionTranslationKey: BOCM_REDUCING_WASTE_IS_A_GREAT_WAY
+          showCaption: true
+          captionLabelTranslationKey: BOCM_HAVE_YOU_IMPLEMENTED_ANY_OF_THESE_PRACTICES_TO_REDUCE_WASTE
+    content.definition.v1:
+      allOf:
+        - type: object
+          properties:
+            key:
+              type: string
+              description:
+                Unique Identifier for Channel Content Definition. The
+                combination of salesChannelId and key must be unique
+              example: PARKING
+            labelTranslationKey:
+              type: string
+              description: For i18n translation
+              example: BOCM_PARKING
+            descriptionTranslationKey:
+              type: string
+              description:
+                Description under definition label, for i18n translation
+              nullable: true
+              example: BOCM_PARKING_DESCRIPTION
+            saleChannelId:
+              type: string
+              description:
+                Sales Channel ID. The combination of salesChannelId and key must
+                be unique
+              example: BOCM
+              minLength: 4
+              maxLength: 4
+            order:
+              type: number
+              minimum: 1
+              format: integer
+              description: UI display definition order
+            categoryKey:
+              type: string
+              description: Primary key of the category table
+              example: TRANSPORT
+            isEnabled:
+              type: boolean
+              default: true
+              description:
+                'If false, this definition is not ready to show on the channel
+                manager page'
+          required:
+            - key
+            - labelTranslationKey
+            - saleChannelId
+            - order
+            - categoryKey
+            - isEnabled
+        - $ref: '#/components/schemas/form.complete.v1'
+    form.setting-value.v1:
+      type: object
+      properties:
+        contentDefinitionId:
+          type: string
+          description: Id of channel content definition table
+          format: uuid
+        isEnabled:
+          type: boolean
+          description:
+            'Value for yes/no question. If true, form value is accepted'
+        formValue:
+          type: object
+          format: 'Record<mappingKey, any>'
+          description: 'Record<gatewayMappingKey, any>'
+          nullable: true
+        order:
+          type: number
+          description: 'When multiple is true, this field support UI order'
+          default: 1
+          minimum: 1
+      required:
+        - contentDefinitionId
+        - isEnabled
+        - order
+      x-examples:
+        Example:
+          contentDefinitionId: ff7bf553-e2e4-4dfd-b9f0-e188d4620a10
+          isEnabled: true
+          formValue:
+            PARKING_NAME: Parking 1
+            PARKING_TYPE: INDOOR_PARKING
+            PAID_PARKING: 'YES'
+            PARKING_RATE:
+              CURRENCY: SEK
+              AMOUNT: 300
+              TYPE: PER_DAY
+            VALET_SERVICE_AVAILABLE: 'YES'
+          order: 1
+    common.uuid.v1:
+      title: common.uuid.v1
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+      required:
+        - id
+    common.timestamp.v1:
+      title: common.timestamp.v1
+      type: object
+      properties:
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+      required:
+        - createdAt
+        - updatedAt
+    response.pagination.v1:
+      title: response.pagination.v1
+      type: object
+      properties:
+        pagination:
+          type: object
+          required:
+            - nextCursor
+          properties:
+            nextCursor:
+              type: string
+              nullable: true
+      required:
+        - pagination
+  parameters:
+    account-id.v1:
+      name: accountId
+      in: path
+      description: The Account ID
+      required: true
+      schema:
+        type: string
+        format: uuid
+    listing-id.v1:
+      name: listingId
+      in: path
+      description: The Listing ID
+      required: true
+      schema:
+        type: number
+        example: 12345
+    content-definition-id.v1:
+      name: contentDefinitionId
+      in: path
+      description:
+        Channel content definition ID. It's unique uuid as primary key in the
+        channel content definition table
+      required: true
+      schema:
+        type: string
+        format: uuid
+  responses:
+    400.error.v1:
+      description: Bad request exception
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              statusCode:
+                type: integer
+                description: The HTTP status code
+                example: 400
+              message:
+                type: string
+                description: The error message
+                example: Field is not allowed
+    401.error.v1:
+      description: Access token is invalid or expired
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              statusCode:
+                type: integer
+                description: The HTTP status code
+                example: 401
+              message:
+                type: string
+                description: The error message
+                example: Access token is invalid or expired

@@ -1,0 +1,697 @@
+openapi: 3.0.3
+info:
+  title: Guest Gateway
+  version: 0.1.0
+  contact:
+    email: kien.nguyen@your.rentals
+    name: Kien Nguyen
+  description: |-
+    # Guest Gateway
+
+    Guest Gateway is a [Backend For
+    Frontend](https://learn.microsoft.com/en-us/azure/architecture/patterns/backends-for-frontends)
+    targeting Guests (end users) who will make bookings for property rental on our system.
+servers:
+  - url: 'https://localhost:8080'
+    description: Local
+  - url: 'https://guest-gateway-dev.your.rentals'
+    description: Development
+  - url: 'https://guest-gateway.your.rentals'
+    description: Production
+security:
+  - bearerAuth: []
+tags:
+  - name: Account
+  - name: Authentication
+  - name: Booking
+  - name: Extra Definition
+  - name: Extra Order
+  - name: Listing
+  - name: Organization
+  - name: User
+paths:
+  '/bookings/{bookingId}/extra-service-orders/quote':
+    parameters:
+      - schema:
+          type: string
+        name: bookingId
+        in: path
+        required: true
+        description: Booking ID
+    post:
+      summary: Get Extra Order Quote
+      operationId: queryExtraOrderQuote
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/extra-service-order.v1'
+                  - type: object
+                    properties:
+                      totalAmountInGuestCurrency:
+                        type: number
+                        description: Total Amount In Guest Currency
+                        example: 1726265.7508
+                    required:
+                      - totalAmountInGuestCurrency
+              examples:
+                Example 1:
+                  value:
+                    id: cc6338d9-ae9c-407e-9bd6-26e682b43427
+                    createdAt: '2023-06-22T08:17:55.806Z'
+                    updatedAt: '2023-06-22T08:17:55.806Z'
+                    bookingId: OAAWJO
+                    listingId: 344519
+                    accountId: fb0cbf81-5524-4c0e-8b13-a7a5d15efa06
+                    status: NEW
+                    paymentStatus: NEW
+                    guestCurrency: VND
+                    bookingSnapshot:
+                      from: '2023-12-17'
+                      to: '2023-12-24'
+                      numberOfAdults: 2
+                      numberOfChildren: 0
+                      numberOfPets: 0
+                      numberOfInfants: 0
+                    totalAmountInGuestCurrency: 1726265.7508
+        '404':
+          description: Not Found
+      tags:
+        - Extra Order
+      description: Query for extra order quote (availability)
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/extra-service-quote-query.v1'
+          application/xml:
+            schema:
+              type: object
+              properties: {}
+  '/bookings/{bookingId}/extra-service-orders':
+    parameters:
+      - schema:
+          type: string
+        name: bookingId
+        in: path
+        required: true
+        description: Booking ID
+    post:
+      summary: Create Extra Order
+      operationId: createExtraOrder
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/extra-service-order.v1'
+                  - type: object
+                    properties:
+                      totalAmountInGuestCurrency:
+                        type: number
+                        description: Total Amount In Guest Currency
+                        example: 1726265.7508
+                    required:
+                      - totalAmountInGuestCurrency
+        '400':
+          description: Bad Request
+        '404':
+          description: Not Found
+      tags:
+        - Extra Order
+      description: Create Extra Order
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/extra-service-quote-query.v1'
+    get:
+      summary: Get Extra Service Orders By Booking ID
+      operationId: getExtraServiceOrdersByBookingId
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/paginated-response.v1'
+                  - type: object
+                    properties:
+                      results:
+                        type: array
+                        description:
+                          Search results - array of extra service orders
+                        items:
+                          allOf:
+                            - $ref: '#/components/schemas/extra-service-order.v1'
+                            - type: object
+                              properties:
+                                totalAmountInGuestCurrency:
+                                  type: number
+                                  description: Total amount in guest currency
+                                  example: 1726265.7508
+                              required:
+                                - totalAmountInGuestCurrency
+                    required:
+                      - results
+              examples:
+                Example 1:
+                  value:
+                    pagination:
+                      nextCursor: abcdef
+                    results:
+                      - id: 497f6eca-6276-4993-bfeb-53cbbbba6f08
+                        createdAt: '2019-08-24T14:15:22Z'
+                        updatedAt: '2019-08-24T14:15:22Z'
+                        bookingId: string
+                        listingId: 0
+                        accountId: string
+                        status: string
+                        paymentStatus: string
+                        guestCurrency: string
+                        bookingSnapshot:
+                          from: '2019-08-24'
+                          to: '2019-08-24'
+                          numberOfAdults: 1
+                          numberOfChildren: 0
+                          numberOfPets: 0
+                          numberOfInfants: 0
+                        totalAmountInGuestCurrency: 1726265.7508
+      description: Get extra service orders by booking id
+      tags:
+        - Extra Order
+      parameters:
+        - $ref: '#/components/parameters/pagination.cursor.v1'
+        - $ref: '#/components/parameters/pagination.limit.v1'
+        - $ref: '#/components/parameters/pagination.sort.v1'
+  '/bookings/{bookingId}/extra-service-orders/{extraServiceOrderId}':
+    parameters:
+      - schema:
+          type: string
+        name: bookingId
+        in: path
+        required: true
+        description: Booking ID
+      - schema:
+          type: string
+        name: extraServiceOrderId
+        in: path
+        required: true
+        description: Extra Service Order ID
+    get:
+      summary: Get Extra Service Order By ID
+      tags:
+        - Extra Order
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/extra-service-order.v1'
+                  - type: object
+                    properties:
+                      totalAmountInGuestCurrency:
+                        type: number
+                        description: Total amount calculated in guest currency
+                        example: 1726265.7508
+                    required:
+                      - totalAmountInGuestCurrency
+              examples:
+                Example 1:
+                  value:
+                    id: 497f6eca-6276-4993-bfeb-53cbbbba6f08
+                    createdAt: '2019-08-24T14:15:22Z'
+                    updatedAt: '2019-08-24T14:15:22Z'
+                    bookingId: string
+                    listingId: 0
+                    accountId: string
+                    status: string
+                    paymentStatus: string
+                    guestCurrency: string
+                    bookingSnapshot:
+                      from: '2019-08-24'
+                      to: '2019-08-24'
+                      numberOfAdults: 1
+                      numberOfChildren: 0
+                      numberOfPets: 0
+                      numberOfInfants: 0
+                    totalAmountInGuestCurrency: 1726265.7508
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - {}
+                type: object
+      operationId: getExtraServiceOrderById
+      description: Get extra service order data by id
+  '/bookings/{bookingToken}/extra-service-orders/{extraServiceOrderId}/payment-sessions':
+    parameters:
+      - schema:
+          type: string
+        name: extraServiceOrderId
+        in: path
+        required: true
+        description: Extra Order ID
+      - schema:
+          type: string
+        name: bookingToken
+        in: path
+        required: true
+        description:
+          'Guest booking token, which is private to the guest by booking email'
+    post:
+      summary: Init Extra Order Payment Session
+      operationId: initExtraOrderPaymentSession
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                oneOf:
+                  - $ref: '#/components/schemas/stripe-payment-token.v1'
+        '400':
+          description: Bad Request
+        '404':
+          description: Not Found
+      tags:
+        - Extra Order
+      description: |-
+        Init payment session to checkout extra order
+        - Throw Bad Request Exception if the extra order status is not processable: if the order is paid or cancelled
+        - Throw Bad Request and mark the order as expired if it exceeds latest order rule
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                paymentProvider:
+                  type: string
+                  enum:
+                    - stripe
+                  description: Payment Provider Identifier
+              required:
+                - paymentProvider
+  '/bookings/{bookingToken}/extra-service-orders/{extraServiceOrderId}/cancel':
+    parameters:
+      - schema:
+          type: string
+        name: extraServiceOrderId
+        in: path
+        required: true
+        description: Extra Order ID
+      - schema:
+          type: string
+        name: bookingToken
+        in: path
+        required: true
+        description:
+          'Guest booking token, which is private to the guest by booking email'
+    post:
+      summary: Cancel an extra order
+      operationId: cancelExtraOrder
+      responses:
+        '200':
+          description: OK
+        '400':
+          description: Bad Request
+        '404':
+          description: Not Found
+      tags:
+        - Extra Order
+      description:
+        Cancel an extra order. Must follow strictest extra order cancellation
+        policy from extra order items in the order being requested on
+  '/listings/{listingId}/extra-service-definitions':
+    parameters:
+      - schema:
+          type: string
+        name: listingId
+        in: path
+        required: true
+    get:
+      summary: Get Listing Associated Extra Definitions
+      tags:
+        - Extra Definition
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/paginated-response.v1'
+                  - type: object
+                    properties:
+                      results:
+                        $ref: '#/components/schemas/listing-extra-definition.v1'
+                    required:
+                      - results
+      operationId: getListingAssociatedExtraDefinitions
+      description: Get Listing Associated Extra Definitions
+      parameters: []
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+  schemas:
+    extra-service-quote-query.v1:
+      title: query-extra-service-quote.v1
+      x-stoplight:
+        id: 0d9205213f3da
+      type: object
+      properties:
+        currency:
+          type: string
+          description: Currency
+          example: EUR
+        items:
+          type: array
+          description: Extra Service Definition Payload
+          minItems: 1
+          items:
+            type: object
+            properties:
+              definitionId:
+                type: string
+                format: uuid
+                description: Extra Service Definition ID
+              quantity:
+                type: integer
+                minimum: 1
+                description: Quantity
+              metadata:
+                type: object
+                description: Metadata
+                properties:
+                  durationQuantity:
+                    type: integer
+                    description: Duration Quantity
+                  unitQuantity:
+                    type: integer
+                    description: Unit quantity
+                required:
+                  - durationQuantity
+                  - unitQuantity
+            required:
+              - definitionId
+              - quantity
+      required:
+        - currency
+        - items
+    booking-snapshot.v1:
+      type: object
+      x-examples:
+        Example 1:
+          from: '2023-12-17'
+          to: '2023-12-24'
+          numberOfAdults: 2
+          numberOfChildren: 0
+          numberOfPets: 0
+          numberOfInfants: 0
+      minProperties: 1
+      properties:
+        from:
+          type: string
+          format: date
+          description: Check-in date
+        to:
+          type: string
+          format: date
+          description: Check-out date
+        numberOfAdults:
+          type: integer
+          minimum: 1
+          description: Number of adults
+        numberOfChildren:
+          type: integer
+          minimum: 0
+          description: Number of children
+        numberOfPets:
+          type: integer
+          minimum: 0
+          description: Number of pets
+        numberOfInfants:
+          type: integer
+          minimum: 0
+          description: Number of infants
+      required:
+        - from
+        - to
+        - numberOfAdults
+        - numberOfChildren
+        - numberOfPets
+        - numberOfInfants
+    extra-service-order.v1:
+      type: object
+      x-examples:
+        Example 1:
+          id: 13d358f0-8906-4a2b-bc86-4846698aaedc
+          createdAt: '2023-06-22T08:32:53.331Z'
+          updatedAt: '2023-06-22T08:32:53.331Z'
+          bookingId: OAAWJO
+          listingId: 344519
+          accountId: fb0cbf81-5524-4c0e-8b13-a7a5d15efa06
+          status: NEW
+          paymentStatus: NEW
+          guestCurrency: VND
+          bookingSnapshot:
+            from: '2023-12-17'
+            to: '2023-12-24'
+            numberOfAdults: 2
+            numberOfChildren: 0
+            numberOfPets: 0
+            numberOfInfants: 0
+      properties:
+        id:
+          type: string
+          format: uuid
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+        bookingId:
+          type: string
+        listingId:
+          type: integer
+        accountId:
+          type: string
+        status:
+          type: string
+        paymentStatus:
+          type: string
+        guestCurrency:
+          type: string
+        bookingSnapshot:
+          $ref: '#/components/schemas/booking-snapshot.v1'
+      required:
+        - id
+        - createdAt
+        - updatedAt
+        - bookingId
+        - listingId
+        - accountId
+        - status
+        - paymentStatus
+        - guestCurrency
+        - bookingSnapshot
+    stripe-payment-token.v1:
+      title: stripe-payment-token.v1
+      x-stoplight:
+        id: fov5koso3npui
+      type: object
+      properties:
+        token:
+          type: string
+          description: Payment Session secret token
+      required:
+        - token
+    paginated-response.v1:
+      title: paginated-response.v1
+      x-stoplight:
+        id: 2012q13sx5pl3
+      type: object
+      properties:
+        pagination:
+          type: object
+          description: The pagination information
+          properties:
+            nextCursor:
+              type: string
+              description: |
+                The cursor to use to get the next page. If this is `null`, empty, or `''`, there are no more pages.
+    listing-extra-definition.v1:
+      type: object
+      x-examples:
+        Example 1:
+          id: 9b154a69-4928-4a67-8f2b-7a5a0a737c2d
+          createdAt: '2023-06-14T09:51:52.000Z'
+          updatedAt: '2023-06-14T09:51:52.000Z'
+          accountId: fb0cbf81-5524-4c0e-8b13-a7a5d15efa06
+          earliestOrderRule: AT_THE_TIME_BOOKING
+          latestOrderRule: NO_RESTRICTION
+          cancellationOrderRule: NONE_REFUNDABLE
+          iconUrl: lnr-star
+          feeBasis: PER_UNIT
+          descriptions:
+            - languageCode: DE
+              createdAt: '2023-06-14T09:51:52.000Z'
+              updatedAt: '2023-06-14T09:51:52.000Z'
+              name: Extra Demo 1
+              description: ''
+            - languageCode: EN
+              createdAt: '2023-06-14T09:51:52.000Z'
+              updatedAt: '2023-06-14T09:51:52.000Z'
+              name: Extra Demo 1
+              description: ''
+            - languageCode: ES
+              createdAt: '2023-06-14T09:51:52.000Z'
+              updatedAt: '2023-06-14T09:51:52.000Z'
+              name: Extra Demo 1
+              description: ''
+            - languageCode: FR
+              createdAt: '2023-06-14T09:51:52.000Z'
+              updatedAt: '2023-06-14T09:51:52.000Z'
+              name: Extra Demo 1
+              description: ''
+            - languageCode: IT
+              createdAt: '2023-06-14T09:51:52.000Z'
+              updatedAt: '2023-06-14T09:51:52.000Z'
+              name: Extra Demo 1
+              description: ''
+          additionalDetails: []
+          guestCurrency: VND
+          unitPriceInGuestCurrency: 863132.8754
+      properties:
+        id:
+          type: string
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+        accountId:
+          type: string
+          format: uuid
+        earliestOrderRule:
+          type: string
+          enum:
+            - AT_THE_TIME_OF_BOOKING
+            - 48H_BEFORE_CHECK_IN
+            - 24H_BEFORE_CHECK_IN
+            - 48H_BEFORE_CHECK_OUT
+            - 24H_BEFORE_CHECK_OUT
+        latestOrderRule:
+          type: string
+          enum:
+            - AT_THE_TIME_OF_BOOKING
+            - 48H_BEFORE_CHECK_IN
+            - 24H_BEFORE_CHECK_IN
+            - 48H_BEFORE_CHECK_OUT
+            - 24H_BEFORE_CHECK_OUT
+        cancellationOrderRule:
+          type: string
+          enum:
+            - NONE_REFUNDABLE
+            - ONE_DAY_BEFORE_CHECK_IN
+            - ANY_TIME_BEFORE_CHECK_OUT
+        iconUrl:
+          type: string
+          example: lnr-star
+        feeBasis:
+          type: string
+          description: PER_UNIT
+        descriptions:
+          type: array
+          items:
+            type: object
+            properties:
+              languageCode:
+                type: string
+              createdAt:
+                type: string
+              updatedAt:
+                type: string
+              name:
+                type: string
+              description:
+                type: string
+        additionalDetails:
+          type: array
+          items:
+            type: object
+            minProperties: 1
+            properties:
+              content:
+                type: string
+                example: Additional Detail EN
+              languageCode:
+                type: string
+                example: EN
+        guestCurrency:
+          type: string
+        unitPriceInGuestCurrency:
+          type: number
+          example: 863132.8754
+      required:
+        - id
+        - createdAt
+        - updatedAt
+        - accountId
+        - earliestOrderRule
+        - latestOrderRule
+        - cancellationOrderRule
+        - feeBasis
+        - descriptions
+        - additionalDetails
+        - guestCurrency
+        - unitPriceInGuestCurrency
+  parameters:
+    pagination.cursor.v1:
+      name: _cursor
+      in: query
+      required: false
+      schema:
+        type: string
+      description:
+        'The cursor to use to get the next page. If omitted, the first page will
+        be returned.'
+    pagination.limit.v1:
+      name: _limit
+      in: query
+      required: false
+      schema:
+        type: string
+      description:
+        'The number of items to return per page. If omitted, the default limit
+        will be used.'
+    pagination.sort.v1:
+      name: _sort
+      in: query
+      required: false
+      schema:
+        type: string
+      description:
+        'The field to sort by. If omitted, the default sort will be used.'
+x-tagGroups:
+  - name: Authentication
+    tags:
+      - Authentication
+  - name: Extra Management
+    tags:
+      - Extra Order
