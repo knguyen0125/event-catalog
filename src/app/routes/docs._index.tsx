@@ -5,6 +5,7 @@ import { Doc } from '~/database/models.server';
 import Breadcrumb from '~/components/Breadcrumb';
 import catalogHash from '../../../catalogHash.json';
 import DocList from '~/components/DocList';
+import Card from '~/components/Card';
 
 export const meta: V2_MetaFunction = () => [
   { title: 'Docs' },
@@ -36,10 +37,11 @@ const DocIndexPage = () => {
   const { docs } = useLoaderData<typeof loader>();
 
   return (
-    <div>
-      <Breadcrumb crumbs={[{ name: 'Docs', to: '.' }]} />
-      <h1 className="py-4 text-2xl font-bold">Docs ({docs.length})</h1>
-      <hr className="py-4" />
+    <div className="flex min-h-screen flex-col gap-4 bg-gray-50 p-4">
+      <Card>
+        <Breadcrumb crumbs={[{ name: 'Docs', to: '.' }]} />
+        <h1 className="pt-2 text-2xl font-bold">Docs ({docs.length})</h1>
+      </Card>
       <DocList docs={docs} />
     </div>
   );

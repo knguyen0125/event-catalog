@@ -44,10 +44,8 @@ const DomainOverviewPage = () => {
             { name: 'Overview' },
           ]}
         />
-        <div className="flex items-baseline gap-2">
-          <h1 className="py-4 text-2xl font-bold">{domain.name}</h1>
-        </div>
-        <p className="pb-4 text-gray-500">{domain.summary}</p>
+        <h1 className="py-4 text-2xl font-bold">{domain.name}</h1>
+        <p className="text-gray-500">{domain.summary}</p>
       </Card>
       <Card title="Owners">
         {(domain.owners || []).map((owner) => (
