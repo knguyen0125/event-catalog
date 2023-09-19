@@ -1,11 +1,5 @@
 import React from 'react';
-import {
-  json,
-  LinksFunction,
-  LoaderArgs,
-  redirect,
-  V2_MetaFunction,
-} from '@remix-run/node';
+import { json, LoaderArgs, redirect, V2_MetaFunction } from '@remix-run/node';
 import { Link, useLoaderData } from '@remix-run/react';
 import { ModelObject } from 'objection';
 import {
