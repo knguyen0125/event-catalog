@@ -81,11 +81,6 @@ const EventDetail = () => {
           </div>
         </Card>
       )}
-      <Card title="Visualizer">
-        <div className="h-[500px] w-full">
-          <EventVisualizer event={event} />
-        </div>
-      </Card>
       {event.schema && (
         <Card title="Schema">
           <FileViewer
@@ -95,6 +90,11 @@ const EventDetail = () => {
           />
         </Card>
       )}
+      <Card title="Visualizer">
+        <div className="h-[500px] w-full">
+          <EventVisualizer event={event} />
+        </div>
+      </Card>
     </div>
   );
 };
