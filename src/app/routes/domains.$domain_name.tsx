@@ -119,7 +119,7 @@ const DomainDetailPage = () => {
         </nav>
       </aside>
       <div className="w-px bg-gray-200" />
-      <div className="flex-grow">
+      <div className="w-full">
         <Outlet />
       </div>
     </div>
