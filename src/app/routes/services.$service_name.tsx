@@ -23,10 +23,9 @@ import Badge from '~/components/Badge';
 import Avatar from '~/components/Avatar';
 import catalogHash from '../../../catalogHash.json';
 import ServicesVisualizer from '~/components/visualizer/ServicesVisualizer';
+import Card from '~/components/Card';
 
-export const links: LinksFunction = () => [
-  { rel: 'stylesheet', href: swaggerUiStyles },
-];
+export const links: LinksFunction = () => [];
 
 export const meta: V2_MetaFunction<typeof loader> = ({ data }) => [
   { title: `${data?.service.name} | Services` },
@@ -192,40 +191,34 @@ const ServiceDetailPage = () => {
   const { service, crumbs } = useLoaderData<typeof loader>();
 
   return (
-    <div>
-      <Breadcrumb crumbs={crumbs} />
-      <div className="xl:grid xl:grid-cols-4">
-        <div className="flex flex-col justify-between xl:col-span-3 xl:border-r xl:border-gray-200 xl:pr-8">
-          <div>
-            <div className="flex items-baseline gap-2">
-              <h1 className="py-4 text-2xl font-bold">{service.name}</h1>
-            </div>
-            <p className="pb-4 text-gray-500">{service.summary}</p>
-            <hr className="pb-4" />
-            <div className="prose max-w-none">
-              {/* eslint-disable-next-line react/no-children-prop */}
-              {service.content && (
-                <div dangerouslySetInnerHTML={{ __html: service.content }} />
-              )}
-            </div>
-            <div>
-              <h2 className="py-4 text-2xl font-bold">Visualizer</h2>
-              <div className="h-[500px] w-full">
-                <ServicesVisualizer services={[service]} />
-              </div>
-            </div>
-            {service.openapi && (
-              <div>
-                <h2 className="py-4 text-2xl font-bold">OpenAPI</h2>
-                <div className="h-[500px] w-full">
-                  <SwaggerUI spec={service.openapi} />
-                </div>
-              </div>
-            )}
+    <div className="flex min-h-screen flex-col gap-4 bg-gray-50 p-4">
+      <Card>
+        <Breadcrumb crumbs={crumbs} />
+        <h1 className="pt-2 text-2xl font-bold">{service.name}</h1>
+        {service.summary && (
+          <p className="pb-4 text-gray-500">{service.summary}</p>
+        )}
+      </Card>
+      {service.content && (
+        <Card title="Content">
+          <div className="prose max-w-none">
+            {/* eslint-disable-next-line react/no-children-prop */}
+            <div dangerouslySetInnerHTML={{ __html: service.content }} />
           </div>
+        </Card>
+      )}
+      <Card title="Visualizer">
+        <div className="h-[500px] w-full">
+          <ServicesVisualizer services={[service]} />
         </div>
-        <Sidebar service={service} key={service.name} />
-      </div>
+      </Card>
+      {service.openapi && (
+        <Card title="OpenAPI">
+          <div className="w-full">
+            <SwaggerUI spec={service.openapi} />
+          </div>
+        </Card>
+      )}
     </div>
   );
 };
