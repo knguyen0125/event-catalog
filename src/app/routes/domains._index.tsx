@@ -50,7 +50,7 @@ const DomainIndex = () => {
         <Breadcrumb crumbs={[{ name: 'Domains', to: '.' }]} />
         <h1 className="pt-2 text-2xl font-bold">Domains ({domains.length})</h1>
       </Card>
-      <ul className="grid auto-rows-fr grid-cols-1 gap-6 lg:grid-cols-2 xl:grid-cols-3">
+      <ul className="grid auto-rows-fr grid-cols-1 gap-4 lg:grid-cols-2 xl:grid-cols-3">
         {domains.map((domain) => (
           <li key={domain.name}>
             <Link to={`/domains/${domain.name}`}>

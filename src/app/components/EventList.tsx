@@ -17,7 +17,7 @@ type EventListProps = {
 
 const EventList: React.FC<EventListProps> = ({ events }) => {
   return (
-    <ul className="grid auto-rows-fr grid-cols-1 gap-6 lg:grid-cols-2 xl:grid-cols-3">
+    <ul className="grid auto-rows-fr grid-cols-1 gap-4 lg:grid-cols-2 xl:grid-cols-3">
       {events.map((event) => (
         <li key={event.name}>
           <Link to={`./${event.name}/versions/${event.version}`}>

@@ -14,7 +14,7 @@ export async function loader({ params }: LoaderArgs) {
       name: params.service_name,
     })
     .withGraphFetched(
-      '[domain, owners, producesEvents(isLatest), consumesEvents(isLatest)]',
+      '[domain, owners, producesEvents(isLatest), consumesEvents(isLatest), docs]',
     );
 
   if (!service) {

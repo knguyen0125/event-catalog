@@ -16,7 +16,7 @@ type ServiceListProps = {
 
 const ServiceList: React.FC<ServiceListProps> = ({ services }) => {
   return (
-    <ul className="grid auto-rows-fr grid-cols-1 gap-6 lg:grid-cols-2 xl:grid-cols-3">
+    <ul className="grid auto-rows-fr grid-cols-1 gap-4 lg:grid-cols-2 xl:grid-cols-3">
       {services.map((service) => (
         <li key={service.name}>
           <Link to={`./${service.name}`}>

@@ -17,7 +17,7 @@ export async function loader({ params }: LoaderArgs) {
     .findOne({
       name: params.domain_name,
     })
-    .withGraphFetched('[services.[producesEvents, consumesEvents]]');
+    .withGraphFetched('[services.[producesEvents, consumesEvents, docs]]');
 
   if (!domain) {
     // eslint-disable-next-line @typescript-eslint/no-throw-literal

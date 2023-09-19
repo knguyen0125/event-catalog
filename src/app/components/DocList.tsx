@@ -8,14 +8,14 @@ import { Doc } from '~/database/models.server';
 
 const getDocPath = (doc: ModelObject<Doc>) => {
   const docPath = `${doc.id}-${slugify(doc.file_name)}`;
-  if (doc.domain?.name) {
-    if (doc.service?.name) {
-      return `/domains/${doc.domain.name}/services/${doc.service.name}/docs/${docPath}`;
-    }
-    return `/domains/${doc.domain.name}/docs/${docPath}`;
+  if (doc.domain_name) {
+    // if (doc.service?.name) {
+    //   return `/domains/${doc.domain.name}/services/${doc.service.name}/docs/${docPath}`;
+    // }
+    return `/domains/${doc.domain_name}/docs/${docPath}`;
   }
 
-  return `/services/${doc.service?.name}/docs/${docPath}`;
+  return `/services/${doc.service_name}/docs/${docPath}`;
 };
 
 type DocListProps = {
@@ -24,7 +24,7 @@ type DocListProps = {
 
 const DocList: React.FC<DocListProps> = ({ docs }) => {
   return (
-    <ul className="grid auto-rows-fr grid-cols-1 gap-6 lg:grid-cols-2 xl:grid-cols-3">
+    <ul className="grid auto-rows-fr grid-cols-1 gap-4 lg:grid-cols-2 xl:grid-cols-3">
       {docs.map((doc) => (
         <li key={doc.id}>
           <Link to={getDocPath(doc)} key={doc.id}>

@@ -7,6 +7,7 @@ import Breadcrumb from '~/components/Breadcrumb';
 import catalogHash from '../../../catalogHash.json';
 import ServicesVisualizer from '~/components/visualizer/ServicesVisualizer';
 import Card from '~/components/Card';
+import DocList from '~/components/DocList';
 
 export const meta: V2_MetaFunction<typeof loader> = ({ data }) => [
   { title: `${data?.service.name} | Services` },
@@ -19,7 +20,7 @@ export async function loader({ params }: LoaderArgs) {
       name: params.service_name,
     })
     .withGraphFetched(
-      '[domain, owners, producesEvents(isLatest), consumesEvents(isLatest)]',
+      '[domain, owners, producesEvents(isLatest), consumesEvents(isLatest), docs]',
     );
 
   if (!service) {
@@ -73,6 +74,16 @@ const ServiceDetailPage = () => {
             <SwaggerUI spec={service.openapi} />
           </div>
         </Card>
+      )}
+      {service.docs && service.docs.length > 0 && (
+        <>
+          <Card>
+            <div className="text-base font-semibold leading-6 text-gray-900">
+              Docs ({service.docs.length})
+            </div>
+          </Card>
+          <DocList docs={service.docs} />
+        </>
       )}
     </div>
   );
