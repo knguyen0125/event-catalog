@@ -3,7 +3,7 @@ import { Link, useLoaderData } from '@remix-run/react';
 import { json } from '@remix-run/node';
 import React from 'react';
 import {
-  Cog8ToothIcon,
+  CubeIcon,
   EnvelopeIcon,
   RectangleStackIcon,
 } from '@heroicons/react/24/outline';
@@ -59,7 +59,7 @@ const OwnersIndex = () => {
                     text: `Events (${owner.events?.length || 0})`,
                   },
                   {
-                    icon: Cog8ToothIcon,
+                    icon: CubeIcon,
                     iconClassName: 'text-emerald-500',
                     text: `Services (${owner.services?.length || 0})`,
                   },

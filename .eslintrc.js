@@ -20,6 +20,7 @@ module.exports = {
           2,
           { namedComponents: 'arrow-function' },
         ],
+        '@typescript-eslint/no-throw-literal': 'off',
       },
     },
     {

@@ -7,7 +7,7 @@ type BreadcrumbProps = {
 };
 
 const Breadcrumb: React.FC<BreadcrumbProps> = ({ crumbs }) => (
-  <nav className="flex py-4" aria-label="Breadcrumb">
+  <nav className="flex" aria-label="Breadcrumb">
     <ol className="flex items-center space-x-4">
       <li>
         <div className="flex items-center">

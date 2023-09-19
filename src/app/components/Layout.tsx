@@ -3,7 +3,7 @@ import clsx from 'clsx';
 import { Transition, Dialog } from '@headlessui/react';
 import {
   Bars3Icon,
-  Cog8ToothIcon,
+  CubeIcon,
   EnvelopeIcon,
   RectangleStackIcon,
   UserGroupIcon,
@@ -26,7 +26,7 @@ const Layout: React.FC<React.PropsWithChildren<{}>> = ({ children }) => {
     {
       name: 'Services',
       path: '/services',
-      icon: Cog8ToothIcon,
+      icon: CubeIcon,
     },
     {
       name: 'Domains',

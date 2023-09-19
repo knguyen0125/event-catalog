@@ -2,7 +2,7 @@ import type { V2_MetaFunction } from '@remix-run/node';
 import { Link, useLoaderData } from '@remix-run/react';
 import {
   ChevronRightIcon,
-  Cog8ToothIcon,
+  CubeIcon,
   DocumentIcon,
   EnvelopeIcon,
   RectangleStackIcon,
@@ -17,26 +17,23 @@ export const meta: V2_MetaFunction = () => [
 ];
 
 export async function loader() {
-  const [eventCount, domainCount, serviceCount, ownerCount, docCount] =
-    await Promise.all([
-      Event.query().where('is_latest', true).resultSize(),
-      Domain.query().distinct('name').resultSize(),
-      Service.query().distinct('name').resultSize(),
-      Owner.query().distinct('email').resultSize(),
-      Doc.query().distinct('path').resultSize(),
-    ]);
+  const [eventCount, domainCount, serviceCount, docCount] = await Promise.all([
+    Event.query().where('is_latest', true).resultSize(),
+    Domain.query().distinct('name').resultSize(),
+    Service.query().distinct('name').resultSize(),
+    Doc.query().distinct('path').resultSize(),
+  ]);
 
   return {
     eventCount,
     domainCount,
     serviceCount,
-    ownerCount,
     docCount,
   };
 }
 
 const Index = () => {
-  const { eventCount, domainCount, serviceCount, ownerCount, docCount } =
+  const { eventCount, domainCount, serviceCount, docCount } =
     useLoaderData<typeof loader>();
   const data = [
     {
@@ -50,7 +47,7 @@ const Index = () => {
       name: 'Services',
       count: serviceCount,
       to: '/services',
-      icon: Cog8ToothIcon,
+      icon: CubeIcon,
       iconColor: 'bg-emerald-500',
     },
     {
@@ -59,13 +56,6 @@ const Index = () => {
       to: '/domains',
       icon: RectangleStackIcon,
       iconColor: 'bg-red-500',
-    },
-    {
-      name: 'Owners',
-      count: ownerCount,
-      to: '/owners',
-      icon: UserGroupIcon,
-      iconColor: 'bg-yellow-500',
     },
     {
       name: 'Docs',
@@ -78,11 +68,11 @@ const Index = () => {
 
   return (
     <div className="flex h-screen flex-col items-center justify-center bg-gray-50">
-      <h1 className="text-4xl font-bold">Event Catalog</h1>
-      <div className="mt-2 text-lg font-light">
+      <h1 className="text-center text-4xl font-bold">Event Catalog</h1>
+      <div className="mt-2 text-center text-lg font-light">
         Discover, Explore, and Document your Event Driven Architectures
       </div>
-      <div className="mt-8 grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5">
+      <div className="mt-8 grid grid-cols-1 gap-5 sm:grid-cols-2 xl:grid-cols-4">
         {data.map((item) => (
           <Link
             className="rounded-lg bg-white px-4 py-4 shadow transition duration-200 ease-in-out hover:shadow-lg"

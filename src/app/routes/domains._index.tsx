@@ -2,7 +2,7 @@ import type { V2_MetaFunction } from '@remix-run/node';
 import { json } from '@remix-run/node';
 import { Link, useLoaderData } from '@remix-run/react';
 import {
-  Cog8ToothIcon,
+  CubeIcon,
   EnvelopeIcon,
   UserGroupIcon,
 } from '@heroicons/react/24/outline';
@@ -58,7 +58,7 @@ const DomainIndex = () => {
                     text: `Events (${domain.events?.length || 0})`,
                   },
                   {
-                    icon: Cog8ToothIcon,
+                    icon: CubeIcon,
                     iconClassName: 'text-emerald-500',
                     text: `Services (${domain.services?.length || 0})`,
                   },

@@ -17,7 +17,7 @@ import {
 import dagre from '@dagrejs/dagre';
 
 import {
-  Cog8ToothIcon,
+  CubeIcon,
   EnvelopeIcon,
   ArrowTopRightOnSquareIcon,
 } from '@heroicons/react/24/outline';
@@ -134,7 +134,7 @@ const ServicesVisualizer: React.FC<DomainVisualizerProps> = ({
       data: {
         label: (
           <div className="inline-flex items-center gap-x-1 align-bottom">
-            <Cog8ToothIcon className="h-4 w-4 text-emerald-500" />
+            <CubeIcon className="h-4 w-4 text-emerald-500" />
             <span>{service.name}</span>
           </div>
         ),

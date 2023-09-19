@@ -13,7 +13,7 @@ import {
 } from 'reactflow';
 import dagre from '@dagrejs/dagre';
 
-import { Cog8ToothIcon, EnvelopeIcon } from '@heroicons/react/24/outline';
+import { CubeIcon, EnvelopeIcon } from '@heroicons/react/24/outline';
 import { Event } from '~/database/models.server';
 import {
   addGraphEdge,
@@ -79,7 +79,7 @@ const EventVisualizer: React.FC<{
       data: {
         label: (
           <div className="inline-flex items-center gap-x-1 align-bottom">
-            <Cog8ToothIcon className="h-4 w-4 text-emerald-500" />
+            <CubeIcon className="h-4 w-4 text-emerald-500" />
             <span>{producer.name}</span>
           </div>
         ),
@@ -111,7 +111,7 @@ const EventVisualizer: React.FC<{
       data: {
         label: (
           <div className="inline-flex items-center gap-x-1 align-bottom">
-            <Cog8ToothIcon className="h-4 w-4 text-emerald-500" />
+            <CubeIcon className="h-4 w-4 text-emerald-500" />
             <span>{consumer.name}</span>
           </div>
         ),

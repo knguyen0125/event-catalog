@@ -12,7 +12,6 @@ const db = Knex({
     },
   },
   useNullAsDefault: true,
-  debug: true,
 });
 
 Model.knex(db);
@@ -312,8 +311,8 @@ export class Domain extends Model {
         relation: Model.HasManyRelation,
         modelClass: Doc,
         join: {
-          from: 'services.name',
-          to: 'docs.service_name',
+          from: 'domains.name',
+          to: 'docs.domain_name',
         },
       },
     };
