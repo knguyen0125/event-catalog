@@ -43,7 +43,7 @@ const OwnersIndex = () => {
       <Breadcrumb crumbs={[{ name: 'Owners', to: '.' }]} />
       <h1 className="py-4 text-2xl font-bold">Owners ({owners.length})</h1>
       <hr className="py-4" />
-      <ul className="grid grid-cols-1 gap-6 sm:grid-cols-2">
+      <ul className="grid auto-rows-fr grid-cols-1 gap-6 lg:grid-cols-2 xl:grid-cols-3">
         {owners.map((owner) => (
           <li key={owner.email}>
             <Link to={`./${owner.email}`} key={owner.email}>

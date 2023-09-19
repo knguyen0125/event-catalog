@@ -61,13 +61,6 @@ const ServiceList: React.FC<ServiceListProps> = ({ services }) => {
                       text: `Docs (${service.consumesEvents?.length})`,
                     }
                   : null,
-                service.owners?.length && service.owners?.length > 0
-                  ? {
-                      icon: UserGroupIcon,
-                      iconClassName: 'text-yellow-500',
-                      text: `Owners (${service.owners?.length || 0})`,
-                    }
-                  : null,
               ]}
             />
           </Link>

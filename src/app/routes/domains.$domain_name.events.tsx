@@ -15,6 +15,7 @@ import Avatar from '~/components/Avatar';
 import catalogHash from '../../../catalogHash.json';
 import ServicesVisualizer from '~/components/visualizer/ServicesVisualizer';
 import EventList from '~/components/EventList';
+import Card from '~/components/Card';
 
 export const meta: V2_MetaFunction<typeof loader> = ({ data }) => [
   { title: `${data?.domain.name} | Domains` },
@@ -39,14 +40,27 @@ export async function loader({ params }: LoaderArgs) {
   });
 }
 
-const DomainDetailPage = () => {
+const DomainEventListPage = () => {
   const { domain } = useLoaderData<typeof loader>();
 
   return (
-    <div className="h-full bg-gray-50 p-4">
-      <EventList events={domain.events || []} />
+    <div className="flex h-full flex-col gap-4 bg-gray-50 p-4">
+      <Card>
+        <Breadcrumb
+          crumbs={[
+            { name: 'Domains', to: '/domains' },
+            { name: domain.name },
+            { name: 'Events' },
+          ]}
+        />
+      </Card>
+      {domain.events && domain.events.length > 0 ? (
+        <EventList events={domain.events || []} />
+      ) : (
+        <Card>No events</Card>
+      )}
     </div>
   );
 };
 
-export default DomainDetailPage;
+export default DomainEventListPage;

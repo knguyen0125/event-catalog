@@ -3,6 +3,7 @@ import { json } from '@remix-run/node';
 import { Link, useLoaderData } from '@remix-run/react';
 import {
   CubeIcon,
+  DocumentIcon,
   EnvelopeIcon,
   UserGroupIcon,
 } from '@heroicons/react/24/outline';
@@ -19,7 +20,7 @@ export const meta: V2_MetaFunction = () => [
 export async function loader() {
   const domains = await Domain.query()
     .withGraphFetched(
-      '[events(isLatest,selectName), services(selectName), owners(selectEmail)]',
+      '[events(isLatest,selectName), services(selectName), owners(selectEmail), docs(selectId)]',
     )
     .modifiers({
       selectName(builder) {
@@ -27,6 +28,9 @@ export async function loader() {
       },
       selectEmail(builder) {
         builder.select('email');
+      },
+      selectId(builder) {
+        builder.select('id');
       },
     })
     .orderBy('name');
@@ -44,7 +48,7 @@ const DomainIndex = () => {
       <Breadcrumb crumbs={[{ name: 'Domains', to: '.' }]} />
       <h1 className="py-4 text-2xl font-bold">Domains ({domains.length})</h1>
       <hr className="py-4" />
-      <ul className="grid grid-cols-1 gap-6 sm:grid-cols-2">
+      <ul className="grid auto-rows-fr grid-cols-1 gap-6 lg:grid-cols-2 xl:grid-cols-3">
         {domains.map((domain) => (
           <li key={domain.name}>
             <Link to={`/domains/${domain.name}`}>
@@ -66,6 +70,11 @@ const DomainIndex = () => {
                     icon: UserGroupIcon,
                     iconClassName: 'text-yellow-500',
                     text: `Owners (${domain.owners?.length || 0})`,
+                  },
+                  {
+                    icon: DocumentIcon,
+                    iconClassName: 'text-stone-500',
+                    text: `Docs (${domain.docs?.length || 0})`,
                   },
                 ]}
               />

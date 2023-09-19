@@ -4,6 +4,8 @@ import { useLoaderData } from '@remix-run/react';
 import { Domain } from '~/database/models.server';
 import catalogHash from '../../../catalogHash.json';
 import ServiceList from '~/components/ServiceList';
+import Breadcrumb from '~/components/Breadcrumb';
+import Card from '~/components/Card';
 
 export const meta: V2_MetaFunction<typeof loader> = ({ data }) => [
   { title: `${data?.domain.name} | Domains` },
@@ -28,14 +30,27 @@ export async function loader({ params }: LoaderArgs) {
   });
 }
 
-const DomainDetailPage = () => {
+const DomainServiceListPage = () => {
   const { domain } = useLoaderData<typeof loader>();
 
   return (
-    <div className="h-full bg-gray-50 p-4">
-      <ServiceList services={domain.services || []} />
+    <div className="flex h-full flex-col gap-4 bg-gray-50 p-4">
+      <Card>
+        <Breadcrumb
+          crumbs={[
+            { name: 'Domains', to: '/domains' },
+            { name: domain.name },
+            { name: 'Services' },
+          ]}
+        />
+      </Card>
+      {domain.services && domain.services.length > 0 ? (
+        <ServiceList services={domain.services || []} />
+      ) : (
+        <Card>No services</Card>
+      )}
     </div>
   );
 };
 
-export default DomainDetailPage;
+export default DomainServiceListPage;

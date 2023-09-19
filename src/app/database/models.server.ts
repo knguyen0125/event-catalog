@@ -425,7 +425,11 @@ export class Doc extends Model {
 
   domain?: Domain;
 
+  domain_name?: string;
+
   service?: Service;
+
+  service_name?: string;
 
   owners?: Owner[];
 

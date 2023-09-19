@@ -1,11 +1,10 @@
 import React from 'react';
 import { json, V2_MetaFunction } from '@remix-run/node';
-import { Link, useLoaderData } from '@remix-run/react';
-import { ModelObject } from 'objection';
-import slugify from 'slugify';
+import { useLoaderData } from '@remix-run/react';
 import { Doc } from '~/database/models.server';
 import Breadcrumb from '~/components/Breadcrumb';
 import catalogHash from '../../../catalogHash.json';
+import DocList from '~/components/DocList';
 
 export const meta: V2_MetaFunction = () => [
   { title: 'Docs' },
@@ -33,18 +32,6 @@ export async function loader() {
   });
 }
 
-const getDocPath = (doc: ModelObject<Doc>) => {
-  const docPath = `${doc.id}-${slugify(doc.file_name)}`;
-  if (doc.domain?.name) {
-    if (doc.service?.name) {
-      return `/domains/${doc.domain.name}/services/${doc.service.name}/docs/${docPath}`;
-    }
-    return `/domains/${doc.domain.name}/docs/${docPath}`;
-  }
-
-  return `/services/${doc.service?.name}/docs/${docPath}`;
-};
-
 const DocIndexPage = () => {
   const { docs } = useLoaderData<typeof loader>();
 
@@ -53,15 +40,7 @@ const DocIndexPage = () => {
       <Breadcrumb crumbs={[{ name: 'Docs', to: '.' }]} />
       <h1 className="py-4 text-2xl font-bold">Docs ({docs.length})</h1>
       <hr className="py-4" />
-      <ul className="grid auto-rows-fr grid-cols-1 gap-6 sm:grid-cols-2">
-        {docs.map((doc) => (
-          <li key={doc.path}>
-            <Link to={getDocPath(doc)}>
-              {doc.summary}-{doc.service?.name}-{doc.domain?.name}
-            </Link>
-          </li>
-        ))}
-      </ul>
+      <DocList docs={docs} />
     </div>
   );
 };
