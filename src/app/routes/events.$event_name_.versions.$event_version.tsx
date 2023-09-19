@@ -72,7 +72,7 @@ const EventDetail = () => {
             <Badge className="bg-red-700 text-white">Previous Version</Badge>
           )}
         </div>
-        {event.summary && <p className="text-gray-500">{event.summary}</p>}
+        {event.summary && <p className="pt-2 text-gray-500">{event.summary}</p>}
       </Card>
       {event.content && (
         <Card title="Content">

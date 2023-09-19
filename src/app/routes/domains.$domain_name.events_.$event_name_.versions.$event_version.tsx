@@ -34,8 +34,10 @@ export async function loader({ params }: LoaderArgs) {
     crumbs: [
       { name: 'Domains', to: '/domains' },
       { name: event.domain_name, to: `/domains/${event.domain_name}` },
-      { name: 'Events', to: '/events' },
-      { name: event.name, to: `/events/${event.name}` },
+      { name: 'Events', to: `/domains/${event.domain_name}/events` },
+      {
+        name: event.name,
+      },
       {
         name: `v${event.version}`,
         to: `/events/${event.name}/versions/${event.version}`,
