@@ -3,6 +3,7 @@ import { json, LoaderArgs, V2_MetaFunction } from '@remix-run/node';
 import { useLoaderData } from '@remix-run/react';
 import { Domain } from '~/database/models.server';
 import catalogHash from '../../../catalogHash.json';
+import ServiceList from '~/components/ServiceList';
 
 export const meta: V2_MetaFunction<typeof loader> = ({ data }) => [
   { title: `${data?.domain.name} | Domains` },
@@ -30,7 +31,11 @@ export async function loader({ params }: LoaderArgs) {
 const DomainDetailPage = () => {
   const { domain } = useLoaderData<typeof loader>();
 
-  return <div>Services</div>;
+  return (
+    <div className="h-full bg-gray-50 p-4">
+      <ServiceList services={domain.services || []} />
+    </div>
+  );
 };
 
 export default DomainDetailPage;

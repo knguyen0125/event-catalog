@@ -34,7 +34,7 @@ const DomainDetailPage = () => {
   const { domain } = useLoaderData<typeof loader>();
 
   return (
-    <div>
+    <div className="p-4">
       <Breadcrumb
         crumbs={[
           { name: 'Domains', to: '/domains' },

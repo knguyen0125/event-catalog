@@ -14,6 +14,7 @@ import Badge from '~/components/Badge';
 import Avatar from '~/components/Avatar';
 import catalogHash from '../../../catalogHash.json';
 import ServicesVisualizer from '~/components/visualizer/ServicesVisualizer';
+import EventList from '~/components/EventList';
 
 export const meta: V2_MetaFunction<typeof loader> = ({ data }) => [
   { title: `${data?.domain.name} | Domains` },
@@ -41,7 +42,11 @@ export async function loader({ params }: LoaderArgs) {
 const DomainDetailPage = () => {
   const { domain } = useLoaderData<typeof loader>();
 
-  return <div>Events</div>;
+  return (
+    <div className="h-full bg-gray-50 p-4">
+      <EventList events={domain.events || []} />
+    </div>
+  );
 };
 
 export default DomainDetailPage;

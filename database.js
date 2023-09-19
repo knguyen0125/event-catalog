@@ -276,6 +276,7 @@ async function handleServiceDirectoryChange(db, dir) {
 
   const service = {
     name: _.trim(serviceName),
+    summary: _.trim(data.summary),
     content: _.trim(await processMarkdown(content, dir)),
     domain_name: _.trim(domainName),
   };

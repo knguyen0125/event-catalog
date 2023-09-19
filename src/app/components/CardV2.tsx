@@ -23,27 +23,29 @@ const CardV2: React.FC<CardV2Props> = ({
 }) => (
   <div
     className={clsx(
-      'prose flex h-full overflow-hidden rounded-lg bg-white shadow hover:bg-gray-50 hover:shadow-md',
+      'prose flex h-full overflow-hidden rounded-lg bg-white shadow transition duration-200 ease-in-out hover:shadow-lg',
     )}
   >
     {accentColor && (
       <div style={{ backgroundColor: accentColor }} className="w-4" />
     )}
-    <div className="flex flex-col justify-around p-4">
-      <div className="flex flex-wrap items-baseline gap-2">
-        <span className="break-all text-lg font-bold">{title}</span>
-        {badges &&
-          badges.map((badge) => (
-            <Badge
-              key={badge.text}
-              className={badge.className}
-              color={badge.color}
-            >
-              {badge.text}
-            </Badge>
-          ))}
+    <div className="flex flex-col justify-between p-4">
+      <div>
+        <div className="flex flex-wrap items-baseline gap-2">
+          <span className="break-all text-lg font-bold">{title}</span>
+          {badges &&
+            badges.map((badge) => (
+              <Badge
+                key={badge.text}
+                className={badge.className}
+                color={badge.color}
+              >
+                {badge.text}
+              </Badge>
+            ))}
+        </div>
+        <div className="py-2 text-gray-500">{description}</div>
       </div>
-      <div className="py-2 font-light">{description}</div>
       <div className="flex flex-wrap gap-2 pt-2 md:gap-x-4">
         {additionalDetails &&
           additionalDetails.map(
