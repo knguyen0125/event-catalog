@@ -16,7 +16,6 @@ import {
 } from '@heroicons/react/24/outline';
 import clsx from 'clsx';
 import SwaggerUI from 'swagger-ui-react';
-import swaggerUiStyles from 'swagger-ui-react/swagger-ui.css';
 import { Service } from '~/database/models.server';
 import Breadcrumb from '~/components/Breadcrumb';
 import Badge from '~/components/Badge';
@@ -24,8 +23,6 @@ import Avatar from '~/components/Avatar';
 import catalogHash from '../../../catalogHash.json';
 import ServicesVisualizer from '~/components/visualizer/ServicesVisualizer';
 import Card from '~/components/Card';
-
-export const links: LinksFunction = () => [];
 
 export const meta: V2_MetaFunction<typeof loader> = ({ data }) => [
   { title: `${data?.service.name} | Services` },
