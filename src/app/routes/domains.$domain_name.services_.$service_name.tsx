@@ -27,7 +27,7 @@ export async function loader({ params }: LoaderArgs) {
     catalogHash,
     crumbs: [
       { name: 'Domains', to: '/domains' },
-      { name: service.domain_name, to: `/domains/${service.domain_name}` },
+      { name: service.domain_name },
       { name: 'Services', to: `/domains/${service.domain_name}/services` },
       { name: service.name, to: '.' },
     ],

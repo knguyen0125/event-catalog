@@ -33,7 +33,7 @@ export async function loader({ params }: LoaderArgs) {
     eventVersions,
     crumbs: [
       { name: 'Domains', to: '/domains' },
-      { name: event.domain_name, to: `/domains/${event.domain_name}` },
+      { name: event.domain_name },
       { name: 'Events', to: `/domains/${event.domain_name}/events` },
       {
         name: event.name,
