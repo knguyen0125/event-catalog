@@ -80,7 +80,7 @@ const ServiceDetailPage = () => {
         </div>
       </Card>
       {service.openapi && (
-        <Card title="OpenAPI">
+        <Card title="OpenAPI" defaultOpen={false}>
           <div className="w-full">
             <SwaggerUI spec={service.openapi} />
           </div>

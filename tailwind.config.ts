@@ -6,5 +6,8 @@ export default {
   theme: {
     extend: {},
   },
-  plugins: [require('@tailwindcss/typography')],
+  plugins: [
+    require('@tailwindcss/typography'),
+    require('@headlessui/tailwindcss')({ prefix: 'ui' }),
+  ],
 } satisfies Config;
