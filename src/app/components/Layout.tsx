@@ -19,6 +19,11 @@ const Layout: React.FC<React.PropsWithChildren<{}>> = ({ children }) => {
 
   const routes = [
     {
+      name: 'Domains',
+      path: '/domains',
+      icon: RectangleStackIcon,
+    },
+    {
       name: 'Events',
       path: '/events',
       icon: EnvelopeIcon,
@@ -29,16 +34,6 @@ const Layout: React.FC<React.PropsWithChildren<{}>> = ({ children }) => {
       icon: CubeIcon,
     },
     {
-      name: 'Domains',
-      path: '/domains',
-      icon: RectangleStackIcon,
-    },
-    {
-      name: 'Owners',
-      path: '/owners',
-      icon: UserGroupIcon,
-    },
-    {
       name: 'Docs',
       path: '/docs',
       icon: DocumentIcon,
@@ -47,6 +42,11 @@ const Layout: React.FC<React.PropsWithChildren<{}>> = ({ children }) => {
       name: 'Visualizer',
       path: '/visualizer',
       icon: EyeIcon,
+    },
+    {
+      name: 'Owners',
+      path: '/owners',
+      icon: UserGroupIcon,
     },
   ];
 

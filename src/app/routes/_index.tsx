@@ -37,6 +37,13 @@ const Index = () => {
     useLoaderData<typeof loader>();
   const data = [
     {
+      name: 'Domains',
+      count: domainCount,
+      to: '/domains',
+      icon: RectangleStackIcon,
+      iconColor: 'bg-red-500',
+    },
+    {
       name: 'Events',
       count: eventCount,
       to: '/events',
@@ -49,13 +56,6 @@ const Index = () => {
       to: '/services',
       icon: CubeIcon,
       iconColor: 'bg-emerald-500',
-    },
-    {
-      name: 'Domains',
-      count: domainCount,
-      to: '/domains',
-      icon: RectangleStackIcon,
-      iconColor: 'bg-red-500',
     },
     {
       name: 'Docs',
