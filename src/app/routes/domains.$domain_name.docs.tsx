@@ -17,7 +17,19 @@ export async function loader({ params }: LoaderArgs) {
     .findOne({
       name: params.domain_name,
     })
-    .withGraphFetched('[docs]');
+    .withGraphFetched('[docs(selectTitleAndSummaryAndId)]')
+    .modifiers({
+      selectTitleAndSummaryAndId(builder) {
+        builder.select(
+          'title',
+          'summary',
+          'id',
+          'domain_name',
+          'service_name',
+          'file_name',
+        );
+      },
+    });
 
   if (!domain) {
     // eslint-disable-next-line @typescript-eslint/no-throw-literal

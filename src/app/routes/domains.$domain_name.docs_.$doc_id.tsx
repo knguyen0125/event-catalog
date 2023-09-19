@@ -1,14 +1,11 @@
 import type { LoaderArgs } from '@remix-run/node';
 import { json, Response, V2_MetaFunction } from '@remix-run/node';
 import { useLoaderData } from '@remix-run/react';
-import SwaggerUI from 'swagger-ui-react';
 import React from 'react';
-import { Doc, Event } from '~/database/models.server';
+import { Doc } from '~/database/models.server';
 import catalogHash from '../../../catalogHash.json';
-import EventDetail from './events.$event_name_.versions.$event_version';
 import Card from '~/components/Card';
 import Breadcrumb from '~/components/Breadcrumb';
-import ServicesVisualizer from '~/components/visualizer/ServicesVisualizer';
 
 export const meta: V2_MetaFunction<typeof loader> = ({ data }) => [
   { title: `${data?.doc.title || data?.doc.file_name} | Documents` },

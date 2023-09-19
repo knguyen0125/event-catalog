@@ -13,6 +13,7 @@ import { Owner } from '~/database/models.server';
 import Breadcrumb from '~/components/Breadcrumb';
 import Badge from '~/components/Badge';
 import catalogHash from '../../../catalogHash.json';
+import Card from '~/components/Card';
 
 export const meta: V2_MetaFunction<typeof loader> = ({ data }) => [
   { title: `${data?.owner.name || data?.owner.email} | Owners` },
@@ -144,34 +145,28 @@ const OwnerDetailPage = () => {
   const { owner } = useLoaderData<typeof loader>();
 
   return (
-    <div>
-      <Breadcrumb
-        crumbs={[
-          { name: 'Owners', to: '/owners' },
-          { name: owner.email, to: '.' },
-        ]}
-      />
-      <div className="xl:grid xl:grid-cols-4">
-        <div className="flex flex-col justify-between xl:col-span-3 xl:border-r xl:border-gray-200 xl:pr-8">
-          <div>
-            <div className="flex items-baseline gap-2">
-              <h1 className="py-4 text-2xl font-bold">
-                {owner.name ? owner.name : owner.email}
-                {owner.role ? ` - ${owner.role}` : ''}
-              </h1>
-            </div>
-            <p className="pb-4 text-gray-500">{owner.email}</p>
-            <hr className="pb-4" />
-            <div className="prose max-w-none">
-              {/* eslint-disable-next-line react/no-children-prop */}
-              {owner.content && (
-                <div dangerouslySetInnerHTML={{ __html: owner.content }} />
-              )}
-            </div>
+    <div className="flex h-full flex-col gap-4 bg-gray-50 p-4">
+      <Card>
+        <Breadcrumb
+          crumbs={[
+            { name: 'Owners', to: '/owners' },
+            { name: owner.email, to: '.' },
+          ]}
+        />
+        <h1 className="py-2 text-2xl font-bold">
+          {owner.name ? owner.name : owner.email}
+          {owner.role ? ` - ${owner.role}` : ''}
+        </h1>
+        <p className="text-gray-500">{owner.email}</p>
+      </Card>
+      {owner.content && (
+        <Card title="Content">
+          <div className="prose max-w-none">
+            {/* eslint-disable-next-line react/no-children-prop */}
+            <div dangerouslySetInnerHTML={{ __html: owner.content }} />
           </div>
-        </div>
-        <Sidebar owner={owner} key={owner.name} />
-      </div>
+        </Card>
+      )}
     </div>
   );
 };

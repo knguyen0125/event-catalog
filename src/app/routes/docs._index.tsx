@@ -14,17 +14,14 @@ export const meta: V2_MetaFunction = () => [
 
 export async function loader() {
   const docs = await Doc.query()
-    .withGraphFetched(
-      '[domain(selectName), service(selectName), owners(selectNameAndEmail)]',
+    .select(
+      'title',
+      'summary',
+      'id',
+      'domain_name',
+      'service_name',
+      'file_name',
     )
-    .modifiers({
-      selectName(builder) {
-        builder.select('name');
-      },
-      selectNameAndEmail(builder) {
-        builder.select('name', 'email');
-      },
-    })
     .orderBy('last_updated_at');
 
   return json({

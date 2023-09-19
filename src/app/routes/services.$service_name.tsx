@@ -20,9 +20,20 @@ export async function loader({ params }: LoaderArgs) {
       name: params.service_name,
     })
     .withGraphFetched(
-      '[domain, owners, producesEvents(isLatest), consumesEvents(isLatest), docs]',
-    );
-
+      '[domain, owners, producesEvents(isLatest), consumesEvents(isLatest), docs(selectTitleAndSummaryAndId)]',
+    )
+    .modifiers({
+      selectTitleAndSummaryAndId(builder) {
+        builder.select(
+          'title',
+          'summary',
+          'id',
+          'domain_name',
+          'service_name',
+          'file_name',
+        );
+      },
+    });
   if (!service) {
     // eslint-disable-next-line @typescript-eslint/no-throw-literal
     throw new Response('Not Found', { status: 404 });
