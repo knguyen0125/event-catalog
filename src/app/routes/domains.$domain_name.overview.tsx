@@ -47,19 +47,20 @@ const DomainOverviewPage = () => {
         <h1 className="py-4 text-2xl font-bold">{domain.name}</h1>
         <p className="text-gray-500">{domain.summary}</p>
       </Card>
-      <Card title="Owners">
-        {(domain.owners || []).map((owner) => (
-          <Link
-            key={owner.email}
-            to={`/owners/${owner.email}`}
-            className="flex items-center gap-2"
-          >
-            <Avatar alt={owner.name} src={owner.image} />
-            <span className="text-gray-700">{owner.name}</span>
-          </Link>
-        ))}
-      </Card>
-
+      {domain.owners && domain.owners.length > 0 && (
+        <Card title="Owners">
+          {(domain.owners || []).map((owner) => (
+            <Link
+              key={owner.email}
+              to={`/owners/${owner.email}`}
+              className="flex items-center gap-2"
+            >
+              <Avatar alt={owner.name} src={owner.image} />
+              <span className="text-gray-700">{owner.name}</span>
+            </Link>
+          ))}
+        </Card>
+      )}
       {domain.content && (
         <Card title="Content">
           <div className="prose max-w-none">

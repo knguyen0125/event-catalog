@@ -115,7 +115,8 @@ async function handleEventDirectoryChange(changes, directory) {
     directory.match(regexes.domainEventVersion)?.groups?.event_name;
   const domainName =
     directory.match(regexes.domainEvent)?.groups?.domain_name ||
-    directory.match(regexes.domainEventVersion)?.groups?.domain_name;
+    directory.match(regexes.domainEventVersion)?.groups?.domain_name ||
+    'Unspecified';
   const isLatest =
     regexes.event.test(directory) || regexes.domainEvent.test(directory);
   const folderEventVersion =
@@ -259,7 +260,8 @@ async function handleServiceDirectoryChange(db, dir) {
   const serviceName =
     dir.match(regexes.service)?.groups?.service_name ||
     dir.match(regexes.domainService)?.groups?.service_name;
-  const domainName = dir.match(regexes.domainService)?.groups?.domain_name;
+  const domainName =
+    dir.match(regexes.domainService)?.groups?.domain_name || 'Unspecified';
 
   if (!serviceName) {
     return;
@@ -323,7 +325,8 @@ async function handleDocDirectoryChange(db, dir) {
     dir.match(regexes.domainServiceDocs)?.groups?.service_name;
   const domainName =
     dir.match(regexes.domainServiceDocs)?.groups?.domain_name ||
-    dir.match(regexes.domainDocs)?.groups?.domain_name;
+    dir.match(regexes.domainDocs)?.groups?.domain_name ||
+    'Unspecified';
 
   // For each markdown file
   const files = fs.readdirSync(path.join(process.cwd(), 'catalog', dir));
@@ -372,7 +375,13 @@ async function handleDocDirectoryChange(db, dir) {
 
 async function handleDirectoryChange(dirs) {
   const changes = {
-    domains: {},
+    domains: {
+      Unspecified: {
+        name: 'Unspecified',
+        summary:
+          'Contains events, services, and documents that does not belong to any domain',
+      },
+    },
     domain_owners: {},
     events: {},
     event_owners: {},
