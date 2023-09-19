@@ -90,14 +90,11 @@ const DomainDetailPage = () => {
   return (
     <div className="flex h-screen w-full">
       <aside className="w-80">
-        <div className="flex flex-col items-start space-y-1 p-4">
-          <div className="flex items-center space-x-1">
-            <div className="rounded-md bg-red-500 p-3">
-              <RectangleStackIcon className="h-8 w-8 text-white" />
-            </div>
-            <h1 className="text-2xl font-bold">{domain.name}</h1>
+        <div className="flex items-center space-x-1 p-4">
+          <div className="rounded-md bg-red-500 p-3">
+            <RectangleStackIcon className="h-8 w-8 text-white" />
           </div>
-          <p className="text-sm text-gray-700">{domain.summary}</p>
+          <h1 className="text-xl font-bold">{domain.name}</h1>
         </div>
         {/* Menu */}
         <nav className="mt-4 space-y-1">
