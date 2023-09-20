@@ -3,7 +3,7 @@
   "sideEffects": false,
   "scripts": {
     "build:db": "node buildDb.js",
-    "build": "remix build",
+    "build": "mkdir build && node buildDb.js && remix build",
     "dev": "DB_PATH=./build/db.sqlite3 remix dev --manual -c \"node server.js\"",
     "start": "cross-env NODE_ENV=production node server.js",
     "typecheck": "tsc"
